@@ -1,324 +1,284 @@
-playerSets = {
-    # only for testing purposes
-    3: {
-        "roles": [
-            "Liberal",
-            "Fascista",
-            "Hitler"
-        ],
-        "track": [
-            None,
-            None,
-            "policy",
-            "kill",
-            "kill",
-            "win"
-        ],
-        "policies": [
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista"
-        ]
-    },
-    # only for testing purposes
-    4: {
-        "roles": [
-            "Liberal",
-            "Liberal",
-            "Fascista",
-            "Hitler"
-        ],
-        "track": [
-            None,
-            None,
-            "policy",
-            "kill",
-            "kill",
-            "win"
-        ],
-        "policies": [
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista"
-        ]
-    },
+playerSets = {    
     5: {
         "roles": [
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Fascista",
-            "Hitler"
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia"
         ],
         "track": [
-            None,
-            None,
-            "policy",
-            "kill",
-            "kill",
-            "win"
-        ],
-        "policies": [
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista"
+            "2",
+            "3",
+            "2",
+            "3",
+            "3"            
         ]
     },
     6: {
         "roles": [
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Fascista",
-            "Hitler"
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia"
         ],
         "track": [
-            None,
-            None,
-            "policy",
-            "kill",
-            "kill",
-            "win"
-        ],
-        "policies": [
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista"
+            "2",
+            "3",
+            "4",
+            "3",
+            "4"            
         ]
     },
     7: {
         "roles": [
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Fascista",
-            "Fascista",
-            "Hitler"
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia",
+            "Espia"
         ],
         "track": [
-            None,
-            "inspect",
-            "choose",
-            "kill",
-            "kill",
-            "win"
-        ],
-        "policies": [
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista"
+            "2",
+            "3",
+            "3",
+            "4*",
+            "4"            
         ]
     },
     8: {
         "roles": [
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Fascista",
-            "Fascista",
-            "Hitler"
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia",
+            "Espia"
         ],
         "track": [
-            None,
-            "inspect",
-            "choose",
-            "kill",
-            "kill",
-            "win"
-        ],
-        "policies": [
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista"
+            "3",
+            "4",
+            "4",
+            "5*",
+            "5"            
         ]
     },
     9: {
         "roles": [
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Fascista",
-            "Fascista",
-            "Fascista",
-            "Hitler"
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia",
+            "Espia"
         ],
         "track": [
-            "inspect",
-            "inspect",
-            "choose",
-            "kill",
-            "kill",
-            "win"
-        ],
-        "policies": [
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista"
+            "3",
+            "4",
+            "4",
+            "5*",
+            "5"            
         ]
     },
     10: {
         "roles": [
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Liberal",
-            "Fascista",
-            "Fascista",
-            "Fascista",
-            "Hitler"
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia",
+            "Espia",
+            "Espia"
         ],
         "track": [
-            "inspect",
-            "inspect",
-            "choose",
-            "kill",
-            "kill",
-            "win"
-        ],
-        "policies": [
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "liberal",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista",
-            "fascista"
+            "3",
+            "4",
+            "4",
+            "5*",
+            "5"            
         ]
     },
 }
 
-policies = [
-        "liberal",
-        "liberal",
-        "liberal",
-        "liberal",
-        "liberal",
-        "liberal",
-        "fascista",
-        "fascista",
-        "fascista",
-        "fascista",
-        "fascista",
-        "fascista",
-        "fascista",
-        "fascista",
-        "fascista",
-        "fascista",
-        "fascista"
-    ]
+modules = {
+    "Asesino": {
+        "roles": {
+            "Asesino": "Espia",
+            "Comandante": "Resistencia"
+        },
+        "track": [
+            "2",
+            "3",
+            "2",
+            "3",
+            "3"            
+        ]
+    },
+    "Desertor": {
+        "roles": [
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia"
+        ],
+        "track": [
+            "2",
+            "3",
+            "4",
+            "3",
+            "4"            
+        ]
+    },
+    "Trampero": {
+        "roles": [
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia",
+            "Espia"
+        ],
+        "track": [
+            "2",
+            "3",
+            "3",
+            "4*",
+            "4"            
+        ]
+    },
+    "Inquisidor": {
+        "roles": [
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia",
+            "Espia"
+        ],
+        "track": [
+            "3",
+            "4",
+            "4",
+            "5*",
+            "5"            
+        ]
+    },
+    "Inversor": {
+        "roles": [
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia",
+            "Espia"
+        ],
+        "track": [
+            "3",
+            "4",
+            "4",
+            "5*",
+            "5"            
+        ]
+    },
+    "Cazador": {
+        "roles": [
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia",
+            "Espia"
+        ],
+        "track": [
+            "3",
+            "4",
+            "4",
+            "5*",
+            "5"            
+        ]
+    },
+    "Trama": {
+        "roles": [
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia",
+            "Espia"
+        ],
+        "track": [
+            "3",
+            "4",
+            "4",
+            "5*",
+            "5"            
+        ]
+    },
+    "Sargento": {
+        "roles": [
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia",
+            "Espia"
+        ],
+        "track": [
+            "3",
+            "4",
+            "4",
+            "5*",
+            "5"            
+        ]
+    },
+    "Picaro": {
+        "roles": [
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Resistencia",
+            "Espia",
+            "Espia",
+            "Espia"
+        ],
+        "track": [
+            "3",
+            "4",
+            "4",
+            "5*",
+            "5"            
+        ]
+    }
+
+}
