@@ -118,166 +118,78 @@ modules = {
             "Asesino": "Espia",
             "Comandante": "Resistencia"
         },
-        "track": [
-            "2",
-            "3",
-            "2",
-            "3",
-            "3"            
+        "rules": [
+            "Asesino"
         ]
     },
     "Desertor": {
-        "roles": [
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Espia",
-            "Espia"
-        ],
-        "track": [
-            "2",
-            "3",
-            "4",
-            "3",
-            "4"            
+        "roles": {
+            "Desertor": "Espia",
+            "Desertor": "Resistencia"
+        },
+        "rules": [
+            "Desertor"
         ]
     },
     "Trampero": {
-        "roles": [
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Espia",
-            "Espia",
-            "Espia"
-        ],
-        "track": [
-            "2",
-            "3",
-            "3",
-            "4*",
-            "4"            
+        "rules": [
+            "Trampero"
         ]
     },
     "Inquisidor": {
-        "roles": [
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Espia",
-            "Espia",
-            "Espia"
-        ],
-        "track": [
-            "3",
-            "4",
-            "4",
-            "5*",
-            "5"            
+        "rules": [
+            "Inquisidor"
         ]
     },
     "Inversor": {
-        "roles": [
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Espia",
-            "Espia",
-            "Espia"
-        ],
-        "track": [
-            "3",
-            "4",
-            "4",
-            "5*",
-            "5"            
+        "roles": {
+            "Inversor": "Espia",
+            "Inversor": "Resistencia"
+        },
+        "rules": [
+            "Inversor"
         ]
     },
     "Cazador": {
-        "roles": [
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Espia",
-            "Espia",
-            "Espia"
-        ],
-        "track": [
-            "3",
-            "4",
-            "4",
-            "5*",
-            "5"            
+        "roles": {
+            "Cazador": "Espia",
+            "Cazador": "Resistencia"
+        },
+        "rules": [
+            "Cazador"
         ]
     },
     "Trama": {
-        "roles": [
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Espia",
-            "Espia",
-            "Espia"
+        "plot": [
+            "plotcard",
+            "plotcard",
+            "plotcard",
+            "plotcard",
+            "plotcard",
+            "plotcard",
+            "plotcard",
+            "plotcard",
+            "plotcard"
         ],
-        "track": [
-            "3",
-            "4",
-            "4",
-            "5*",
-            "5"            
+        "rules": [
+            "plot"
         ]
     },
     "Sargento": {
-        "roles": [
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Espia",
-            "Espia",
-            "Espia"
-        ],
-        "track": [
-            "3",
-            "4",
-            "4",
-            "5*",
-            "5"            
+        "roles": {
+            "Sargento": "Ambos"
+        },
+        "rules": [
+            "Sargento"
         ]
     },
     "Picaro": {
-        "roles": [
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Resistencia",
-            "Espia",
-            "Espia",
-            "Espia"
-        ],
-        "track": [
-            "3",
-            "4",
-            "4",
-            "5*",
-            "5"            
+        "roles": {
+            "Picaro": "Espia",
+            "Picaro": "Resistencia"
+        },
+        "rules": [
+            "Picaro"
         ]
     }
 
