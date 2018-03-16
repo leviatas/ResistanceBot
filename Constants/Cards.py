@@ -153,7 +153,9 @@ modules = {
     "Cazador": {
         "roles": {
             "Cazador": "Espia",
-            "Cazador": "Resistencia"
+            "Cazador": "Resistencia",
+            "Jefe": "Espia",
+            "Jefe": "Resistencia"
         },
         "rules": [
             "Cazador"
