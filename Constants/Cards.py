@@ -129,7 +129,18 @@ modules = {
         },
         "rules": [
             "Desertor"
-        ]
+        ],
+        "mazoalianza": [
+            "card",
+            "card",
+            "card",
+            "card",
+            "card",
+            "card",
+            "card",
+            "card",
+            "card"
+        ],
     },
     "Trampero": {
         "rules": [
@@ -196,3 +207,4 @@ modules = {
     }
 
 }
+
