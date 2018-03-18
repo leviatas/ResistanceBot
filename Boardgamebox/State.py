@@ -1,13 +1,22 @@
 class State(object):
     """Storage object for game state"""
     def __init__(self):
-        self.liberal_track = 0
-        self.fascist_track = 0
-        self.failed_votes = 0
-        self.president = None
-        self.nominated_president = None
-        self.nominated_chancellor = None
-        self.chosen_president = None
+        # Datos generales
+        self.currentround = -1
+        
+        # Datos sobre la mision
+        self.equipo_cantidad_mision = 0
+        
+        
+        # Equipo para ir a la misión
+        self.equipo = []        
+        self.equipo_contador = 0
+                      
+        #self.nominated_president = None Lider por orden
+        self.lider_actual = None                
+        #self.chosen_president = None Lider elegido por evento o jugador
+        self.lider_elegido = None
+        
         self.chancellor = None
         self.dead = 0
         self.last_votes = {}
@@ -16,4 +25,7 @@ class State(object):
         self.player_counter = 0
         self.veto_refused = False
         self.not_hitlers = []
-        self.currentround = -1   
+        
+        self.liberal_track = 0
+        self.fascist_track = 0
+        self.failed_votes = 0
