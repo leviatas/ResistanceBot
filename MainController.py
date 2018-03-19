@@ -83,12 +83,12 @@ def start_round(bot, game):
         
         msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.nominated_president.name, game.board.state.nominated_president.uid, game.board.state.nominated_president.name)
         bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
-        asignar_miembro(bot, game)
+        asignar_equipo(bot, game)
         # --> nominate_chosen_chancellor --> vote --> handle_voting --> count_votes --> voting_aftermath --> draw_policies
         # --> choose_policy --> pass_two_policies --> choose_policy --> enact_policy --> start_round
 
 
-def asignar_miembro(bot, game):
+def asignar_equipo(bot, game):
 	log.info('choose_members called')
 	strcid = str(game.cid)
 	pres_uid = 0
@@ -99,17 +99,15 @@ def asignar_miembro(bot, game):
 	for uid in game.playerlist:
 		name = game.playerlist[uid].name
 		btns.append([InlineKeyboardButton(name, callback_data=strcid + "_equipo_" + str(uid))])
-		
-	
-	chancellorMarkup = InlineKeyboardMarkup(btns)
+	equipoMarkup = InlineKeyboardMarkup(btns)
 
 	if(debugging):
 		game.board.state.lider_actual.uid = ADMIN		
 	bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
-	bot.send_message(game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', reply_markup=chancellorMarkup)
+	bot.send_message(game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
 
 
-def asignar_equipo(bot, update):
+def asignar_miembro(bot, update):
 	log.info('asignar_miembro called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
@@ -125,9 +123,7 @@ def asignar_equipo(bot, update):
 		#log.info(str(chosen_uid) in game.playerlist )
 		#log.info(chosen_uid in game.playerlist)        
 		
-		miembro_asignado = game.playerlist[chosen_uid]
-		
-		
+		miembro_asignado = game.playerlist[chosen_uid]			
 		
 		log.info("El lider %s (%d) eligio a %s (%d)" % (
 			game.board.state.lider_actual.name, game.board.state.lider_actual.uid,
@@ -145,9 +141,13 @@ def asignar_equipo(bot, update):
 		game.board.state.equipo_contador += 1
 		
 		# Si se suman la cantidad apropiada de miembros para la mision se vota.
-		if  game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
+		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
+			mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %s\n" (game.board.state.currentround + 2)
+			for player in game.board.state.equipo:
+				mensaje_votacion += game.playerlist[player.uid].name + "\n"
+			game.board.state.mensaje_votacion = mensaje_votacion			
 			vote(bot, game)
-		
+		#Si no se eligieron todos se le pide que siga eligiendo hasta llegar al cupo.
 		asignar_equipo(bot, game)
 		
 	except AttributeError as e:
@@ -158,22 +158,19 @@ def asignar_equipo(bot, update):
 
 
 def vote(bot, game):
-        log.info('vote called')
+        log.info('Vote called')
         #When voting starts we start the counter to see later with the vote command if we can see you voted.
         game.dateinitvote = datetime.datetime.now()
-
+	
         strcid = str(game.cid)
         btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
         voteMarkup = InlineKeyboardMarkup(btns)
         for uid in game.playerlist:
-                if not game.playerlist[uid].is_dead and not debugging:
+                if not game.playerlist[uid].esta_muerto and not debugging:
                         # El lider ya tiene el tablero
 			if game.playerlist[uid] is not game.board.state.nominated_president:                        
-                                bot.send_message(uid, game.board.print_board(game.player_sequence))
-                        mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %s\n" (game.board.state.currentround + 2)
-			for player in game.board.state.equipo:
-				mensaje_votacion += game.playerlist[player.uid].name + "\n"			
-			bot.send_message(uid, mensaje_votacion, reply_markup=voteMarkup)
+                                bot.send_message(uid, game.board.print_board(game.player_sequence))                        		
+			bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 
 def handle_voting(bot, update):
     callback = update.callback_query
@@ -186,14 +183,13 @@ def handle_voting(bot, update):
         game = GamesController.games[cid]
         uid = callback.from_user.id
         bot.edit_message_text("Gracias por tu voto!", uid, callback.message.message_id)
-        log.info("Player %s (%d) voted %s" % (callback.from_user.first_name, uid, answer))
+        log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
         
         #if uid not in game.board.state.last_votes:
         game.board.state.last_votes[uid] = answer
         
         #Allow player to change his vote
-        btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"),
-        InlineKeyboardButton("No", callback_data=strcid + "_No")]]
+        btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
         voteMarkup = InlineKeyboardMarkup(btns)
         bot.send_message(uid, "Puedes cambiar tu voto aquí.\n", reply_markup=voteMarkup)
         Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
@@ -204,55 +200,67 @@ def handle_voting(bot, update):
 
 
 def count_votes(bot, game):
-    # La votacion ha finalizado.
-    game.dateinitvote = None
-    # La votacion ha finalizado.
-    log.info('count_votes called')
-    voting_text = ""
-    voting_success = False
-    for player in game.player_sequence:
-        if game.board.state.last_votes[player.uid] == "Si":
-            voting_text += game.playerlist[player.uid].name + " votó Si!\n"
-        elif game.board.state.last_votes[player.uid] == "No":
-            voting_text += game.playerlist[player.uid].name + " votó No!\n"
-    if list(game.board.state.last_votes.values()).count("Si") > (len(game.player_sequence) / 2):  
-	# because player_sequence doesnt include dead
-        # VOTING WAS SUCCESSFUL
-        log.info("Voting successful")
-        voting_text += "Hail Presidente [%s](tg://user?id=%d)! Hail Canciller [%s](tg://user?id=%d)!" % (
-            game.board.state.nominated_president.name, game.board.state.nominated_president.uid, 
-                game.board.state.nominated_chancellor.name, game.board.state.nominated_chancellor.uid)
-        game.board.state.chancellor = game.board.state.nominated_chancellor
-        game.board.state.president = game.board.state.nominated_president
-        game.board.state.nominated_president = None
-        game.board.state.nominated_chancellor = None
-        voting_success = True
-        bot.send_message(game.cid, voting_text, ParseMode.MARKDOWN)
-        bot.send_message(game.cid, "\nNo se puede hablar ahora.")
-        game.history.append(("Ronda %d.%d\n\n" % (game.board.state.liberal_track + game.board.state.fascist_track + 1, game.board.state.failed_votes + 1) ) + voting_text)
-        log.info(game.history[game.board.state.currentround])
-        voting_aftermath(bot, game, voting_success)
-    else:
-        log.info("Voting failed")
-        voting_text += "Al pueblo no les gusto el Presidente %s y el canciller %s!" % (
-            game.board.state.nominated_president.name, game.board.state.nominated_chancellor.name)
-        game.board.state.nominated_president = None
-        game.board.state.nominated_chancellor = None
-        game.board.state.failed_votes += 1
-        bot.send_message(game.cid, voting_text)
-        game.history.append(("Ronda %d.%d\n\n" % (game.board.state.liberal_track + game.board.state.fascist_track + 1, game.board.state.failed_votes) ) + voting_text)
-        log.info(game.history[game.board.state.currentround])
-        if game.board.state.failed_votes == 3:
-            do_anarchy(bot, game)
-        else:
-            voting_aftermath(bot, game, voting_success)
+	# La votacion ha finalizado.
+	game.dateinitvote = None
+	# La votacion ha finalizado.
+	log.info('count_votes called')
+	voting_text = ""
+	voting_success = False
+	for player in game.player_sequence:
+		if game.board.state.last_votes[player.uid] == "Si":
+			voting_text += game.playerlist[player.uid].name + " votó Si!\n"
+		elif game.board.state.last_votes[player.uid] == "No":
+			voting_text += game.playerlist[player.uid].name + " votó No!\n"
+	if list(game.board.state.last_votes.values()).count("Si") > (len(game.player_sequence) / 2):  
+		# because player_sequence doesnt include dead
+		# VOTING WAS SUCCESSFUL
+		log.info("Voting successful")
+		voting_text += "Felicitaciones al equipo elegido por [%s](tg://user?id=%d)!" % (
+			game.board.state.lider_actual.name, game.board.state.lider_actual .uid)
+		#game.board.state.chancellor = game.board.state.nominated_chancellor
+		#game.board.state.president = game.board.state.nominated_president
+		#game.board.state.nominated_president = None
+		#game.board.state.nominated_chancellor = None
+		voting_success = True
+		bot.send_message(game.cid, voting_text, ParseMode.MARKDOWN)
+		bot.send_message(game.cid, "\nNo se puede hablar ahora.")
+		game.history.append(("Ronda %d.%d\n\n" % (game.board.state.currentround + 2, game.board.state.failed_votes + 1) ) + voting_text)
+		log.info(game.history[game.board.state.currentround])
+		voting_aftermath(bot, game, voting_success)
+	else:
+		log.info("Voting failed")
+		voting_text += "A la resistencia no le gusto el equipo de %s!" % (
+			game.board.state.lider_actual.name)
+		#Reseteo el equipo
+		game.board.state.equipo = []
+		game.board.state.failed_votes += 1
+		bot.send_message(game.cid, voting_text)
+		game.history.append(("Ronda %d.%d\n\n" % (game.board.state.currentround + 2, game.board.state.failed_votes) ) + voting_text)
+		log.info(game.history[game.board.state.currentround])
+		if game.board.state.failed_votes == 5:
+			do_anarchy(bot, game)
+		else:
+			voting_aftermath(bot, game, voting_success)
 
 
 def voting_aftermath(bot, game, voting_success):
     log.info('voting_aftermath called')
     game.board.state.last_votes = {}
     if voting_success:
-        if game.board.state.fascist_track >= 3 and game.board.state.chancellor.role == "Hitler":
+	#Si es exitoso reparto las cartas para votar
+	btns_resistencia = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito")]]
+        voteMarkup = InlineKeyboardMarkup(btns)
+	
+	btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
+        voteMarkup = InlineKeyboardMarkup(btns)
+	
+	for player in game.board.state.equipo:
+		
+		bot.send_message(player.uid, "", reply_markup=voteMarkup)
+		
+	
+	'''
+       	if game.board.state.fascist_track >= 3 and game.board.state.chancellor.role == "Hitler":
             # fascists win, because Hitler was elected as chancellor after 3 fascist policies
             game.board.state.game_endcode = -2
             end_game(bot, game, game.board.state.game_endcode)
@@ -262,6 +270,7 @@ def voting_aftermath(bot, game, voting_success):
         else:
             # voting was successful and Hitler was not nominated as chancellor after 3 fascist policies
             draw_policies(bot, game)
+    	'''
     else:
         bot.send_message(game.cid, game.board.print_board(game.player_sequence))
         start_next_round(bot, game)
