@@ -3,6 +3,8 @@ class State(object):
     def __init__(self):
         # Datos generales
         self.currentround = -1
+        # Mensaje a enviar en las votaciones
+        self.mensaje_votacion = None
         
         # Datos sobre la mision
         self.equipo_cantidad_mision = 0
