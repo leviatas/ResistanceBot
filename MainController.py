@@ -254,8 +254,7 @@ def voting_aftermath(bot, game, voting_success):
 	btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
         voteMarkup = InlineKeyboardMarkup(btns)
 	
-	for player in game.board.state.equipo:
-		
+	for player in game.board.state.equipo:		
 		bot.send_message(player.uid, "", reply_markup=voteMarkup)
 		
 	
@@ -274,8 +273,49 @@ def voting_aftermath(bot, game, voting_success):
     else:
         bot.send_message(game.cid, game.board.print_board(game.player_sequence))
         start_next_round(bot, game)
+	
+def handle_team_voting(bot, update):
+	callback = update.callback_query
+	log.info('handle_voting called: %s' % callback.data)
+	regex = re.search("(-[0-9]*)_(.*)", callback.data)
+	cid = int(regex.group(1))
+	answer = regex.group(2)
+	strcid = regex.group(1)
+	try:
+		game = GamesController.games[cid]
+		uid = callback.from_user.id
+		bot.edit_message_text("Gracias por tu voto!", uid, callback.message.message_id)
+		log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
 
-
+		#if uid not in game.board.state.last_votes:
+		game.board.state.votos_mision[uid] = answer
+		
+		Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
+		if len(game.board.state.last_votes) == len(game.player_sequence):
+			count_mission_votes(bot, game)
+	except Exception as e:
+		log.error(str(e))
+		
+def count_mission_votes(bot, game):
+	# La votacion ha finalizado.
+	game.dateinitvote = None
+	# La votacion ha finalizado.
+	log.info('count_votes called')
+	voting_text = ""
+	voting_success = False
+	#Aca se podra hacer llamados para ver las cartas de mision y descartarla antes. Pero primero quiero lo basico
+		
+	#Simplemente verifico si hay algun fracaso en la mision
+	if 'Fracaso' in game.board.state.votos_mision.values():
+		voting_success = False
+	else:
+		voting_success = True	
+		
+	game.history.append("La mision ha sido un exito/fracaso")
+	log.info(game.history[game.board.state.currentround])
+		
+	voting_aftermath(bot, game, voting_success)
+		
 def draw_policies(bot, game):
         log.info('draw_policies called')
         strcid = str(game.cid)
@@ -866,6 +906,7 @@ def main():
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(yesveto|noveto)", callback=choose_veto))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(liberal|fascista|veto)", callback=choose_policy))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(Si|No)", callback=handle_voting))
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(Exito|Fracaso)", callback=handle_team_voting))
 
 
 	# log all errors
