@@ -219,8 +219,12 @@ def count_votes(bot, game):
 		# because player_sequence doesnt include dead
 		# VOTING WAS SUCCESSFUL
 		log.info("Voting successful")
-		voting_text += "Felicitaciones al equipo elegido por [%s](tg://user?id=%d)!" % (
-			game.board.state.lider_actual.name, game.board.state.lider_actual .uid)
+				
+		voting_text += "Felicitaciones al equipo compuesto por:\n"
+		
+		for player in game.board.state.equipo:
+			voting_text += "[%s](tg://user?id=%d)\n" % (player.name, player.uid)
+		
 		#game.board.state.chancellor = game.board.state.nominated_chancellor
 		#game.board.state.president = game.board.state.nominated_president
 		#game.board.state.nominated_president = None
