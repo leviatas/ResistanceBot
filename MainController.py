@@ -397,7 +397,7 @@ def inform_badguys(bot, game, player_number):
 
 	for uid in game.playerlist:
 		rol = game.playerlist[uid].rol
-		if rol == "Resistencia":
+		if rol == "Espia":
 			badguys = game.get_badguys()
 			if player_number > 6:
 				fstring = ""
@@ -407,15 +407,6 @@ def inform_badguys(bot, game, player_number):
 				fstring = fstring[:-2]
 				if not debugging:
 					bot.send_message(uid, "Tus compañeros fascistas son: %s" % fstring)
-		'''	hitler = game.get_hitler()
-			if not debugging:
-				bot.send_message(uid, "Hitler es: %s" % hitler.name) #Uncoomend on production
-		elif role == "Hitler":
-		if player_number <= 6:
-		fascists = game.get_fascists()
-		if not debugging:
-		bot.send_message(uid, "Tu compañero fascista es: %s" % fascists[0].name)
-		'''
 		elif role == "Espia":
 			pass
 		else:
