@@ -73,7 +73,7 @@ def start_round(bot, game):
                 game.board.state.lider_actual = game.board.state.lider_elegido
                 game.board.state.lider_elegido = None
         
-        msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.nominated_president.name, game.board.state.nominated_president.uid, game.board.state.nominated_president.name)
+        msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
         bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
         asignar_equipo(bot, game)
         # --> nominate_chosen_chancellor --> vote --> handle_voting --> count_votes --> voting_aftermath --> draw_policies
