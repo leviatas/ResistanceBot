@@ -81,16 +81,19 @@ def start_round(bot, game):
 
 
 def asignar_equipo(bot, game):
-	log.info('choose_members called')
+	log.info('asignar_equipo called')
 	strcid = str(game.cid)
 	pres_uid = 0
 	chan_uid = 0
 	btns = []
 			
-	#Inicialmente se puede elegir a cualquiera para formar los equipos
+	# Inicialmente se puede elegir a cualquiera para formar los equipos
+	# Menos los que esten en el equipo elegido
 	for uid in game.playerlist:
-		name = game.playerlist[uid].name
-		btns.append([InlineKeyboardButton(name, callback_data=strcid + "_equipo_" + str(uid))])
+		if game.playerlist[uid] not in game.board.state.equipo
+			name = game.playerlist[uid].name
+			btns.append([InlineKeyboardButton(name, callback_data=strcid + "_equipo_" + str(uid))])
+	
 	equipoMarkup = InlineKeyboardMarkup(btns)
 	
 	# Marco la cantidad de miembros que hay que llevar
@@ -138,6 +141,11 @@ def asignar_miembro(bot, update):
 		#Lo agrego al equipo
 		game.board.state.equipo.append(miembro_asignado)
 		game.board.state.equipo_contador += 1
+		
+		log.info(game.board.state.equipo_cantidad_mision)
+		log.info(game.board.state.equipo_contador)
+		log.info(game.board.state.equipo)
+		log.info(len(game.board.state.equipo))		
 		
 		# Si se suman la cantidad apropiada de miembros para la mision se vota.
 		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
