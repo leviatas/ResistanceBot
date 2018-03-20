@@ -250,6 +250,7 @@ def count_votes(bot, game):
 def voting_aftermath(bot, game, voting_success):
 	log.info('voting_aftermath called')
 	game.board.state.last_votes = {}
+	strcid = str(game.cid)
 	if voting_success:
 		#Si es exitoso reparto las cartas para votar
 		btns_resistencia = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito")]]
