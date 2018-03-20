@@ -8,7 +8,7 @@ class Board(object):
         self.num_players = playercount
         self.misiones = playerSets[self.num_players]["misiones"]
         
-        self.plotcards = random.sample(playerSets[self.num_players]["policies"], len(playerSets[self.num_players]["policies"]))
+        #self.plotcards = random.sample(playerSets[self.num_players]["plot"], len(playerSets[self.num_players]["plot"]))
         self.discards = []
         self.previous = []
    
