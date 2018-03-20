@@ -226,7 +226,7 @@ def command_join(bot, update, args):
 			bot.send_message(game.cid, jugadoresActuales)
 		except Exception:
 			bot.send_message(game.cid,
-				fname + ", No te puedo enviar un mensaje privado. Por favor, ve a @secrethitlertestlbot y has pincha \"Start\".\nLuego necesitas escribir /join de nuevo.")
+				fname + ", No te puedo enviar un mensaje privado. Por favor, ve a @LaResistenciaByLevibot y has pincha \"Start\".\nLuego necesitas escribir /join de nuevo.")
 
 
 def command_startgame(bot, update):
@@ -245,7 +245,7 @@ def command_startgame(bot, update):
 	else:
 		player_number = len(game.playerlist)
 		MainController.inform_players(bot, game, game.cid, player_number)
-		MainController.inform_fascists(bot, game, player_number)
+		MainController.inform_badguys(bot, game, player_number)
 		game.board = Board(player_number, game)
 		log.info(game.board)
 		log.info("len(games) Command_startgame: " + str(len(GamesController.games)))
