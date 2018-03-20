@@ -168,8 +168,8 @@ def vote(bot, game):
         for uid in game.playerlist:
                 if not game.playerlist[uid].esta_muerto and not debugging:
                         # El lider ya tiene el tablero
-			if game.playerlist[uid] is not game.board.state.nominated_president:                        
-                                bot.send_message(uid, game.board.print_board(game.player_sequence))                        		
+			if game.playerlist[uid] is not game.board.state.nominated_president:
+				bot.send_message(uid, game.board.print_board(game.player_sequence))
 			bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 
 def handle_voting(bot, update):
