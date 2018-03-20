@@ -324,32 +324,32 @@ def start_next_round(bot, game):
 
 def end_game(bot, game, game_endcode):
 	log.info('end_game called')
-        ##
-        # game_endcode:
-        #   -2  fascists win by electing Hitler as chancellor
-        #   -1  espias ganan con 3 misiones
-        #   0   not ended
-        #   1   resitencia gana con 3 misiones
-        #   2   liberals win by killing Hitler
-        #   99  game cancelled
-        #
-        if game_endcode == 99:
-                if GamesController.games[game.cid].board is not None:
-                        bot.send_message(game.cid, "Juego cancelado!\n\n%s" % game.print_roles())
-                else:
-                        bot.send_message(game.cid, "Juego cancelado!")
-        else:
-                if game_endcode == -2:
-                        bot.send_message(game.cid, "Juego finalizado! Los fascistas ganaron eligiendo a Hitler como Canciller!\n\n%s" % game.print_roles())
-                if game_endcode == -1:
-                        bot.send_message(game.cid, "Juego finalizado! Los espias ganaron saboteando 3 misiones!\n\n%s" % game.print_roles())
-                if game_endcode == 1:
-                        bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó pasando 3 misiones con exito!\n\n%s" % game.print_roles())
-                if game_endcode == 2:
-                        bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó matando a Hitler!\n\n%s" % game.print_roles())
-        #showHiddenhistory(game.cid)
-        del GamesController.games[game.cid]
-        Commands.delete_game(game.cid)
+	##
+	# game_endcode:
+	#   -2  fascists win by electing Hitler as chancellor
+	#   -1  espias ganan con 3 misiones
+	#   0   not ended
+	#   1   resitencia gana con 3 misiones
+	#   2   liberals win by killing Hitler
+	#   99  game cancelled
+	#
+	if game_endcode == 99:
+		if GamesController.games[game.cid].board is not None:
+			bot.send_message(game.cid, "Juego cancelado!\n\n%s" % game.print_roles())
+		else:
+			bot.send_message(game.cid, "Juego cancelado!")
+	else:
+		if game_endcode == -2:
+			bot.send_message(game.cid, "Juego finalizado! Los fascistas ganaron eligiendo a Hitler como Canciller!\n\n%s" % game.print_roles())
+		if game_endcode == -1:
+			bot.send_message(game.cid, "Juego finalizado! Los espias ganaron saboteando 3 misiones!\n\n%s" % game.print_roles())
+		if game_endcode == 1:
+			bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó pasando 3 misiones con exito!\n\n%s" % game.print_roles())
+		if game_endcode == 2:
+			bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó matando a Hitler!\n\n%s" % game.print_roles())
+	#showHiddenhistory(game.cid)
+	del GamesController.games[game.cid]
+	Commands.delete_game(game.cid)
 
 def showHiddenhistory(cid):
 	#game.pedrote = 3
