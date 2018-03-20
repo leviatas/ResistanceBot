@@ -220,7 +220,7 @@ def count_votes(bot, game):
 		# VOTING WAS SUCCESSFUL
 		log.info("Voting successful")
 				
-		voting_text += "Felicitaciones al equipo compuesto por:\n"
+		voting_text += "\nFelicitaciones al equipo compuesto por:\n"
 		
 		for player in game.board.state.equipo:
 			voting_text += "[%s](tg://user?id=%d)\n" % (player.name, player.uid)
@@ -287,8 +287,8 @@ def handle_team_voting(bot, update):
 		#if uid not in game.board.state.last_votes:
 		game.board.state.votos_mision[uid] = answer
 		
-		Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
-		if len(game.board.state.last_votes) == len(game.player_sequence):
+		#Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
+		if len(game.board.state.votos_mision) == len(game.board.state.equipo):
 			count_mission_votes(bot, game)
 	except Exception as e:
 		log.error(str(e))
