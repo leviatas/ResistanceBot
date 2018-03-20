@@ -13,6 +13,7 @@ class State(object):
         # Equipo para ir a la misión
         self.equipo = []        
         self.equipo_contador = 0
+        self.votos_mision = {}
                       
         #self.nominated_president = None Lider por orden
         self.lider_actual = None                
