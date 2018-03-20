@@ -159,7 +159,7 @@ def command_newgame(bot, update):
 				# Ask the president to choose a chancellor
 				
 				
-				if len(game.board.state.equipo) = game.board.state.equipo_cantidad_mision:
+				if len(game.board.state.equipo) == game.board.state.equipo_cantidad_mision:
 					if len(game.board.state.last_votes) == len(game.player_sequence):
 						MainController.count_votes(bot, game)
 					else:
