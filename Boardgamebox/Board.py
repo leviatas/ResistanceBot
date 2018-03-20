@@ -16,7 +16,7 @@ class Board(object):
         board = "--- Misiones ---\n"
         for i in range(5):
             # Pongo la cantidad de miembros por mision como primera fila
-            board += misiones[i] + " " #X
+            board += self.misiones[i] + " " #X
         
         # Seguimiento de misiones
         for resultado in self.state.resultado_misiones :
