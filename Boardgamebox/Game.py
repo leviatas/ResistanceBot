@@ -23,7 +23,7 @@ class Game(object):
 
     def get_hitler(self):
         for uid in self.playerlist:
-            if self.playerlist[uid].role == "Hitler":
+            if self.playerlist[uid].rol == "Hitler":
                 return self.playerlist[uid]
 
     def get_badguys(self):
@@ -53,7 +53,7 @@ class Game(object):
                 rtext += self.playerlist[p].name + "'s "
                 if self.playerlist[p].is_dead:
                     rtext += "(dead) "
-                rtext += "secret role was " + self.playerlist[p].role + "\n"
+                rtext += "El rol secreto era " + self.playerlist[p].rol + "\n"
             return rtext
     def encode_all(obj):
         if isinstance(obj, Player):
