@@ -143,10 +143,8 @@ def asignar_miembro(bot, update):
 		game.board.state.equipo_contador += 1
 		
 		log.info(game.board.state.equipo_cantidad_mision)
-		log.info(game.board.state.equipo_contador)
-		log.info(game.board.state.equipo)
-		log.info(len(game.board.state.equipo))		
-		
+		log.info(game.board.state.equipo_contador)			
+		log.info(game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision)
 		# Si se suman la cantidad apropiada de miembros para la mision se vota.
 		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
 			mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %d\n" % (game.board.state.currentround + 1)
@@ -154,8 +152,9 @@ def asignar_miembro(bot, update):
 				mensaje_votacion += game.playerlist[player.uid].name + "\n"
 			game.board.state.mensaje_votacion = mensaje_votacion			
 			vote(bot, game)
-		#Si no se eligieron todos se le pide que siga eligiendo hasta llegar al cupo.
-		asignar_equipo(bot, game)
+		else:
+			#Si no se eligieron todos se le pide que siga eligiendo hasta llegar al cupo.
+			asignar_equipo(bot, game)
 		
 	except AttributeError as e:
 		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
