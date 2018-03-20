@@ -511,7 +511,7 @@ def main():
 	dp.add_handler(CommandHandler("ja", Commands.command_ja))
 	dp.add_handler(CommandHandler("nein", Commands.command_nein))
 
-	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_equipo_(.*)", callback=asignar_equipo))	
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_equipo_(.*)", callback=asignar_miembro))	
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(Si|No)", callback=handle_voting))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(Exito|Fracaso)", callback=handle_team_voting))
 
