@@ -113,8 +113,9 @@ def asignar_miembro(bot, update):
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
 
-	if debugging:
-		chosen_uid = ADMIN   
+	'''if debugging:
+		chosen_uid = ADMIN
+	'''
 	try:
 		game = GamesController.games.get(cid, None)
 		#log.info(game.playerlist)
