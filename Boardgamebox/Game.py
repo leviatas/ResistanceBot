@@ -27,11 +27,11 @@ class Game(object):
                 return self.playerlist[uid]
 
     def get_badguys(self):
-        fascists = []
+        espias = []
         for uid in self.playerlist:
-            if self.playerlist[uid].role == "Fascista":
-                fascists.append(self.playerlist[uid])
-        return fascists
+            if self.playerlist[uid].rol == "Espia":
+                espias.append(self.playerlist[uid])
+        return espias
 
     def shuffle_player_sequence(self):
         for uid in self.playerlist:
