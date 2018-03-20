@@ -323,13 +323,13 @@ def start_next_round(bot, game):
 ##
 
 def end_game(bot, game, game_endcode):
-        log.info('end_game called')
+	log.info('end_game called')
         ##
         # game_endcode:
         #   -2  fascists win by electing Hitler as chancellor
-        #   -1  fascists win with 6 fascist policies
+        #   -1  espias ganan con 3 misiones
         #   0   not ended
-        #   1   liberals win with 5 liberal policies
+        #   1   resitencia gana con 3 misiones
         #   2   liberals win by killing Hitler
         #   99  game cancelled
         #
