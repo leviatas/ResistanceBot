@@ -92,6 +92,9 @@ def asignar_equipo(bot, game):
 		name = game.playerlist[uid].name
 		btns.append([InlineKeyboardButton(name, callback_data=strcid + "_equipo_" + str(uid))])
 	equipoMarkup = InlineKeyboardMarkup(btns)
+	
+	# Marco la cantidad de miembros que hay que llevar
+	game.board.state.equipo_cantidad_mision = game.board.misiones[game.board.state.currentround]
 
 	if(debugging):
 		game.board.state.lider_actual.uid = ADMIN		
@@ -114,7 +117,7 @@ def asignar_miembro(bot, update):
 		#log.info(game.playerlist)
 		#log.info(str(chosen_uid) in game.playerlist )
 		#log.info(chosen_uid in game.playerlist)        
-		
+		log.info(chosen_uid)
 		miembro_asignado = game.playerlist[chosen_uid]			
 		
 		log.info("El lider %s (%d) eligio a %s (%d)" % (
