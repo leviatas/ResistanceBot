@@ -5,6 +5,8 @@ class State(object):
         self.currentround = -1
         # Mensaje a enviar en las votaciones
         self.mensaje_votacion = None
+        # Misiones y como han salido
+        self.resultado_misiones = []
         
         # Datos sobre la mision
         self.equipo_cantidad_mision = 0
