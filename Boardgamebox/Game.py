@@ -26,7 +26,7 @@ class Game(object):
             if self.playerlist[uid].role == "Hitler":
                 return self.playerlist[uid]
 
-    def get_fascists(self):
+    def get_badguys(self):
         fascists = []
         for uid in self.playerlist:
             if self.playerlist[uid].role == "Fascista":
