@@ -50,7 +50,7 @@ query = "SELECT ...."
 cur.execute(query)
 '''
 
-debugging = False
+debugging = True
 
 ##
 #
