@@ -158,20 +158,18 @@ def asignar_miembro(bot, update):
 
 
 def vote(bot, game):
-        log.info('Vote called')
-        #When voting starts we start the counter to see later with the vote command if we can see you voted.
-        game.dateinitvote = datetime.datetime.now()
-	
-        strcid = str(game.cid)
-        btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
-        voteMarkup = InlineKeyboardMarkup(btns)
-        for uid in game.playerlist:
-                if not game.playerlist[uid].esta_muerto and not debugging:
-                        # El lider ya tiene el tablero
+	log.info('Vote called')
+	#When voting starts we start the counter to see later with the vote command if we can see you voted.
+	game.dateinitvote = datetime.datetime.now()
+	strcid = str(game.cid)
+	btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
+	voteMarkup = InlineKeyboardMarkup(btns)
+	for uid in game.playerlist:
+		if not game.playerlist[uid].esta_muerto and not debugging:
 			if game.playerlist[uid] is not game.board.state.nominated_president:
 				bot.send_message(uid, game.board.print_board(game.player_sequence))
 			bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
-
+			
 def handle_voting(bot, update):
     callback = update.callback_query
     log.info('handle_voting called: %s' % callback.data)
