@@ -408,7 +408,7 @@ def inform_badguys(bot, game, player_number):
 			badguys = game.get_badguys()
 			if player_number > 6:
 				fstring = ""
-				for f in fascists:
+				for f in badguys:
 					if f.uid != uid:
 						fstring += f.name + ", "
 				fstring = fstring[:-2]
