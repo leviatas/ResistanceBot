@@ -94,8 +94,11 @@ def asignar_equipo(bot, game):
 	equipoMarkup = InlineKeyboardMarkup(btns)
 	
 	# Marco la cantidad de miembros que hay que llevar
-	game.board.state.equipo_cantidad_mision = game.board.misiones[game.board.state.currentround]
-
+	if "*" not in game.board.misiones[game.board.state.currentround]: 
+		game.board.state.equipo_cantidad_mision = int(game.board.misiones[game.board.state.currentround])
+	else:
+		game.board.state.equipo_cantidad_mision = int((game.board.misiones[game.board.state.currentround])[:-1])
+		
 	if(debugging):
 		game.board.state.lider_actual.uid = ADMIN		
 	bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
