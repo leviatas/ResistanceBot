@@ -90,7 +90,7 @@ def asignar_equipo(bot, game):
 	# Inicialmente se puede elegir a cualquiera para formar los equipos
 	# Menos los que esten en el equipo elegido
 	for uid in game.playerlist:
-		if game.playerlist[uid] not in game.board.state.equipo
+		if game.playerlist[uid] not in game.board.state.equipo:
 			name = game.playerlist[uid].name
 			btns.append([InlineKeyboardButton(name, callback_data=strcid + "_equipo_" + str(uid))])
 	
