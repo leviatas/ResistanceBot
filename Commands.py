@@ -461,7 +461,7 @@ def command_ja(bot, update):
 	if uid == ADMIN:
 		cid = update.message.chat_id
 		game = GamesController.games.get(cid, None)
-		answer = "Ja"
+		answer = "Si"
 		for uid in game.playerlist:
 			game.board.state.last_votes[uid] = answer
 		MainController.count_votes(bot, game)
@@ -472,7 +472,7 @@ def command_nein(bot, update):
 	if uid == ADMIN:
 		cid = update.message.chat_id
 		game = GamesController.games.get(cid, None)
-		answer = "Nein"
+		answer = "No"
 		for uid in game.playerlist:
 			game.board.state.last_votes[uid] = answer
 		MainController.count_votes(bot, game)
