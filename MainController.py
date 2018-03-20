@@ -248,8 +248,8 @@ def voting_aftermath(bot, game, voting_success):
 			else:
 				bot.send_message(player.uid, "", reply_markup=voteMarkupEspias)
 	else:
-	bot.send_message(game.cid, game.board.print_board(game.player_sequence))
-	start_next_round(bot, game)
+		bot.send_message(game.cid, game.board.print_board(game.player_sequence))
+		start_next_round(bot, game)
 	
 def handle_team_voting(bot, update):
 	callback = update.callback_query
