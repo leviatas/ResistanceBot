@@ -1,6 +1,6 @@
 playerSets = {    
     5: {
-        "roles": [
+        "afiliacion": [
             "Resistencia",
             "Resistencia",
             "Resistencia",
@@ -16,7 +16,7 @@ playerSets = {
         ]
     },
     6: {
-        "roles": [
+        "afiliacion": [
             "Resistencia",
             "Resistencia",
             "Resistencia",
@@ -33,7 +33,7 @@ playerSets = {
         ]
     },
     7: {
-        "roles": [
+        "afiliacion": [
             "Resistencia",
             "Resistencia",
             "Resistencia",
@@ -51,7 +51,7 @@ playerSets = {
         ]
     },
     8: {
-        "roles": [
+        "afiliacion": [
             "Resistencia",
             "Resistencia",
             "Resistencia",
@@ -70,7 +70,7 @@ playerSets = {
         ]
     },
     9: {
-        "roles": [
+        "afiliacion": [
             "Resistencia",
             "Resistencia",
             "Resistencia",
@@ -90,7 +90,7 @@ playerSets = {
         ]
     },
     10: {
-        "roles": [
+        "afiliacion": [
             "Resistencia",
             "Resistencia",
             "Resistencia",
