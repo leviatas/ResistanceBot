@@ -1,5 +1,4 @@
 from Constants.Cards import playerSets
-from Constants.Cards import policies
 import random
 from Boardgamebox.State import State
 
