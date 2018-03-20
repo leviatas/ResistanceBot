@@ -52,14 +52,6 @@ cur.execute(query)
 
 debugging = False
 
-def initialize_testdata():
-    # Sample game for quicker tests
-    testgame = Game(-1001113216265, 15771023)
-    GamesController.games[-1001113216265] = testgame
-    players = [Player("Александр", 320853702), Player("Gustav", 305333239), Player("Rene", 318940765), Player("Susi", 290308460), Player("Renate", 312027975)]
-    for player in players:
-        testgame.add_player(player.uid, player)
-
 ##
 #
 # Beginning of round
@@ -166,7 +158,7 @@ def vote(bot, game):
 	voteMarkup = InlineKeyboardMarkup(btns)
 	for uid in game.playerlist:
 		if not game.playerlist[uid].esta_muerto and not debugging:
-			if game.playerlist[uid] is not game.board.state.nominated_president:
+			if game.playerlist[uid] is not game.board.state.lider_actual:
 				bot.send_message(uid, game.board.print_board(game.player_sequence))
 			bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 			
@@ -242,21 +234,22 @@ def count_votes(bot, game):
 
 
 def voting_aftermath(bot, game, voting_success):
-    log.info('voting_aftermath called')
-    game.board.state.last_votes = {}
-    if voting_success:
-	#Si es exitoso reparto las cartas para votar
-	btns_resistencia = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito")]]
-        voteMarkup = InlineKeyboardMarkup(btns)
-	
-	btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
-        voteMarkup = InlineKeyboardMarkup(btns)
-	
-	for player in game.board.state.equipo:		
-		bot.send_message(player.uid, "", reply_markup=voteMarkup)
-    else:
-        bot.send_message(game.cid, game.board.print_board(game.player_sequence))
-        start_next_round(bot, game)
+	log.info('voting_aftermath called')
+	game.board.state.last_votes = {}
+	if voting_success:
+		#Si es exitoso reparto las cartas para votar
+		btns_resistencia = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito")]]
+		voteMarkupResistencia = InlineKeyboardMarkup(btns_resistencia)
+		btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
+		voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
+		for player in game.board.state.equipo:
+			if player.rol == "Resistencia"
+				bot.send_message(player.uid, "", reply_markup=voteMarkupResistencia)
+			else:
+				bot.send_message(player.uid, "", reply_markup=voteMarkupEspias)
+	else:
+	bot.send_message(game.cid, game.board.print_board(game.player_sequence))
+	start_next_round(bot, game)
 	
 def handle_team_voting(bot, update):
 	callback = update.callback_query
