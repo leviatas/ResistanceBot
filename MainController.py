@@ -258,6 +258,7 @@ def voting_aftermath(bot, game, voting_success):
 		btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
 		voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
 		for player in game.board.state.equipo:
+			log.info(player.uid)
 			if player.rol == "Resistencia":
 				bot.send_message(player.uid, "", reply_markup=voteMarkupResistencia)
 			else:
