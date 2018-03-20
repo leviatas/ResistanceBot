@@ -289,13 +289,20 @@ def count_mission_votes(bot, game):
 	
 	#Simplemente verifico si hay algun fracaso en la mision
 	if 'Fracaso' in game.board.state.votos_mision.values():
-		voting_success = False
+		game.board.state.resultado_misiones.append("Fracaso")
+		game.history.append("La mision ha sido un Fracaso")
 	else:
-		voting_success = True	
+		game.board.state.resultado_misiones.append("Exito")
+		game.history.append("La mision ha sido un Exito")
+		
+	if sum(x == 'Fracaso' for x in game.board.state.votos_mision.values()) == 3:
+		end_game(bot, game, -1)
+	if sum(x == 'Exito' for x in game.board.state.votos_mision.values()) == 3:
+		end_game(bot, game, 1)
 	
-	game.history.append("La mision ha sido un exito/fracaso")
+	#Si nadie ganó. Despues de poner el resultado de la mision vuelvo al comienzo.
 	start_next_round(bot, game)
-	#Despues de poner el resultado de la mision vuelvo al comienzo.
+	
 		
 def start_next_round(bot, game):
     log.info('start_next_round called')
@@ -335,11 +342,11 @@ def end_game(bot, game, game_endcode):
                 if game_endcode == -2:
                         bot.send_message(game.cid, "Juego finalizado! Los fascistas ganaron eligiendo a Hitler como Canciller!\n\n%s" % game.print_roles())
                 if game_endcode == -1:
-                        bot.send_message(game.cid, "Juego finalizado! Los fascistas ganaron promulgando 6 políticas fascistas!\n\n%s" % game.print_roles())
+                        bot.send_message(game.cid, "Juego finalizado! Los espias ganaron saboteando 3 misiones!\n\n%s" % game.print_roles())
                 if game_endcode == 1:
-                        bot.send_message(game.cid, "Juego finalizado! Los liberales ganaron promulgando 5 políticas liberales!\n\n%s" % game.print_roles())
+                        bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó pasando 3 misiones con exito!\n\n%s" % game.print_roles())
                 if game_endcode == 2:
-                        bot.send_message(game.cid, "Juego finalizado! Los liberales ganaron matando a Hitler!\n\n%s" % game.print_roles())
+                        bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó matando a Hitler!\n\n%s" % game.print_roles())
         #showHiddenhistory(game.cid)
         del GamesController.games[game.cid]
         Commands.delete_game(game.cid)
