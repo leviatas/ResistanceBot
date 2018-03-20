@@ -68,7 +68,7 @@ def start_round(bot, game):
         log.info(game.board.state.lider_elegido)
         
         if game.board.state.lider_elegido is None:
-                game.board.state.lider_elegido = game.player_sequence[game.board.state.player_counter]
+                game.board.state.lider_actual = game.player_sequence[game.board.state.player_counter]
         else:
                 game.board.state.lider_actual = game.board.state.lider_elegido
                 game.board.state.lider_elegido = None
