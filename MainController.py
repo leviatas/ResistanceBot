@@ -141,7 +141,7 @@ def asignar_miembro(bot, update):
 		
 		# Si se suman la cantidad apropiada de miembros para la mision se vota.
 		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
-			mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %s\n" (game.board.state.currentround + 2)
+			mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %d\n" (game.board.state.currentround + 2)
 			for player in game.board.state.equipo:
 				mensaje_votacion += game.playerlist[player.uid].name + "\n"
 			game.board.state.mensaje_votacion = mensaje_votacion			
