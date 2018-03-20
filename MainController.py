@@ -414,7 +414,7 @@ def inform_badguys(bot, game, player_number):
 				fstring = fstring[:-2]
 				if not debugging:
 					bot.send_message(uid, "Tus compañeros fascistas son: %s" % fstring)
-		elif role == "Espia":
+		elif rol == "Resistencia":
 			pass
 		else:
 			log.error("inform_fascists: can\'t handle the role %s" % role)
