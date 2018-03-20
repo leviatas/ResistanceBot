@@ -51,7 +51,7 @@ class Game(object):
         else:
             for p in self.playerlist:
                 rtext += self.playerlist[p].name + "'s "
-                if self.playerlist[p].is_dead:
+                if self.playerlist[p].esta_muerto:
                     rtext += "(dead) "
                 rtext += "El rol secreto era " + self.playerlist[p].rol + "\n"
             return rtext
