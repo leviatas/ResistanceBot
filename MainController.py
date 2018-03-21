@@ -63,6 +63,7 @@ def start_round(bot, game):
         log.info('start_round called')
         # Comienzo de nuevo turno se resetea el equipo elegido
 	game.board.state.equipo = []
+	game.board.state.equipo_contador = 0
 	# Starting a new round makes the current round to go up    
         game.board.state.currentround += 1
         
