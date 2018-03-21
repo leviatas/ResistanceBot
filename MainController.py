@@ -102,9 +102,11 @@ def asignar_equipo(bot, game):
 		game.board.state.equipo_cantidad_mision = int((game.board.misiones[game.board.state.currentround])[:-1])
 		
 	if(debugging):
-		game.board.state.lider_actual.uid = ADMIN		
-	bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
-	bot.send_message(game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
+		bot.send_message(ADMIN, game.board.print_board(game.player_sequence))
+		bot.send_message(ADMIN, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
+	else:
+		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
+		bot.send_message(game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
 
 
 def asignar_miembro(bot, update):
