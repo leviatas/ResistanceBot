@@ -147,9 +147,10 @@ def asignar_miembro(bot, update):
 		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
 			miembros_elegidos = ""
 			for player in game.board.state.equipo:
-				miembros_elegidos += "%s " % (player.name)
-			mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %d:" % (game.board.state.currentround + 1)
+				miembros_elegidos += "%s\n" % (player.name)
+			mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %d:\n" % (game.board.state.currentround + 1)
 			mensaje_votacion += miembros_elegidos
+			miembros_elegidos = ""
 			for player in game.board.state.equipo:
 				miembros_elegidos += "[%s](tg://user?id=%d) " % (player.name, player.uid)			
 			game.board.state.mensaje_votacion = mensaje_votacion			
@@ -158,7 +159,8 @@ def asignar_miembro(bot, update):
 			
 			vote(bot, game)
 		else:
-			#Si no se eligieron todos se le pide que siga eligiendo hasta llegar al cupo.
+			#Si no se eligieron todos se le pide que siga eligiendo hasta llegar al cupo. Se pone tiempo para que no se sobrepise
+			sleep(1)
 			asignar_equipo(bot, game)
 		
 	except AttributeError as e:
