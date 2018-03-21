@@ -340,10 +340,10 @@ def count_mission_votes(bot, game):
 	
 	finalizo_el_partido = False
 	
-	if sum(x == 'Fracaso' for x in game.board.state.resultado_misiones) == 4:
+	if sum(x == 'Fracaso' for x in game.board.state.resultado_misiones) == 3:
 		end_game(bot, game, -1)
 		finalizo_el_partido = True
-	if sum(x == 'Exito' for x in game.board.state.resultado_misiones) == 4:
+	if sum(x == 'Exito' for x in game.board.state.resultado_misiones) == 3:
 		end_game(bot, game, 1)
 		finalizo_el_partido = True
 	if not finalizo_el_partido:
