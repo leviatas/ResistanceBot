@@ -60,13 +60,12 @@ debugging = True
 
 def start_round(bot, game):        
         Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround + 1), game)
-        log.info('start_round called')
-        # Comienzo de nuevo turno se resetea el equipo elegido
+	log.info('start_round called')
+	# Comienzo de nuevo turno se resetea el equipo elegido
 	game.board.state.equipo = []
 	game.board.state.equipo_contador = 0
 	# Starting a new round makes the current round to go up    
         game.board.state.currentround += 1
-        
 	# Si el lider fue elegido por un evento o jugador... El chosen presidente no sera nulo
         log.info(game.board.state.lider_elegido)
         
@@ -249,9 +248,7 @@ def count_votes(bot, game):
 	else:
 		log.info("Voting failed")
 		voting_text += "A la resistencia no le gusto el equipo de %s!" % (
-			game.board.state.lider_actual.name)
-		#Reseteo el equipo
-		game.board.state.equipo = []
+			game.board.state.lider_actual.name)		
 		game.board.state.failed_votes += 1
 		bot.send_message(game.cid, voting_text)
 		game.history.append(("Ronda %d.%d\n\n" % (game.board.state.currentround + 2, game.board.state.failed_votes) ) + voting_text)
