@@ -288,6 +288,9 @@ def handle_team_voting(bot, update):
 		game.board.state.votos_mision[uid] = answer
 		
 		#Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
+		log.info(len(game.board.state.votos_mision))
+		log.info(len(game.board.state.equipo))
+		log.info(len(game.board.state.votos_mision) == len(game.board.state.equipo))
 		if len(game.board.state.votos_mision) == len(game.board.state.equipo):
 			count_mission_votes(bot, game)
 	except Exception as e:
@@ -316,6 +319,7 @@ def count_mission_votes(bot, game):
 		game.board.state.resultado_misiones.append("Exito")
 		game.history.append("La mision ha sido un Exito")
 		bot.send_message(game.cid, "La mision ha sido un exito!")
+		
 		
 	if sum(x == 'Fracaso' for x in game.board.state.votos_mision.values()) == 3:
 		end_game(bot, game, -1)
