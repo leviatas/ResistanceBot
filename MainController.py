@@ -326,16 +326,20 @@ def count_mission_votes(bot, game):
 		game.history.append("La mision ha sido un Exito")
 		bot.send_message(game.cid, "La mision ha sido un exito!")
 		
-		
+	log.info("Misiones fracasadas: " + sum(x == 'Fracaso' for x in game.board.state.votos_mision.values()))
+	log.info("Misiones exitosas: " + sum(x == 'Exito' for x in game.board.state.votos_mision.values()))
+	
+	finalizo_el_partido = False
+	
 	if sum(x == 'Fracaso' for x in game.board.state.votos_mision.values()) == 3:
 		end_game(bot, game, -1)
+		finalizo_el_partido = True
 	if sum(x == 'Exito' for x in game.board.state.votos_mision.values()) == 3:
 		end_game(bot, game, 1)
-	
-	#Si nadie 
-	bot.send_message(game.cid, game.board.print_board(game.player_sequence))
-	game.board.state.equipo = []
-	start_next_round(bot, game)
+		finalizo_el_partido = True
+	if not finalizo_el_partido
+		bot.send_message(game.cid, game.board.print_board(game.player_sequence))
+		start_next_round(bot, game)
 	
 		
 def start_next_round(bot, game):
