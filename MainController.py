@@ -302,9 +302,8 @@ def handle_team_voting(bot, update):
 		game.board.state.votos_mision[uid] = answer
 		
 		#Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
-		log.info(len(game.board.state.votos_mision))
-		log.info(len(game.board.state.equipo_cantidad_mision))
-		log.info(len(game.board.state.votos_mision) == game.board.state.equipo_cantidad_mision)
+		log.info(len(game.board.state.votos_mision))	
+		log.info(game.board.state.equipo_cantidad_mision)
 		if len(game.board.state.votos_mision) == game.board.state.equipo_cantidad_mision:
 			count_mission_votes(bot, game)
 	except Exception as e:
