@@ -312,8 +312,8 @@ def count_mission_votes(bot, game):
 	voting_success = False
 	#Aca se podra hacer llamados para ver las cartas de mision y descartarla antes. Pero primero quiero lo basico
 	
-	cantidad_fracasos = sum(x == 'Fracaso' for x in game.board.state.votos_mision.values())
-	cantidad_exitos = sum(x == 'Fracaso' for x in game.board.state.votos_mision.values())
+	cantidad_fracasos = sum(x == "Fracaso" for x in game.board.state.votos_mision.values())
+	cantidad_exitos = sum(x == "Exito" for x in game.board.state.votos_mision.values())
 	
 	log.info("Misiones Fracasadas y exitosas") 
 	log.info(sum( x == 'Fracaso' for x in game.board.state.resultado_misiones ))
