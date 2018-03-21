@@ -64,3 +64,12 @@ class Game(object):
     
     def jsonify(self):
         return json.dumps(self.__dict__, default= encode_all)
+    
+    def get_equipo_actual(self, con_markup):
+        if con_markup:
+            for player in self.board.state.equipo:
+				miembros_elegidos += "[%s](tg://user?id=%d)\n" % (player.name, player.uid)
+        else:
+            for player in self.board.state.equipo:
+				miembros_elegidos += "%s\n" % (player.name)
+        return miembros_elegidos
