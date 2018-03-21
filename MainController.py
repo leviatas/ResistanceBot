@@ -160,7 +160,6 @@ def asignar_miembro(bot, update):
 			vote(bot, game)
 		else:
 			#Si no se eligieron todos se le pide que siga eligiendo hasta llegar al cupo. Se pone tiempo para que no se sobrepise
-			sleep(1)
 			asignar_equipo(bot, game)
 		
 	except AttributeError as e:
