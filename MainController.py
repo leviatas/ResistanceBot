@@ -337,7 +337,7 @@ def count_mission_votes(bot, game):
 	if sum(x == 'Exito' for x in game.board.state.votos_mision.values()) == 3:
 		end_game(bot, game, 1)
 		finalizo_el_partido = True
-	if not finalizo_el_partido
+	if not finalizo_el_partido:
 		bot.send_message(game.cid, game.board.print_board(game.player_sequence))
 		start_next_round(bot, game)
 	
