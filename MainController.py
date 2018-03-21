@@ -265,7 +265,9 @@ def voting_aftermath(bot, game, voting_success):
 				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
 			else:
 				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
+		game.board.state.equipo = []		
 	else:
+		game.board.state.equipo = []
 		bot.send_message(game.cid, game.board.print_board(game.player_sequence))
 		start_next_round(bot, game)
 	
@@ -309,16 +311,19 @@ def count_mission_votes(bot, game):
 	if 'Fracaso' in game.board.state.votos_mision.values():
 		game.board.state.resultado_misiones.append("Fracaso")
 		game.history.append("La mision ha sido un Fracaso")
+		bot.send_message(game.cid, "La mision ha sido saboteada!")
 	else:
 		game.board.state.resultado_misiones.append("Exito")
 		game.history.append("La mision ha sido un Exito")
+		bot.send_message(game.cid, "La mision ha sido un exito!")
 		
 	if sum(x == 'Fracaso' for x in game.board.state.votos_mision.values()) == 3:
 		end_game(bot, game, -1)
 	if sum(x == 'Exito' for x in game.board.state.votos_mision.values()) == 3:
 		end_game(bot, game, 1)
 	
-	#Si nadie ganó. Despues de poner el resultado de la mision vuelvo al comienzo.
+	#Si nadie 
+	bot.send_message(game.cid, game.board.print_board(game.player_sequence))
 	start_next_round(bot, game)
 	
 		
