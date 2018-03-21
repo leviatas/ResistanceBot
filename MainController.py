@@ -152,7 +152,7 @@ def asignar_miembro(bot, update):
 			mensaje_votacion += miembros_elegidos
 			
 			game.board.state.mensaje_votacion = mensaje_votacion			
-			mensaje_miembros_mision_elegidos = "El líder ha elegido a los siguientes miembros para ir a la misión:\n %s /nVoten en privado si les gusta dicho equipo." % (miembros_elegidos)			
+			mensaje_miembros_mision_elegidos = "El líder ha elegido a los siguientes miembros para ir a la misión:\n %s \nVoten en privado si les gusta dicho equipo." % (miembros_elegidos)			
 			bot.send_message(game.cid, mensaje_miembros_mision_elegidos)
 			
 			vote(bot, game)
