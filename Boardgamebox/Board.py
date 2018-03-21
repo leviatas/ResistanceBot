@@ -25,7 +25,7 @@ class Board(object):
         # Seguimiento de misiones
         for resultado in self.state.resultado_misiones :
             if resultado == "Exito":
-                board += u"\U0001F54A" + " " #dove
+                board += u"\u2714\uFE0F" + " " #dove
             else:
                 board += u"\u2716\uFE0F" + " " #X          
         
