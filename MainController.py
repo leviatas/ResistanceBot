@@ -58,8 +58,8 @@ debugging = True
 #
 ##
 
-def start_round(bot, game):        
-        Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround + 1), game)
+def start_round(bot, game):
+	Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround + 1), game)
 	log.info('start_round called')
 	# Comienzo de nuevo turno se resetea el equipo elegido
 	game.board.state.equipo = []
