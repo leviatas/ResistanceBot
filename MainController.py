@@ -65,22 +65,19 @@ def start_round(bot, game):
 	game.board.state.equipo = []
 	game.board.state.equipo_contador = 0
 	# Starting a new round makes the current round to go up    
-        game.board.state.currentround += 1
+	game.board.state.currentround += 1
 	# Si el lider fue elegido por un evento o jugador... El chosen presidente no sera nulo
-        log.info(game.board.state.lider_elegido)
-        
-        if game.board.state.lider_elegido is None:
-                game.board.state.lider_actual = game.player_sequence[game.board.state.player_counter]
-        else:
-                game.board.state.lider_actual = game.board.state.lider_elegido
-                game.board.state.lider_elegido = None
-        
-        msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
-        bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
-        asignar_equipo(bot, game)
-        # --> nominate_chosen_chancellor --> vote --> handle_voting --> count_votes --> voting_aftermath --> draw_policies
-        # --> choose_policy --> pass_two_policies --> choose_policy --> enact_policy --> start_round
-
+	log.info(game.board.state.lider_elegido)
+	if game.board.state.lider_elegido is None:
+		game.board.state.lider_actual = game.player_sequence[game.board.state.player_counter]
+	else:
+		game.board.state.lider_actual = game.board.state.lider_elegido
+		game.board.state.lider_elegido = None
+	msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
+	bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
+	asignar_equipo(bot, game)
+	# --> nominate_chosen_chancellor --> vote --> handle_voting --> count_votes --> voting_aftermath --> draw_policies
+	# --> choose_policy --> pass_two_policies --> choose_policy --> enact_policy --> start_round
 
 def asignar_equipo(bot, game):
 	log.info('asignar_equipo called')
