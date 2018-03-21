@@ -145,14 +145,11 @@ def asignar_miembro(bot, update):
 		
 		# Si se suman la cantidad apropiada de miembros para la mision se vota.
 		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
-			miembros_elegidos = ""
-			for player in game.board.state.equipo:
-				miembros_elegidos += "%s\n" % (player.name)
+			miembros_elegidos = game.get_equipo_actual(false)
+			
 			mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %d:\n" % (game.board.state.currentround + 1)
 			mensaje_votacion += miembros_elegidos
-			miembros_elegidos = ""
-			for player in game.board.state.equipo:
-				miembros_elegidos += "[%s](tg://user?id=%d) " % (player.name, player.uid)			
+			miembros_elegidos = game.get_equipo_actual(true)		
 			game.board.state.mensaje_votacion = mensaje_votacion			
 			mensaje_miembros_mision_elegidos = "El líder ha elegido a los siguientes miembros para ir a la misión:\n%s\nVoten en privado si les gusta dicho equipo." % (miembros_elegidos)			
 			bot.send_message(game.cid, mensaje_miembros_mision_elegidos, ParseMode.MARKDOWN )
@@ -277,8 +274,7 @@ def voting_aftermath(bot, game, voting_success):
 			if player.rol == "Resistencia":
 				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
 			else:
-				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
-		game.board.state.equipo = []		
+				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)				
 	else:
 		game.board.state.equipo = []
 		bot.send_message(game.cid, game.board.print_board(game.player_sequence))
@@ -340,6 +336,7 @@ def count_mission_votes(bot, game):
 	
 	#Si nadie 
 	bot.send_message(game.cid, game.board.print_board(game.player_sequence))
+	game.board.state.equipo = []
 	start_next_round(bot, game)
 	
 		
