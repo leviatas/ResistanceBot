@@ -27,7 +27,7 @@ class Board(object):
             if resultado == "Exito":
                 board += u"\u2714\uFE0F" + " " #dove
             else:
-                board += u"\u2716\uFE0F" + " " #X          
+                board += u"\u2716\uFE0F" + "   " #X          
         
         board += "\n--- Contador de elección ---\n"
         for i in range(5):
