@@ -313,28 +313,33 @@ def count_mission_votes(bot, game):
 	
 	cantidad_fracasos = sum(x == 'Fracaso' for x in game.board.state.votos_mision.values())
 	
-	log.info(sum( x == 'Fracaso' for x in game.board.state.votos_mision.values() ))
-	log.info(sum( x == 'Exito' for x in game.board.state.votos_mision.values() ))
+	log.info("Misiones Fracasadas y exitosas") 
+	log.info(sum( x == 'Fracaso' for x in game.board.state.resultado_misiones.values() ))
+	log.info(sum( x == 'Exito' for x in game.board.state.resultado_misiones.values() ))
 	
 	#Simplemente verifico si hay algun fracaso en la mision
+	log.info('Fracaso' in game.board.state.votos_mision.values())
 	if 'Fracaso' in game.board.state.votos_mision.values():
 		game.board.state.resultado_misiones.append("Fracaso")
 		game.history.append("La mision ha sido un Fracaso")
 		bot.send_message(game.cid, "La mision ha sido saboteada!")
+		log.info("Mision fracasada") 
 	else:
 		game.board.state.resultado_misiones.append("Exito")
 		game.history.append("La mision ha sido un Exito")
 		bot.send_message(game.cid, "La mision ha sido un exito!")
-		
-	log.info("Misiones fracasadas: " + sum(x == 'Fracaso' for x in game.board.state.votos_mision.values()))
-	log.info("Misiones exitosas: " + sum(x == 'Exito' for x in game.board.state.votos_mision.values()))
+		log.info("Mision exitosa") 
+	
+	log.info("Misiones Fracasadas y exitosas") 
+	log.info(sum( x == 'Fracaso' for x in game.board.state.resultado_misiones.values() ))
+	log.info(sum( x == 'Exito' for x in game.board.state.resultado_misiones.values() ))
 	
 	finalizo_el_partido = False
 	
-	if sum(x == 'Fracaso' for x in game.board.state.votos_mision.values()) == 4:
+	if sum(x == 'Fracaso' for x in game.board.state.resultado_misiones.values()) == 4:
 		end_game(bot, game, -1)
 		finalizo_el_partido = True
-	if sum(x == 'Exito' for x in game.board.state.votos_mision.values()) == 4:
+	if sum(x == 'Exito' for x in game.board.state.resultado_misiones.values()) == 4:
 		end_game(bot, game, 1)
 		finalizo_el_partido = True
 	if not finalizo_el_partido:
