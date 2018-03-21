@@ -315,8 +315,8 @@ def count_mission_votes(bot, game):
 	cantidad_exitos = sum(x == 'Fracaso' for x in game.board.state.votos_mision.values())
 	
 	log.info("Misiones Fracasadas y exitosas") 
-	log.info(sum( x == 'Fracaso' for x in game.board.state.resultado_misiones.values() ))
-	log.info(sum( x == 'Exito' for x in game.board.state.resultado_misiones.values() ))
+	log.info(sum( x == 'Fracaso' for x in game.board.state.resultado_misiones ))
+	log.info(sum( x == 'Exito' for x in game.board.state.resultado_misiones ))
 		
 	bot.send_message(game.cid, "Exitos: %d\nFracasos: %d\n" % (cantidad_exitos, cantidad_fracasos))
 	
@@ -334,15 +334,15 @@ def count_mission_votes(bot, game):
 		log.info("Mision exitosa") 
 	
 	log.info("Misiones Fracasadas y exitosas") 
-	log.info(sum( x == 'Fracaso' for x in game.board.state.resultado_misiones.values() ))
-	log.info(sum( x == 'Exito' for x in game.board.state.resultado_misiones.values() ))
+	log.info(sum( x == 'Fracaso' for x in game.board.state.resultado_misiones ))
+	log.info(sum( x == 'Exito' for x in game.board.state.resultado_misiones ))
 	
 	finalizo_el_partido = False
 	
-	if sum(x == 'Fracaso' for x in game.board.state.resultado_misiones.values()) == 4:
+	if sum(x == 'Fracaso' for x in game.board.state.resultado_misiones) == 4:
 		end_game(bot, game, -1)
 		finalizo_el_partido = True
-	if sum(x == 'Exito' for x in game.board.state.resultado_misiones.values()) == 4:
+	if sum(x == 'Exito' for x in game.board.state.resultado_misiones) == 4:
 		end_game(bot, game, 1)
 		finalizo_el_partido = True
 	if not finalizo_el_partido:
