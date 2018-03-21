@@ -64,6 +64,7 @@ def start_round(bot, game):
 	# Comienzo de nuevo turno se resetea el equipo elegido
 	game.board.state.equipo = []
 	game.board.state.equipo_contador = 0
+	game.board.state.votos_mision = {}
 	# Starting a new round makes the current round to go up    
 	game.board.state.currentround += 1
 	# Si el lider fue elegido por un evento o jugador... El chosen presidente no sera nulo
