@@ -147,13 +147,13 @@ def asignar_miembro(bot, update):
 		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
 			miembros_elegidos = ""
 			for player in game.board.state.equipo:
-				miembros_elegidos += "%s " % (player.name)
+				miembros_elegidos += "[%s](tg://user?id=%d) " % (player.name, player.uid)
 			mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %d: " % (game.board.state.currentround + 1)
 			mensaje_votacion += miembros_elegidos
 			
 			game.board.state.mensaje_votacion = mensaje_votacion			
 			mensaje_miembros_mision_elegidos = "El líder ha elegido a los siguientes miembros para ir a la misión:\n %s \nVoten en privado si les gusta dicho equipo." % (miembros_elegidos)			
-			bot.send_message(game.cid, mensaje_miembros_mision_elegidos)
+			bot.send_message(game.cid, mensaje_miembros_mision_elegidos, ParseMode.MARKDOWN )
 			
 			vote(bot, game)
 		else:
@@ -174,6 +174,11 @@ def vote(bot, game):
 	strcid = str(game.cid)
 	btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
 	voteMarkup = InlineKeyboardMarkup(btns)
+	
+	if debugging:
+		bot.send_message(ADMIN, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
+		
+	
 	for uid in game.playerlist:
 		if not game.playerlist[uid].esta_muerto and not debugging:
 			if game.playerlist[uid] is not game.board.state.lider_actual:
