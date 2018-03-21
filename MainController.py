@@ -142,9 +142,7 @@ def asignar_miembro(bot, update):
 		game.board.state.equipo.append(miembro_asignado)
 		game.board.state.equipo_contador += 1
 		
-		log.info(game.board.state.equipo_cantidad_mision)
-		log.info(game.board.state.equipo_contador)			
-		log.info(game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision)
+		
 		# Si se suman la cantidad apropiada de miembros para la mision se vota.
 		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
 			mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %d\n" % (game.board.state.currentround + 1)
@@ -433,7 +431,7 @@ def inform_badguys(bot, game, player_number):
 						fstring += f.name + ", "
 				fstring = fstring[:-2]
 				if not debugging:
-					bot.send_message(uid, "Tus compañeros fascistas son: %s" % fstring)
+					bot.send_message(uid, "Tus compañeros espías son: %s" % fstring)
 		elif rol == "Resistencia":
 			pass
 		else:
