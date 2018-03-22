@@ -243,7 +243,7 @@ def count_votes(bot, game):
 		# VOTING WAS SUCCESSFUL
 		log.info("Voting successful")
 				
-		voting_text += "\nFelicitaciones al equipo compuesto por:\n%s" % (game.get_equipo_actual(True))
+		voting_text += "\nFelicitaciones al equipo de [%s](tg://user?id=%d) compuesto por:\n%s" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.get_equipo_actual(True))
 		
 		#game.board.state.chancellor = game.board.state.nominated_chancellor
 		#game.board.state.president = game.board.state.nominated_president
