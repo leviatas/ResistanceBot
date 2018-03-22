@@ -204,7 +204,9 @@ def handle_voting(bot, update):
 	strcid = regex.group(1)
 	try:
 		game = GamesController.games[cid]
+		log.info(game.board.state.failed_votes)
 		game.board.state.failed_votes = 2
+		log.info("Paso")
 		uid = callback.from_user.id
 		bot.edit_message_text("Gracias por tu voto %s al equipo:\n%s" % (answer, game.get_equipo_actual_flat(False)), uid, callback.message.message_id)
 		log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
