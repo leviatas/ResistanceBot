@@ -267,7 +267,9 @@ def count_votes(bot, game):
 		game.history.append(("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes) ) + voting_text)
 		log.info(game.history[game.board.state.currentround])
 		if game.board.state.failed_votes == 5:
-			do_anarchy(bot, game)
+			game.board.state.resultado_misiones.append("Fracaso")
+			game.history.append("La mision ha sido un fracaso debido a no decidirse!\n\n")
+			bot.send_message(game.cid, "La mision ha sido un fracaso debido a no decidirse!")
 		else:
 			voting_aftermath(bot, game, voting_success)
 
