@@ -259,7 +259,7 @@ def count_votes(bot, game):
 		voting_aftermath(bot, game, voting_success)
 	else:
 		log.info("Voting failed")
-		voting_text += "A la resistencia no le gusto el equipo de %s compuesto por:\n%s" % (
+		voting_text += "\nA la resistencia no le gusto el equipo de %s compuesto por:\n%s" % (
 			game.board.state.lider_actual.name, game.get_equipo_actual(False))		
 		game.board.state.failed_votes += 1
 		bot.send_message(game.cid, voting_text)
