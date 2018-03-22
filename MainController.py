@@ -199,7 +199,7 @@ def handle_voting(bot, update):
     try:
         game = GamesController.games[cid]
         uid = callback.from_user.id
-        bot.edit_message_text("Gracias por tu voto!", uid, callback.message.message_id)
+        bot.edit_message_text("Gracias por tu voto %s al equipo:%s" % (answer, game.get_equipo_actual(False)), uid, callback.message.message_id)
         log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
         
         #if uid not in game.board.state.last_votes:
@@ -208,7 +208,7 @@ def handle_voting(bot, update):
         #Allow player to change his vote
         btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
         voteMarkup = InlineKeyboardMarkup(btns)
-        bot.send_message(uid, "Puedes cambiar tu voto aquí.\n", reply_markup=voteMarkup)
+        bot.send_message(uid, "Puedes cambiar tu voto aquí.\n %s" % (game.board.state.mensaje_votacion), reply_markup=voteMarkup)
         Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
         if len(game.board.state.last_votes) == len(game.player_sequence):
                 count_votes(bot, game)
