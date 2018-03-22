@@ -62,6 +62,7 @@ def start_round(bot, game):
 	game.board.state.equipo = []
 	game.board.state.equipo_contador = 0
 	game.board.state.votos_mision = {}
+	game.board.state.failed_votes = 0
 	Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround + 1), game)
 	log.info('start_round called')
 	# Comienzo de nuevo turno se resetea el equipo elegido
@@ -89,7 +90,8 @@ def asignar_equipo(bot, game):
 	pres_uid = 0
 	chan_uid = 0
 	btns = []
-			
+	
+	log.info('Creando teclado called')
 	# Inicialmente se puede elegir a cualquiera para formar los equipos
 	# Menos los que esten en el equipo elegido
 	for uid in game.playerlist:
@@ -99,11 +101,16 @@ def asignar_equipo(bot, game):
 	
 	equipoMarkup = InlineKeyboardMarkup(btns)
 	
+	log.info('Creando Teclado creado correctamente')
 	# Marco la cantidad de miembros que hay que llevar
-	if "*" not in game.board.misiones[game.board.state.currentround]: 
-		game.board.state.equipo_cantidad_mision = int(game.board.misiones[game.board.state.currentround])
+	log.info(game.board.state.currentround)
+	
+	turno_actual = len(game.board.state.resultado_misiones)
+	
+	if "*" not in game.board.misiones[turno_actual]: 
+		game.board.state.equipo_cantidad_mision = int(game.board.misiones[turno_actual])
 	else:
-		game.board.state.equipo_cantidad_mision = int((game.board.misiones[game.board.state.currentround])[:-1])
+		game.board.state.equipo_cantidad_mision = int((game.board.misiones[turno_actual])[:-1])
 		
 	if(debugging):
 		bot.send_message(ADMIN, game.board.print_board(game.player_sequence))
@@ -114,6 +121,7 @@ def asignar_equipo(bot, game):
 
 
 def asignar_miembro(bot, update):
+	turno_actual = len(game.board.state.resultado_misiones)
 	log.info('asignar_miembro called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
@@ -152,7 +160,7 @@ def asignar_miembro(bot, update):
 		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
 			miembros_elegidos = game.get_equipo_actual(False)
 			
-			mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %d:\n" % (game.board.state.currentround + 1)
+			mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %d:\n" % (len(game.board.state.resultado_misiones) + 1)
 			mensaje_votacion += miembros_elegidos
 			miembros_elegidos = game.get_equipo_actual(True)		
 			game.board.state.mensaje_votacion = mensaje_votacion			
@@ -223,6 +231,9 @@ def count_votes(bot, game):
 	log.info('count_votes called')
 	voting_text = ""
 	voting_success = False
+	
+	turno_actual = len(game.board.state.resultado_misiones) + 1
+	
 	for player in game.player_sequence:
 		if game.board.state.last_votes[player.uid] == "Si":
 			voting_text += game.playerlist[player.uid].name + " votó Si!\n"
@@ -242,7 +253,7 @@ def count_votes(bot, game):
 		voting_success = True
 		bot.send_message(game.cid, voting_text, ParseMode.MARKDOWN)
 		bot.send_message(game.cid, "\nNo se puede hablar ahora.")
-		game.history.append(("Ronda %d.%d\n\n" % (game.board.state.currentround + 1, game.board.state.failed_votes + 1) ) + voting_text)
+		game.history.append(("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes + 1) ) + voting_text)
 		log.info(game.history[game.board.state.currentround])
 		voting_aftermath(bot, game, voting_success)
 	else:
@@ -251,7 +262,7 @@ def count_votes(bot, game):
 			game.board.state.lider_actual.name, game.get_equipo_actual(False))		
 		game.board.state.failed_votes += 1
 		bot.send_message(game.cid, voting_text)
-		game.history.append(("Ronda %d.%d\n\n" % (game.board.state.currentround + 1, game.board.state.failed_votes) ) + voting_text)
+		game.history.append(("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes) ) + voting_text)
 		log.info(game.history[game.board.state.currentround])
 		if game.board.state.failed_votes == 5:
 			do_anarchy(bot, game)
@@ -304,6 +315,7 @@ def handle_team_voting(bot, update):
 		log.error(str(e))
 		
 def count_mission_votes(bot, game):
+	turno_actual = len(game.board.state.resultado_misiones)
 	# La votacion ha finalizado.
 	game.dateinitvote = None
 	# La votacion ha finalizado.
@@ -328,7 +340,7 @@ def count_mission_votes(bot, game):
 	fracaso = False
 	
 	# Si es una mision que requiere dos fallos...
-	if "*" in game.board.misiones[game.board.state.currentround]:
+	if "*" in game.board.misiones[turno_actual]:
 		if cantidad_fracasos > 1:
 			fracaso = True
 		else:
