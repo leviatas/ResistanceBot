@@ -75,3 +75,13 @@ class Game(object):
 			for player in self.board.state.equipo:
 				miembros_elegidos += "%s\n" % (player.name)
 		return miembros_elegidos
+	
+	def get_equipo_actual_flat(self, con_markup):
+		miembros_elegidos = ""
+		if con_markup:
+			for player in self.board.state.equipo:
+				miembros_elegidos += "[%s](tg://user?id=%d) " % (player.name, player.uid)
+		else:
+			for player in self.board.state.equipo:
+				miembros_elegidos += "%s " % (player.name)
+		return miembros_elegidos
