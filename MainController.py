@@ -333,7 +333,7 @@ def count_mission_votes(bot, game):
 			fracaso = True
 		else:
 			fracaso = False
-	else
+	else:
 		if cantidad_fracasos > 0:
 			fracaso = True
 	
