@@ -323,7 +323,21 @@ def count_mission_votes(bot, game):
 	
 	#Simplemente verifico si hay algun fracaso en la mision
 	log.info('Fracaso' in game.board.state.votos_mision.values())
-	if 'Fracaso' in game.board.state.votos_mision.values():
+	
+	
+	fracaso = False
+	
+	# Si es una mision que requiere dos fallos...
+	if "*" in game.board.misiones[game.board.state.currentround]:
+		if cantidad_fracasos > 1:
+			fracaso = True
+		else:
+			fracaso = False
+	else
+		if cantidad_fracasos > 0:
+			fracaso = True
+	
+	if fracaso:
 		game.board.state.resultado_misiones.append("Fracaso")
 		game.history.append("La mision ha sido un Fracaso")
 		bot.send_message(game.cid, "La mision ha sido saboteada!")
