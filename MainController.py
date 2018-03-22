@@ -233,10 +233,7 @@ def count_votes(bot, game):
 		# VOTING WAS SUCCESSFUL
 		log.info("Voting successful")
 				
-		voting_text += "\nFelicitaciones al equipo compuesto por:\n"
-		
-		for player in game.board.state.equipo:
-			voting_text += "[%s](tg://user?id=%d)\n" % (player.name, player.uid)
+		voting_text += "\nFelicitaciones al equipo compuesto por:\n %s" % (game.get_equipo_actual(True))
 		
 		#game.board.state.chancellor = game.board.state.nominated_chancellor
 		#game.board.state.president = game.board.state.nominated_president
@@ -250,8 +247,8 @@ def count_votes(bot, game):
 		voting_aftermath(bot, game, voting_success)
 	else:
 		log.info("Voting failed")
-		voting_text += "A la resistencia no le gusto el equipo de %s!" % (
-			game.board.state.lider_actual.name)		
+		voting_text += "A la resistencia no le gusto el equipo de %s compuesto por:\n%s!" % (
+			game.board.state.lider_actual.name, (game.get_equipo_actual(False))		
 		game.board.state.failed_votes += 1
 		bot.send_message(game.cid, voting_text)
 		game.history.append(("Ronda %d.%d\n\n" % (game.board.state.currentround + 1, game.board.state.failed_votes) ) + voting_text)
