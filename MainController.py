@@ -90,8 +90,7 @@ def asignar_equipo(bot, game):
 	pres_uid = 0
 	chan_uid = 0
 	btns = []
-	
-	log.info('Creando teclado called')
+		
 	# Inicialmente se puede elegir a cualquiera para formar los equipos
 	# Menos los que esten en el equipo elegido
 	for uid in game.playerlist:
@@ -101,7 +100,7 @@ def asignar_equipo(bot, game):
 	
 	equipoMarkup = InlineKeyboardMarkup(btns)
 	
-	log.info("Este es la mision: %d" % (turno_actual))
+	log.info("Este es la mision: %d" % (turno_actual + 1))
 	
 	if "*" not in game.board.misiones[turno_actual]: 
 		game.board.state.equipo_cantidad_mision = int(game.board.misiones[turno_actual])
