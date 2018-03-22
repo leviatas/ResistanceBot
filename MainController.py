@@ -195,7 +195,7 @@ def vote(bot, game):
 			bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 			
 def handle_voting(bot, update):
-	game.board.state.failed_votes = 2
+	
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_(.*)", callback.data)
@@ -204,6 +204,7 @@ def handle_voting(bot, update):
 	strcid = regex.group(1)
 	try:
 		game = GamesController.games[cid]
+		game.board.state.failed_votes = 2
 		uid = callback.from_user.id
 		bot.edit_message_text("Gracias por tu voto %s al equipo:\n%s" % (answer, game.get_equipo_actual_flat(False)), uid, callback.message.message_id)
 		log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
