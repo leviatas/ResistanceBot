@@ -199,7 +199,7 @@ def handle_voting(bot, update):
     try:
         game = GamesController.games[cid]
         uid = callback.from_user.id
-        bot.edit_message_text("Gracias por tu voto %s al equipo:\n%s" % (answer, game.get_equipo_actual(False)), uid, callback.message.message_id)
+        bot.edit_message_text("Gracias por tu voto %s al equipo:\n%s" % (answer, game.get_equipo_actual_flat(False)), uid, callback.message.message_id)
         log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
         
         #if uid not in game.board.state.last_votes:
