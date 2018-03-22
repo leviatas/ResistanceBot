@@ -83,5 +83,6 @@ class Game(object):
 				miembros_elegidos += "[%s](tg://user?id=%d) " % (player.name, player.uid)
 		else:
 			for player in self.board.state.equipo:
-				miembros_elegidos += "%s " % (player.name)
+				miembros_elegidos += "%s - " % (player.name)
+		miembros_elegidos = miembros_elegidos[:-3]
 		return miembros_elegidos
