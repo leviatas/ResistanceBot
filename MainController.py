@@ -118,7 +118,7 @@ def asignar_equipo(bot, game):
 
 
 def asignar_miembro(bot, update):
-	turno_actual = len(game.board.state.resultado_misiones)
+	
 	log.info('asignar_miembro called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
@@ -130,7 +130,8 @@ def asignar_miembro(bot, update):
 		chosen_uid = ADMIN
 	'''
 	try:
-		game = GamesController.games.get(cid, None)
+		game = GamesController.games.get(cid, None)		
+		turno_actual = len(game.board.state.resultado_misiones)		
 		#log.info(game.playerlist)
 		#log.info(str(chosen_uid) in game.playerlist )
 		#log.info(chosen_uid in game.playerlist)        
