@@ -493,15 +493,16 @@ def command_reloadgame(bot, update):
 				bot.send_message(cid, game.board.print_board(game.player_sequence))				
 				# Ask the president to choose a chancellor
 								
-				if game.board.state.nominated_chancellor:
+				if not game.board.state.equipo_contador == 0:
 					if len(game.board.state.last_votes) == len(game.player_sequence):
 						MainController.count_votes(bot, game)
 					else:
 						bot.send_message(cid, "Hay una votación en progreso utiliza /calltovote para decirles a los otros jugadores. ")
 				else:				
 					MainController.start_round(bot, game)
-			else:				
-				bot.send_message(cid, "No hay juego que recargar! Crea un nuevo juego con /newgame!")
+			else:
+				GamesController.games[cid] = Game(cid, update.message.from_user.id)
+				bot.send_message(cid, "Nuevo juego creado! Cada jugador debe unirse al juego con el comando /join.\nEl iniciador del juego (o el administrador) pueden unirse tambien y escribir /startgame cuando todos se hayan unido al juego!")
 			
 			
 	except Exception as e:
