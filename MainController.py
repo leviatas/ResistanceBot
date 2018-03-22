@@ -61,8 +61,7 @@ debugging = False
 def start_round(bot, game):
 	game.board.state.equipo = []
 	game.board.state.equipo_contador = 0
-	game.board.state.votos_mision = {}
-	game.board.state.failed_votes = 0
+	game.board.state.votos_mision = {}	
 	Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround + 1), game)
 	log.info('start_round called')
 	# Comienzo de nuevo turno se resetea el equipo elegido
@@ -196,30 +195,31 @@ def vote(bot, game):
 			bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 			
 def handle_voting(bot, update):
-    callback = update.callback_query
-    log.info('handle_voting called: %s' % callback.data)
-    regex = re.search("(-[0-9]*)_(.*)", callback.data)
-    cid = int(regex.group(1))
-    answer = regex.group(2)
-    strcid = regex.group(1)
-    try:
-        game = GamesController.games[cid]
-        uid = callback.from_user.id
-        bot.edit_message_text("Gracias por tu voto %s al equipo:\n%s" % (answer, game.get_equipo_actual_flat(False)), uid, callback.message.message_id)
-        log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
-        
-        #if uid not in game.board.state.last_votes:
-        game.board.state.last_votes[uid] = answer
-        
-        #Allow player to change his vote
-        btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
-        voteMarkup = InlineKeyboardMarkup(btns)
-        bot.send_message(uid, "Puedes cambiar tu voto aquí.\n%s" % (game.board.state.mensaje_votacion), reply_markup=voteMarkup)
-        Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
-        if len(game.board.state.last_votes) == len(game.player_sequence):
-                count_votes(bot, game)
-    except Exception as e:
-        log.error(str(e))
+	game.board.state.failed_votes = 2
+	callback = update.callback_query
+	log.info('handle_voting called: %s' % callback.data)
+	regex = re.search("(-[0-9]*)_(.*)", callback.data)
+	cid = int(regex.group(1))
+	answer = regex.group(2)
+	strcid = regex.group(1)
+	try:
+		game = GamesController.games[cid]
+		uid = callback.from_user.id
+		bot.edit_message_text("Gracias por tu voto %s al equipo:\n%s" % (answer, game.get_equipo_actual_flat(False)), uid, callback.message.message_id)
+		log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
+
+		#if uid not in game.board.state.last_votes:
+		game.board.state.last_votes[uid] = answer
+
+		#Allow player to change his vote
+		btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
+		voteMarkup = InlineKeyboardMarkup(btns)
+		bot.send_message(uid, "Puedes cambiar tu voto aquí.\n%s" % (game.board.state.mensaje_votacion), reply_markup=voteMarkup)
+		Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
+		if len(game.board.state.last_votes) == len(game.player_sequence):
+			count_votes(bot, game)
+	except Exception as e:
+		log.error(str(e))
 
 
 def count_votes(bot, game):
@@ -253,10 +253,12 @@ def count_votes(bot, game):
 		bot.send_message(game.cid, "\nNo se puede hablar ahora.")
 		game.history.append(("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes + 1) ) + voting_text)
 		log.info(game.history[game.board.state.currentround])
+		# Se resetea los votos fallidos
+		game.board.state.failed_votes = 0
 		voting_aftermath(bot, game, voting_success)
 	else:
 		log.info("Voting failed")
-		voting_text += "A la resistencia no le gusto el equipo de %s compuesto por:\n%s!" % (
+		voting_text += "A la resistencia no le gusto el equipo de %s compuesto por:\n%s" % (
 			game.board.state.lider_actual.name, game.get_equipo_actual(False))		
 		game.board.state.failed_votes += 1
 		bot.send_message(game.cid, voting_text)
