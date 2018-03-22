@@ -85,6 +85,7 @@ def start_round(bot, game):
 	# --> choose_policy --> pass_two_policies --> choose_policy --> enact_policy --> start_round
 
 def asignar_equipo(bot, game):
+	turno_actual = len(game.board.state.resultado_misiones)
 	log.info('asignar_equipo called')
 	strcid = str(game.cid)
 	pres_uid = 0
@@ -101,11 +102,7 @@ def asignar_equipo(bot, game):
 	
 	equipoMarkup = InlineKeyboardMarkup(btns)
 	
-	log.info('Creando Teclado creado correctamente')
-	# Marco la cantidad de miembros que hay que llevar
-	log.info(game.board.state.currentround)
-	
-	turno_actual = len(game.board.state.resultado_misiones)
+	log.info("Este es la mision: %d" % (turno_actual))
 	
 	if "*" not in game.board.misiones[turno_actual]: 
 		game.board.state.equipo_cantidad_mision = int(game.board.misiones[turno_actual])
