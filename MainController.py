@@ -456,7 +456,7 @@ def incluir_modulo(bot, update):
 	regex = re.search("(-[0-9]*)_modulo_(.*)", callback.data)
 	
 	cid = int(regex.group(1))
-	modulo_elegido = int(regex.group(2))
+	modulo_elegido = regex.group(2)
 	strcid = regex.group(1)
 	
 	log.info(modulo_elegido)
