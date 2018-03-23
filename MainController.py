@@ -500,6 +500,21 @@ def inform_players(bot, game, cid, player_number):
 		"Vamos a comenzar el juego con %d jugadores!\n%s\nVe a nuestro chat privado y mira tu rol secreto!" % (
 	player_number, print_player_info(player_number)))
 	afiliaciones_posibles = list(playerSets[player_number]["afiliacion"])  # copy not reference because we need it again later
+	# Copio las afiliaciones y luego reemplazo por los roles posibles. Tendre que ver que pasa si supera la cantidad
+	roles_posibles = list(playerSets[player_number]["afiliacion"])
+	set_roles(roles_posibles)
+	
+	if game.is_debugging:
+		text_adming_roles_posibles = ""
+		text_afiliaciones_posibles = ""
+		for rol in roles_posibles:
+			text_adming_roles_posibles += rol + " - "
+		for afiliacion in afiliaciones_posibles:
+			text_afiliaciones_posibles += afiliacion + " - "
+			
+		bot.send_message(ADMIN, text_adming_roles_posibles[:-3], ParseMode.MARKDOWN)
+		bot.send_message(ADMIN, text_afiliaciones_posibles[:-3], ParseMode.MARKDOWN)
+	
 	for uid in game.playerlist:
 		random_index = randrange(len(afiliaciones_posibles))
 		#log.info(str(random_index))
@@ -515,6 +530,25 @@ def inform_players(bot, game, cid, player_number):
 			bot.send_message(ADMIN, "El jugador %s es %s y su afiliación es: %s" % (game.playerlist[uid].name, rol, afiliacion))
 
 
+def set_roles(lista_a_modificar):
+	# Me fijo en cada modulo que roles hay y de que afiliacion son, cambio uno por uno.
+	for modulo in game.modulos:
+		# Me fijo si el modulo incluye roles
+		modulo_actual = modules[modulo]["roles"]		
+		if not modulo_actual == None:
+			for rol in modules[modulo]["roles"]:
+				# Obtiene el indice y modifica el elemento en la lista 
+				indice = next(i for i,v in lista_a_modificar if v == rol, -1)
+				if indice == -1:					
+					bot.send_message(ADMIN, "Se quiso agregar un rol cuando no hay afiliaciones disponibles")	
+				else:
+					lista_a_modificar[indice] = rol
+				
+				#bot.send_message(ADMIN, indice)
+				'''for n, i in enumerate(a):
+				if i == 1:
+				a[n] = 10'''
+			
 def print_player_info(player_number):
     if player_number == 5:
         return "Hay 3 miembros de la resistencia y 2 Espias."
