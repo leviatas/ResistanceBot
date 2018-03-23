@@ -427,7 +427,7 @@ def end_game(bot, game, game_endcode):
 	Commands.delete_game(game.cid)
 
 	
-def configurar_partida(bot, game)
+def configurar_partida(bot, game):
 	# Metodo para configurar la partida actual
 	strcid = str(game.cid)
 	bot.send_message(game.cid, "Comenzamos eligiendo los modulos a incluir")	
