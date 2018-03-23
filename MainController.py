@@ -570,9 +570,11 @@ def inform_badguys(bot, game, player_number):
 	for uid in game.playerlist:
 		afiliacion = game.playerlist[uid].afiliacion
 		rol = game.playerlist[uid].rol
-		if afiliacion == "Espia":
-			badguys = game.get_badguys()
+		
+		
+		if afiliacion == "Espia":			
 			if player_number > 6:
+				badguys = game.get_badguys()
 				fstring = ""
 				for f in badguys:
 					if f.uid != uid:
