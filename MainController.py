@@ -569,6 +569,7 @@ def inform_badguys(bot, game, player_number):
 
 	for uid in game.playerlist:
 		afiliacion = game.playerlist[uid].afiliacion
+		rol = game.playerlist[uid].rol
 		if afiliacion == "Espia":
 			badguys = game.get_badguys()
 			if player_number > 6:
@@ -580,6 +581,16 @@ def inform_badguys(bot, game, player_number):
 				if not game.is_debugging:
 					bot.send_message(uid, "Tus compañeros espías son: %s" % fstring)
 		elif afiliacion == "Resistencia":
+			if rol == "Comandante":
+				badguys = game.get_badguys()
+				fstring = ""
+				for f in badguys:
+					fstring += f.name + ", "
+				fstring = fstring[:-2]
+				if not game.is_debugging:
+					bot.send_message(uid, "Los espías son: %s" % fstring)
+				else:
+					bot.send_message(ADMIN, "Comandante: Los espías son: %s" % fstring)
 			pass
 		else:
 			log.error("inform_badguys: no se que hacer con la afiliacion: %s" % afiliacion)
