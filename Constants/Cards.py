@@ -163,10 +163,8 @@ modules = {
     },
     "Cazador": {
         "roles": {
-            "Espia": "Cazador",
-            "Resistencia": "Cazador",
-            "Espia": "Jefe",
-            "Resistencia": "Jefe"
+            "Ambos": "Cazador",
+            "Ambos": "Jefe"
         },
         "rules": [
             "Cazador"
@@ -191,10 +189,7 @@ modules = {
             "plot"
         ]
     },
-    "Sargento": {
-        "roles": {
-            "Ambos": "Sargento"
-        },
+    "Sargento": {        
         "rules": [
             "Sargento"
         ]
