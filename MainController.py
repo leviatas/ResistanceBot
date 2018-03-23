@@ -384,7 +384,7 @@ def count_mission_votes(bot, game):
 		start_next_round(bot, game)
 		
 #Comienzan metodos de expansiones
-def final_asesino(game)
+def final_asesino(game):
 	#Busco al Asesino y le mando un privado con todos los miembros de la resistencia
 	asesino = game.get_asesino()
 	miembros_resistencia = game.get_goodguys()
@@ -402,8 +402,7 @@ def final_asesino(game)
 	else:
 		bot.send_message(asesino.cid, '¿A quien vas a asesinar? Puedes hablar con tu compañero al respecto', reply_markup=miembros_resistencia_markup)		
 
-def asesinar_miembro(bot, update):
-	
+def asesinar_miembro(bot, update):	
 	log.info('asesinar_miembro called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
