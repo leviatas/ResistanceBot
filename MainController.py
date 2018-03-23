@@ -633,7 +633,7 @@ def inform_badguys(bot, game, player_number):
 		
 		
 		if afiliacion == "Espia":			
-			if player_number > 5:
+			if player_number > 4:
 				badguys = game.get_badguys()
 				fstring = ""
 				for f in badguys:
