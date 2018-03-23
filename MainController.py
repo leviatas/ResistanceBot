@@ -432,12 +432,14 @@ def configurar_partida(bot, game):
 	strcid = str(game.cid)
 	bot.send_message(game.cid, "Comenzamos eligiendo los modulos a incluir")	
 	btns = []	
-	for modulo in modules.keys() not in game.modulos
+	'''for modulo in modules.keys() not in game.modulos:
 		bot.send_message(game.cid, modulo)
-		
-	for modulo in modules.keys() not in game.modulos
+	'''	
+	for modulo in modules.keys() not in game.modulos:
 		btns.append([InlineKeyboardButton(modulo, callback_data=strcid + "_modulo_" + modulo)])
-
+	btns.append([InlineKeyboardButton("Finalizar Configuración", callback_data=strcid + "_modulo_" + "Fin")])
+	modulosMarkup = InlineKeyboardMarkup(btns)
+	bot.send_message(game.cid, 'Elija un modulo para agregar!', reply_markup=equipoMarkup)
 
 def incluir_modulo(bot, update):
 	
@@ -457,7 +459,12 @@ def incluir_modulo(bot, update):
 	'''
 	try:
 		game = GamesController.games.get(cid, None)		
-		game.modulos.append(modulo_elegido)
+		# Si se ha terminado de configurar los modulos...
+		if modulo_elegido == "Fin"
+			bot.send_message(game.cid, "Gracias por configurar el juego, para comenzar presione /startgame")
+		else:
+			game.modulos.append(modulo_elegido)
+			configurar_partida(bot, game)
 	except AttributeError as e:
 		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
 	except Exception as e:
