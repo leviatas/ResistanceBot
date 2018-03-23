@@ -31,7 +31,7 @@ class Game(object):
 	def get_badguys(self):
 		espias = []
 		for uid in self.playerlist:
-			if self.playerlist[uid].rol == "Espia":
+			if self.playerlist[uid].afiliacion == "Espia":
 				espias.append(self.playerlist[uid])
 		return espias
 
