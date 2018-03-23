@@ -502,7 +502,7 @@ def inform_players(bot, game, cid, player_number):
 	afiliaciones_posibles = list(playerSets[player_number]["afiliacion"])  # copy not reference because we need it again later
 	# Copio las afiliaciones y luego reemplazo por los roles posibles. Tendre que ver que pasa si supera la cantidad
 	roles_posibles = list(playerSets[player_number]["afiliacion"])
-	set_roles(roles_posibles)
+	set_roles(game, roles_posibles)
 	
 	if game.is_debugging:
 		text_adming_roles_posibles = ""
@@ -520,7 +520,7 @@ def inform_players(bot, game, cid, player_number):
 		#log.info(str(random_index))
 		afiliacion = afiliaciones_posibles.pop(random_index)
 		#log.info(str(role))
-		rol = get_role(afiliacion)
+		rol = roles_posibles.pop(random_index)
 		game.playerlist[uid].afiliacion = afiliacion
 		game.playerlist[uid].rol = rol
 		# I comment so tyhe player aren't discturbed in testing, uncomment when deploy to production
@@ -530,7 +530,7 @@ def inform_players(bot, game, cid, player_number):
 			bot.send_message(ADMIN, "El jugador %s es %s y su afiliación es: %s" % (game.playerlist[uid].name, rol, afiliacion))
 
 
-def set_roles(lista_a_modificar):
+def set_roles(game, lista_a_modificar):
 	# Me fijo en cada modulo que roles hay y de que afiliacion son, cambio uno por uno.
 	for modulo in game.modulos:
 		# Me fijo si el modulo incluye roles
