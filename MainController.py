@@ -389,7 +389,7 @@ def final_asesino(bot, game):
 	asesino = game.get_asesino()
 	miembros_resistencia = game.get_goodguys()
 	bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó pasando 3 misiones con...")
-	bot.send_message(game.cid, "Minuto! Hay una sombra sobre el edificio con un rifle de francotirador, si mata al comandate habra sido todo por nada! (Los espias pueden charlar entre ellos)")
+	bot.send_message(game.cid, "Minuto! Hay una sombra sobre el edificio con un rifle de francotirador, si mata al comandante habra sido todo por nada! (Los espias pueden charlar entre ellos)")
 	# Creando botonera para el asesino
 	strcid = str(game.cid)			
 	btns = []
