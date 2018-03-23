@@ -315,7 +315,7 @@ def handle_team_voting(bot, update):
 			count_mission_votes(bot, game)
 	except Exception as e:
 		log.error(str(e))
-		
+
 def count_mission_votes(bot, game):
 	turno_actual = len(game.board.state.resultado_misiones)
 	# La votacion ha finalizado.
@@ -372,13 +372,69 @@ def count_mission_votes(bot, game):
 		end_game(bot, game, -1)
 		finalizo_el_partido = True
 	if sum(x == 'Exito' for x in game.board.state.resultado_misiones) == 3:
-		end_game(bot, game, 1)
-		finalizo_el_partido = True
+		# Si esta el modulo de asesino se deberia preguntar al asesino a quien mata y mostrar un mensaje de que puede matar
+		if "Asesino" in game.modulos:
+			final_asesino(game)
+			finalizo_el_partido = False
+		else:
+			end_game(bot, game, 1)
+			finalizo_el_partido = True
 	if not finalizo_el_partido:
 		bot.send_message(game.cid, game.board.print_board(game.player_sequence))
 		start_next_round(bot, game)
-	
 		
+#Comienzan metodos de expansiones
+def final_asesino(game)
+	#Busco al Asesino y le mando un privado con todos los miembros de la resistencia
+	asesino = game.get_asesino()
+	miembros_resistencia = game.get_goodguys()
+	bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó pasando 3 misiones con...")
+	bot.send_message(game.cid, "Minuto! Hay una sombra sobre el edificio con un rifle de francotirador, si mata al comandate habra sido todo por nada! (Los espias pueden charlar entre ellos)")
+	# Creando botonera para el asesino
+	strcid = str(game.cid)			
+	btns = []
+	for miembro_resistencia in miembros_resistencia:
+		btns.append([InlineKeyboardButton(miembro_resistencia.name, callback_data=strcid + "_asesinato_" + str(miembro_resistencia.uid))])
+	miembros_resistencia_markup = InlineKeyboardMarkup(btns)
+	bot.send_message(asesino.cid, '¿A quien vas a asesinar? Puedes hablar con tu compañero al respecto', reply_markup=miembros_resistencia_markup)		
+
+def asesinar_miembro(bot, update):
+	
+	log.info('asesinar_miembro called')
+	log.info(update.callback_query.data)
+	callback = update.callback_query
+	regex = re.search("(-[0-9]*)_equipo_([0-9]*)", callback.data)
+	cid = int(regex.group(1))
+	chosen_uid = int(regex.group(2))
+
+	try:
+		game = GamesController.games.get(cid, None)
+		log.info(chosen_uid)
+		miembro_asesinado = game.playerlist[chosen_uid]			
+		
+		log.info("Se ha asesinado a %s (%d)" % (miembro_asesinado.name, miembro_asesinado.uid))
+						
+		bot.edit_message_text("Tú asesinaste a %s !" % miembro_asesinado.name,
+				callback.from_user.id, callback.message.message_id)
+		
+		text_asesinato = "La bala pega entre los ojos de %s!\n" % (miembro_asesinado.name)
+		
+		miembro_asesinado.esta_muerto = True
+		
+		if miembro_asesinado.rol == "Comandante":
+			text_asesinato += "Lamentablemente era nuestro Comandante. La resistencia, sin alguien que los guie, se desbanda."
+			bot.send_message(game.cid, text_asesinato)
+			end_game(bot, game, -2)
+		else:
+			text_asesinato += "Los restantes miembros de la resistencia protegen a su lider. El imperio tiene los días contados."
+			bot.send_message(game.cid, text_asesinato)
+			end_game(bot, game, 1)
+	except AttributeError as e:
+		log.error("asesinar_miembro: Game or board should not be None! Eror: " + str(e))
+	except Exception as e:
+		log.error("Unknown error: " + repr(e))
+		log.exception(e)
+
 def start_next_round(bot, game):
     log.info('start_next_round called')
     # start next round if there is no winner (or /cancel)
@@ -408,6 +464,9 @@ def end_game(bot, game, game_endcode):
 	#   2   liberals win by killing Hitler
 	#   99  game cancelled
 	#
+	
+	
+	
 	if game_endcode == 99:
 		if GamesController.games[game.cid].board is not None:
 			bot.send_message(game.cid, "Juego cancelado!\n\n%s" % game.print_roles())
@@ -415,13 +474,14 @@ def end_game(bot, game, game_endcode):
 			bot.send_message(game.cid, "Juego cancelado!")
 	else:
 		if game_endcode == -2:
-			bot.send_message(game.cid, "Juego finalizado! Los fascistas ganaron eligiendo a Hitler como Canciller!\n\n%s" % game.print_roles())
+			bot.send_message(game.cid, "Juego finalizado! Los espías ganaron matando al Comandante!\n\n%s" % game.print_roles())
 		if game_endcode == -1:
 			bot.send_message(game.cid, "Juego finalizado! Los espias ganaron saboteando 3 misiones!\n\n%s" % game.print_roles())
 		if game_endcode == 1:
 			bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó pasando 3 misiones con exito!\n\n%s" % game.print_roles())
 		if game_endcode == 2:
-			bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó matando a Hitler!\n\n%s" % game.print_roles())
+			bot.send_message(game.cid, "Juego finalizado! Pendiente!\n\n%s" % game.print_roles())
+		
 	#showHiddenhistory(game.cid)
 	del GamesController.games[game.cid]
 	Commands.delete_game(game.cid)
@@ -431,10 +491,7 @@ def configurar_partida(bot, game):
 	try:
 		# Metodo para configurar la partida actual
 		strcid = str(game.cid)			
-		btns = []	
-		'''for modulo in modules.keys() not in game.modulos:
-			bot.send_message(game.cid, modulo)
-		'''	
+		btns = []
 		for modulo in modules.keys():
 			if modulo not in game.modulos:
 				btns.append([InlineKeyboardButton(modulo, callback_data=strcid + "_modulo_" + modulo)])
@@ -683,6 +740,7 @@ def main():
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(Si|No)", callback=handle_voting))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(Exito|Fracaso)", callback=handle_team_voting))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_modulo_(.*)", callback=incluir_modulo))
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_asesinato_(.*)", callback=asesinar_miembro))
 	
 	# log all errors
 	dp.add_error_handler(error)
