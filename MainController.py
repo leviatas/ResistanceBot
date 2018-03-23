@@ -470,8 +470,7 @@ def incluir_modulo(bot, update):
 		uid = callback.from_user.id
 		
 		if modulo_elegido == "Fin":
-			bot.edit_message_text("Gracias por configurar el juego, para comenzar presione /startgame" % 
-					      (modulo_elegido), cid, callback.message.message_id)
+			bot.edit_message_text("Gracias por configurar el juego, para comenzar presione /startgame", cid, callback.message.message_id)
 		else:
 			game.modulos.append(modulo_elegido)
 			bot.edit_message_text("Se ha incluido el modulo %s" % (modulo_elegido), cid, callback.message.message_id)
