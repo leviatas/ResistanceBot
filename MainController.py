@@ -502,7 +502,7 @@ def inform_players(bot, game, cid, player_number):
 	afiliaciones_posibles = list(playerSets[player_number]["afiliacion"])  # copy not reference because we need it again later
 	# Copio las afiliaciones y luego reemplazo por los roles posibles. Tendre que ver que pasa si supera la cantidad
 	roles_posibles = list(playerSets[player_number]["afiliacion"])
-	set_roles(game, roles_posibles)
+	set_roles(bot, game, roles_posibles)
 	
 	if game.is_debugging:
 		text_adming_roles_posibles = ""
@@ -530,7 +530,7 @@ def inform_players(bot, game, cid, player_number):
 			bot.send_message(ADMIN, "El jugador %s es %s y su afiliación es: %s" % (game.playerlist[uid].name, rol, afiliacion))
 
 
-def set_roles(game, lista_a_modificar):
+def set_roles(bot, game, lista_a_modificar):
 	# Me fijo en cada modulo que roles hay y de que afiliacion son, cambio uno por uno.
 	for modulo in game.modulos:
 		# Me fijo si el modulo incluye roles
@@ -539,8 +539,8 @@ def set_roles(game, lista_a_modificar):
 			for rol in modules[modulo]["roles"]:
 				# Obtiene el indice y modifica el elemento en la lista 
 				indice = next((i for i,v in enumerate(lista_a_modificar) if v == rol), -1)
-				if indice == -1:					
-					bot.send_message(ADMIN, "Se quiso agregar un rol cuando no hay afiliaciones disponibles")	
+				if indice == -1:
+					bot.send_message(ADMIN, "Se quiso agregar un rol (%s) cuando no hay afiliaciones disponibles" % (rol))	
 				else:
 					lista_a_modificar[indice] = rol
 				
