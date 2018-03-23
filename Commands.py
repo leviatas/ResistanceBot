@@ -524,4 +524,4 @@ def command_prueba(bot, update):
 	if uid == ADMIN:
 		cid = update.message.chat_id
 		game = GamesController.games.get(cid, None)		
-		MainController.final_asesino(game)
+		MainController.final_asesino(bot, game)
