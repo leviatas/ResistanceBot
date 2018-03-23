@@ -23,10 +23,16 @@ class Game(object):
 	def add_player(self, uid, player):
 		self.playerlist[uid] = player
 
-	def get_hitler(self):
+	def get_asesino(self):
 		for uid in self.playerlist:
-			if self.playerlist[uid].rol == "Hitler":
+			if self.playerlist[uid].rol == "Asesino":
 				return self.playerlist[uid]
+	def get_goodguys(self):
+		resistencia = []
+		for uid in self.playerlist:
+			if self.playerlist[uid].afiliacion == "Resistencia":
+				resistencia.append(self.playerlist[uid])
+		return resistencia
 
 	def get_badguys(self):
 		espias = []
