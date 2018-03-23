@@ -51,8 +51,6 @@ query = "SELECT ...."
 cur.execute(query)
 '''
 
-debugging = False
-
 ##
 #
 # Beginning of round
@@ -108,7 +106,7 @@ def asignar_equipo(bot, game):
 	else:
 		game.board.state.equipo_cantidad_mision = int((game.board.misiones[turno_actual])[:-1])
 		
-	if(debugging):
+	if(game.is_debugging):
 		bot.send_message(ADMIN, game.board.print_board(game.player_sequence))
 		bot.send_message(ADMIN, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
 	else:
@@ -184,12 +182,12 @@ def vote(bot, game):
 	btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
 	voteMarkup = InlineKeyboardMarkup(btns)
 	
-	if debugging:
+	if game.is_debugging:
 		bot.send_message(ADMIN, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 		
 	
 	for uid in game.playerlist:
-		if not game.playerlist[uid].esta_muerto and not debugging:
+		if not game.playerlist[uid].esta_muerto and not game.is_debugging:
 			if game.playerlist[uid] is not game.board.state.lider_actual:
 				bot.send_message(uid, game.board.print_board(game.player_sequence))
 			bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
@@ -495,7 +493,7 @@ def inform_players(bot, game, cid, player_number):
 		game.playerlist[uid].afiliacion = afiliacion
 		game.playerlist[uid].rol = rol
 		# I comment so tyhe player aren't discturbed in testing, uncomment when deploy to production
-		if not debugging:
+		if not game.is_debugging:
 			bot.send_message(uid, "Tu rol secreto es: %s\nTu afiliación es: %s" % (rol, afiliacion))
 		else:
 			bot.send_message(ADMIN, "El jugador %s es %s y su afiliación es: %s" % (game.playerlist[uid].name, rol, afiliacion))
@@ -528,7 +526,7 @@ def inform_badguys(bot, game, player_number):
 					if f.uid != uid:
 						fstring += f.name + ", "
 				fstring = fstring[:-2]
-				if not debugging:
+				if not game.is_debugging:
 					bot.send_message(uid, "Tus compañeros espías son: %s" % fstring)
 		elif rol == "Resistencia":
 			pass
