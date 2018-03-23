@@ -16,6 +16,7 @@ class Game(object):
 		self.dateinitvote = None
 		self.history = []
 		self.hiddenhistory = []
+		self.modules = []
     
     
 	def add_player(self, uid, player):
