@@ -467,6 +467,8 @@ def incluir_modulo(bot, update):
 	try:
 		game = GamesController.games.get(cid, None)		
 		# Si se ha terminado de configurar los modulos...
+		uid = callback.from_user.id
+		
 		if modulo_elegido == "Fin":
 			bot.send_message(game.cid, "Gracias por configurar el juego, para comenzar presione /startgame")
 		else:
