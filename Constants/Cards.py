@@ -115,8 +115,8 @@ playerSets = {
 modules = {
     "Asesino": {
         "roles": {
-            "Asesino": "Espia",
-            "Comandante": "Resistencia"
+            "Espia": "Asesino",
+            "Resistencia": "Comandante"
         },
         "rules": [
             "Asesino"
@@ -124,8 +124,8 @@ modules = {
     },
     "Desertor": {
         "roles": {
-            "Desertor": "Espia",
-            "Desertor": "Resistencia"
+            "Espia": "Desertor",
+            "Resistencia": "Desertor"
         },
         "rules": [
             "Desertor"
@@ -154,8 +154,8 @@ modules = {
     },
     "Inversor": {
         "roles": {
-            "Inversor": "Espia",
-            "Inversor": "Resistencia"
+            "Espia": "Inversor",
+            "Resistencia": "Inversor"
         },
         "rules": [
             "Inversor"
@@ -163,10 +163,10 @@ modules = {
     },
     "Cazador": {
         "roles": {
-            "Cazador": "Espia",
-            "Cazador": "Resistencia",
-            "Jefe": "Espia",
-            "Jefe": "Resistencia"
+            "Espia": "Cazador",
+            "Resistencia": "Cazador",
+            "Espia": "Jefe",
+            "Resistencia": "Jefe"
         },
         "rules": [
             "Cazador"
@@ -190,7 +190,7 @@ modules = {
     },
     "Sargento": {
         "roles": {
-            "Sargento": "Ambos"
+            "Ambos": "Sargento"
         },
         "rules": [
             "Sargento"
@@ -198,8 +198,8 @@ modules = {
     },
     "Picaro": {
         "roles": {
-            "Picaro": "Espia",
-            "Picaro": "Resistencia"
+            "Espia": "Picaro",
+            "Resistencia": "Picaro"
         },
         "rules": [
             "Picaro"
