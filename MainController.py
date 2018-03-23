@@ -430,8 +430,7 @@ def end_game(bot, game, game_endcode):
 def configurar_partida(bot, game):
 	try:
 		# Metodo para configurar la partida actual
-		strcid = str(game.cid)
-		bot.send_message(game.cid, "Comenzamos eligiendo los modulos a incluir")	
+		strcid = str(game.cid)			
 		btns = []	
 		'''for modulo in modules.keys() not in game.modulos:
 			bot.send_message(game.cid, modulo)
@@ -470,7 +469,7 @@ def incluir_modulo(bot, update):
 		uid = callback.from_user.id
 		
 		if modulo_elegido == "Fin":
-			bot.edit_message_text("Gracias por configurar el juego, para comenzar presione /startgame", cid, callback.message.message_id)
+			bot.edit_message_text("Gracias por configurar el juego, para unirse usar /join y para comenzar presione /startgame", cid, callback.message.message_id)
 		else:
 			game.modulos.append(modulo_elegido)
 			bot.edit_message_text("Se ha incluido el modulo %s" % (modulo_elegido), cid, callback.message.message_id)
