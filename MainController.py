@@ -374,7 +374,7 @@ def count_mission_votes(bot, game):
 	if sum(x == 'Exito' for x in game.board.state.resultado_misiones) == 3:
 		# Si esta el modulo de asesino se deberia preguntar al asesino a quien mata y mostrar un mensaje de que puede matar
 		if "Asesino" in game.modulos:
-			final_asesino(game)
+			final_asesino(bot, game)
 			finalizo_el_partido = False
 		else:
 			end_game(bot, game, 1)
@@ -384,7 +384,7 @@ def count_mission_votes(bot, game):
 		start_next_round(bot, game)
 		
 #Comienzan metodos de expansiones
-def final_asesino(game):
+def final_asesino(bot, game):
 	#Busco al Asesino y le mando un privado con todos los miembros de la resistencia
 	asesino = game.get_asesino()
 	miembros_resistencia = game.get_goodguys()
