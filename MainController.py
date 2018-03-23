@@ -538,7 +538,7 @@ def set_roles(game, lista_a_modificar):
 		if not modulo_actual == None:
 			for rol in modules[modulo]["roles"]:
 				# Obtiene el indice y modifica el elemento en la lista 
-				indice = next((i for i,v in lista_a_modificar.items() if v == rol), -1)
+				indice = next((i for i,v in enumerate(lista_a_modificar) if v == rol), -1)
 				if indice == -1:					
 					bot.send_message(ADMIN, "Se quiso agregar un rol cuando no hay afiliaciones disponibles")	
 				else:
