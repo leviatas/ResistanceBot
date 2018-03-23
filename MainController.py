@@ -559,7 +559,7 @@ def print_player_info(player_number):
     elif player_number == 8:
         return "Hay 5 miembros de la resistencia y 3 Espias."
     elif player_number == 9:
-        return "Hay 5 miembros de la resistencia y 3 Espias."
+        return "Hay 5 miembros de la resistencia y 4 Espias."
     elif player_number == 10:
         return "Hay 6 miembros de la resistencia y 4 Espias."
 
