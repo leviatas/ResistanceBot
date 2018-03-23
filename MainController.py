@@ -441,7 +441,7 @@ def configurar_partida(bot, game):
 				btns.append([InlineKeyboardButton(modulo, callback_data=strcid + "_modulo_" + modulo)])
 		btns.append([InlineKeyboardButton("Finalizar Configuración", callback_data=strcid + "_modulo_" + "Fin")])
 		modulosMarkup = InlineKeyboardMarkup(btns)
-		bot.send_message(game.cid, 'Elija un modulo para agregar!', reply_markup=equipoMarkup)
+		bot.send_message(game.cid, 'Elija un modulo para agregar!', reply_markup=modulosMarkup)
 	except AttributeError as e:
 		log.error("incluir_modulo: " + str(e))
 	except Exception as e:
