@@ -396,7 +396,11 @@ def final_asesino(game)
 	for miembro_resistencia in miembros_resistencia:
 		btns.append([InlineKeyboardButton(miembro_resistencia.name, callback_data=strcid + "_asesinato_" + str(miembro_resistencia.uid))])
 	miembros_resistencia_markup = InlineKeyboardMarkup(btns)
-	bot.send_message(asesino.cid, '¿A quien vas a asesinar? Puedes hablar con tu compañero al respecto', reply_markup=miembros_resistencia_markup)		
+	
+	if game.is_debugging:
+		bot.send_message(ADMIN, '¿A quien vas a asesinar? Puedes hablar con tu compañero al respecto', reply_markup=miembros_resistencia_markup)		
+	else:
+		bot.send_message(asesino.cid, '¿A quien vas a asesinar? Puedes hablar con tu compañero al respecto', reply_markup=miembros_resistencia_markup)		
 
 def asesinar_miembro(bot, update):
 	
