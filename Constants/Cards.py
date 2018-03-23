@@ -174,15 +174,18 @@ modules = {
     },
     "Trama": {
         "plot": [
-            "plotcard",
-            "plotcard",
-            "plotcard",
-            "plotcard",
-            "plotcard",
-            "plotcard",
-            "plotcard",
-            "plotcard",
-            "plotcard"
+            "Lider Fuerte",
+            "Sin confianza",
+            "Sin confianza",
+            "Sin confianza",
+            "Comunicación Intervenida",
+            "Comunicación Intervenida",
+            "Vigilancia Estrecha",
+            "Vigilancia Estrecha",
+            "Creador De Opinión",
+            "En El Punto De Mira",
+            "Compartir Opinión",
+            "Establecer Confianza"
         ],
         "rules": [
             "plot"
