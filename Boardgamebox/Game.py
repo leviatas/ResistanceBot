@@ -55,7 +55,7 @@ class Game(object):
 				rtext += "El rol secreto de %s" % (self.playerlist[p].name)
 				if self.playerlist[p].esta_muerto:
 					rtext += "(dead) "
-				rtext += "era %s (%s)\n" % (self.playerlist[p].rol, self.playerlist[p].afiliacion)
+				rtext += " era %s (%s)\n" % (self.playerlist[p].rol, self.playerlist[p].afiliacion)
 			return rtext
 
 	def encode_all(obj):
