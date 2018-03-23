@@ -175,6 +175,7 @@ modules = {
     "Trama": {
         "plot": [
             "Lider Fuerte",
+            "Lider Fuerte",
             "Sin confianza",
             "Sin confianza",
             "Sin confianza",
@@ -183,9 +184,11 @@ modules = {
             "Vigilancia Estrecha",
             "Vigilancia Estrecha",
             "Creador De Opinión",
+            "Creador De Opinión",
             "En El Punto De Mira",
             "Compartir Opinión",
-            "Establecer Confianza"
+            "Establecer Confianza",
+            "Asumir Responsabilidad"
         ],
         "rules": [
             "plot"
