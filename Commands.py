@@ -517,4 +517,3 @@ def command_toggle_debugging(bot, update):
 		# Informo que el modo de debugging ha cambiado
 		game.is_debugging = True if not game.is_debugging else False
 		bot.send_message(cid, "Debug Mode: ON" if game.is_debugging else "Debug Mode: OFF"
-				 
