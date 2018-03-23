@@ -284,7 +284,7 @@ def voting_aftermath(bot, game, voting_success):
 		voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
 		for player in game.board.state.equipo:
 			log.info(player.uid)
-			if player.rol == "Resistencia":
+			if player.afiliacion == "Resistencia":
 				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
 			else:
 				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)				
