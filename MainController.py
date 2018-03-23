@@ -536,7 +536,7 @@ def set_roles(bot, game, lista_a_modificar):
 		# Me fijo si el modulo incluye roles
 		modulo_actual = modules[modulo]["roles"]		
 		if not modulo_actual == None:
-			for afiliacion, rol in modules[modulo]["roles"].iteritems():	
+			for afiliacion, rol in modules[modulo]["roles"].items():	
 				# Obtiene el indice y modifica el elemento en la lista 
 				indice = next((i for i, v in enumerate(lista_a_modificar) if v == afiliacion), -1)
 				if indice == -1:
