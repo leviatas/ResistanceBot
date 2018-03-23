@@ -15,6 +15,7 @@ from telegram.ext import (Updater, CommandHandler, CallbackQueryHandler)
 import Commands
 from Constants.Cards import playerSets
 from Constants.Config import TOKEN, STATS, ADMIN
+from Constants.Cards import modules
 from Boardgamebox.Game import Game
 from Boardgamebox.Player import Player
 import GamesController
@@ -427,6 +428,45 @@ def end_game(bot, game, game_endcode):
 	del GamesController.games[game.cid]
 	Commands.delete_game(game.cid)
 
+	
+def configurar_partida(bot, game)
+	# Metodo para configurar la partida actual
+	strcid = str(game.cid)
+	bot.send_message(game.cid, "Comenzamos eligiendo los modulos a incluir")	
+	btns = []	
+	for modulo in modules.keys() not in game.modulos
+		bot.send_message(game.cid, modulo)
+		
+	for modulo in modules.keys() not in game.modulos
+		btns.append([InlineKeyboardButton(modulo, callback_data=strcid + "_modulo_" + modulo)])
+
+
+def incluir_modulo(bot, update):
+	
+	log.info('incluir_modulo')
+	log.info(update.callback_query.data)
+	callback = update.callback_query
+	regex = re.search("(-[0-9]*)_modulo_(.*)", callback.data)
+	
+	cid = int(regex.group(1))
+	modulo_elegido = int(regex.group(2))
+	strcid = regex.group(1)
+	
+	log.info(modulo_elegido)
+	
+	'''if debugging:
+		chosen_uid = ADMIN
+	'''
+	try:
+		game = GamesController.games.get(cid, None)		
+		game.modulos.append(modulo_elegido)
+	except AttributeError as e:
+		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
+	except Exception as e:
+		log.error("Unknown error: " + repr(e))
+		log.exception(e)
+
+		
 def showHiddenhistory(cid):
 	#game.pedrote = 3
 	try:
@@ -590,8 +630,8 @@ def main():
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_equipo_(.*)", callback=asignar_miembro))	
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(Si|No)", callback=handle_voting))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(Exito|Fracaso)", callback=handle_team_voting))
-
-
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_modulo_(.*)", callback=incluir_modulo))
+	
 	# log all errors
 	dp.add_error_handler(error)
 
