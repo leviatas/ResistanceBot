@@ -567,8 +567,8 @@ def inform_badguys(bot, game, player_number):
 	log.info('inform_badguys called')
 
 	for uid in game.playerlist:
-		rol = game.playerlist[uid].rol
-		if rol == "Espia":
+		afiliacion = game.playerlist[uid].afiliacion
+		if afiliacion == "Espia":
 			badguys = game.get_badguys()
 			if player_number > 6:
 				fstring = ""
@@ -578,21 +578,10 @@ def inform_badguys(bot, game, player_number):
 				fstring = fstring[:-2]
 				if not game.is_debugging:
 					bot.send_message(uid, "Tus compañeros espías son: %s" % fstring)
-		elif rol == "Resistencia":
+		elif afiliacion == "Resistencia":
 			pass
 		else:
-			log.error("inform_fascists: can\'t handle the role %s" % role)
-
-
-def get_role(role):
-    log.info('get_membership called')
-    if role == "Resistencia":
-        return "Resistencia"
-    elif role == "Espia":
-        return "Espia"
-    else:
-        return None
-
+			log.error("inform_badguys: no se que hacer con la afiliacion: %s" % afiliacion)
 
 def increment_player_counter(game):
     log.info('increment_player_counter called')
