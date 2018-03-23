@@ -542,6 +542,7 @@ def set_roles(bot, game, lista_a_modificar):
 				if indice == -1:
 					bot.send_message(ADMIN, "Se quiso agregar un afiliacion (%s) y rol (%s), cuando no hay afiliaciones disponibles" % (afiliacion, rol))	
 				else:
+					bot.send_message(ADMIN, indice)
 					lista_a_modificar[indice] = rol
 				
 				#bot.send_message(ADMIN, indice)
