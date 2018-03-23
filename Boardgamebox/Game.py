@@ -17,6 +17,7 @@ class Game(object):
 		self.history = []
 		self.hiddenhistory = []
 		self.modulos = []
+		self.is_debugging = False
     
     
 	def add_player(self, uid, player):
