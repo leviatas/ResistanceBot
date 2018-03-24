@@ -177,12 +177,9 @@ modules = {
             "5" : [                
                 "Lider Fuerte",
                 "Lider Fuerte",
-                "Sin confianza",
-                "Sin confianza",
-                "Sin confianza",
+                "Sin confianza",                
                 "Vigilancia Estrecha",
-                "Vigilancia Estrecha",
-                "Creador De Opinión",
+                "Vigilancia Estrecha",                
                 "Creador De Opinión",
                 "Asumir Responsabilidad"
             ],
@@ -192,6 +189,9 @@ modules = {
                 "En El Punto De Mira",
                 "Compartir Opinión",
                 "Establecer Confianza",
+                "Creador De Opinión",
+                "Sin confianza",
+                "Sin confianza"
             ]
         },
         "rules": [
