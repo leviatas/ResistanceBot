@@ -131,15 +131,11 @@ modules = {
             "Desertor"
         ],
         "mazoalianza": [
-            "card",
-            "card",
-            "card",
-            "card",
-            "card",
-            "card",
-            "card",
-            "card",
-            "card"
+            "Sin Cambio",
+            "Sin Cambio",
+            "Sin Cambio",
+            "Cambia La Lealtad",
+            "Cambia La Lealtad"
         ],
     },
     "Trampero": {
