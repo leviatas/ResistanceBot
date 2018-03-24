@@ -58,15 +58,13 @@ cur.execute(query)
 ##
 
 def start_round(bot, game):
+	# Comienzo de nuevo turno se resetea el equipo elegido
 	game.board.state.equipo = []
 	game.board.state.equipo_contador = 0
 	game.board.state.votos_mision = {}	
 	Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround + 1), game)
 	log.info('start_round called')
-	# Comienzo de nuevo turno se resetea el equipo elegido
-	game.board.state.equipo = []
-	game.board.state.equipo_contador = 0
-	game.board.state.votos_mision = {}
+		
 	# Starting a new round makes the current round to go up    
 	game.board.state.currentround += 1
 	# Si el lider fue elegido por un evento o jugador... El chosen presidente no sera nulo
@@ -444,7 +442,17 @@ def start_next_round(bot, game):
     if game.board.state.game_endcode == 0:
         # start new round
         sleep(5)
-        # if there is no special elected president in between
+        
+	# Averiguo si algun jugador tiene la carta de Lider Fuerte (Modulo Trama) y le pregunto si quiere usarla
+	'''if "Trama" in game.modulos:
+		strcid = str(game.cid)
+		[InlineKeyboardButton(name, callback_data=strcid + "_liderfuerte_" + str(uid))]
+		btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
+		desicion = InlineKeyboardMarkup(btns)
+		for uid in game.playerlist:
+			if "Lider Fuerte 1-Uso" in game.playerlist[uid].cartas_trama
+	'''
+	# if there is no special elected president in between
         if game.board.state.lider_elegido is None:
             increment_player_counter(game)
         start_round(bot, game)
