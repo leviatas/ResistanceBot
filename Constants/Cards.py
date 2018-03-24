@@ -173,23 +173,27 @@ modules = {
         ]
     },
     "Trama": {
-        "plot": [
-            "Lider Fuerte",
-            "Lider Fuerte",
-            "Sin confianza",
-            "Sin confianza",
-            "Sin confianza",
-            "Comunicación Intervenida",
-            "Comunicación Intervenida",
-            "Vigilancia Estrecha",
-            "Vigilancia Estrecha",
-            "Creador De Opinión",
-            "Creador De Opinión",
-            "En El Punto De Mira",
-            "Compartir Opinión",
-            "Establecer Confianza",
-            "Asumir Responsabilidad"
-        ],
+        "plot": {
+            "5" : [                
+                "Lider Fuerte",
+                "Lider Fuerte",
+                "Sin confianza",
+                "Sin confianza",
+                "Sin confianza",
+                "Vigilancia Estrecha",
+                "Vigilancia Estrecha",
+                "Creador De Opinión",
+                "Creador De Opinión",
+                "Asumir Responsabilidad"
+            ],
+            "7" : [
+                "Comunicación Intervenida",
+                "Comunicación Intervenida",
+                "En El Punto De Mira",
+                "Compartir Opinión",
+                "Establecer Confianza",
+            ]
+        },
         "rules": [
             "plot"
         ]
