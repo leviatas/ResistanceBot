@@ -8,4 +8,4 @@ class Player(object):
         self.was_investigated = False
         self.is_the_insquisitor = False
         self.was_the_insquisitor = False
-        self.cards = {}     
+        self.cartas_trama = []     
