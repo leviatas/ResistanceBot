@@ -443,15 +443,7 @@ def start_next_round(bot, game):
         # start new round
         sleep(5)
         
-	# Averiguo si algun jugador tiene la carta de Lider Fuerte (Modulo Trama) y le pregunto si quiere usarla
-	'''if "Trama" in game.modulos:
-		strcid = str(game.cid)
-		[InlineKeyboardButton(name, callback_data=strcid + "_liderfuerte_" + str(uid))]
-		btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
-		desicion = InlineKeyboardMarkup(btns)
-		for uid in game.playerlist:
-			if "Lider Fuerte 1-Uso" in game.playerlist[uid].cartas_trama
-	'''
+	
 	# if there is no special elected president in between
         if game.board.state.lider_elegido is None:
             increment_player_counter(game)
