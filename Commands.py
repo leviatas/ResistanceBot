@@ -41,12 +41,12 @@ conn = psycopg2.connect(
 
 commands = [  # command description used in the "help" command
     '/help - Te da informacion de los comandos disponibles',
-    '/start - Da un poco de información sobre Secret Hitler',
+    '/start - Da un poco de información sobre La Resistencia',
     '/symbols - Te muestra todos los símbolos posibles en el tablero',
     '/rules - Te da un link al sitio oficial con las reglas de Secret Hitler',
     '/newgame - Crea un nuevo juego o carga un juego previo',
     '/join - Te une a un juego existente',
-    '/startgame - Comienza un juego existente cuando todos los jugadores se han unido',
+    '/startgame - Comienza un juego existente cuantodo todos los jugadores se han unido',
     '/cancelgame - Cancela un juego existente, todos los datos son borrados.',
     '/board - Imprime el tablero actual con la pista liberal y la pista fascista, orden presidencial y contador de elección',
     '/history - Imprime el historial del juego actual',
@@ -86,17 +86,7 @@ def command_board(bot, update):
 
 def command_start(bot, update):
     cid = update.message.chat_id
-    bot.send_message(cid,
-                     "\"Secret Hitler es un juego de deducción social para 5-10 jugadores "
-                     "acerca de encontrar a Hitler y detener el ascenso del fascismo."
-                     " La mayoría de los jugadores son liberales. Si pueden aprender a "
-                     "confiar entre ellos, tienen suficientes votos para controlar el parlamento y ganar el juego."
-                     " Pero algunos jugadores son fascistas. Ellos dirán lo que sea necesario para ser electos, "
-		     "promover el fascismo y culpar a los demás por la derrota de la República."
-		     " Los liberales deben trabajar juntos para descubrir la verdad antes "
-		     "de que los fascistas instalen a su desalamado líder y ganen el juego."
-		     " Traducción de la descripición oficial de Secret Hitler."
-                     " Agregame a un grupo y escribe /newgame para crear un juego!")
+    bot.send_message(cid,"Bot de La Resistencia ")
     command_help(bot, update)
 
 
@@ -104,7 +94,7 @@ def command_rules(bot, update):
     cid = update.message.chat_id
     btn = [[InlineKeyboardButton("Rules", url="http://www.secrethitler.com/assets/Secret_Hitler_Rules.pdf")]]
     rulesMarkup = InlineKeyboardMarkup(btn)
-    bot.send_message(cid, "Lee las reglas oficiales de Secret Hitler:", reply_markup=rulesMarkup)
+    bot.send_message(cid, "Lee las reglas oficiales de Resistencia:", reply_markup=rulesMarkup)
 
 
 # pings the bot
