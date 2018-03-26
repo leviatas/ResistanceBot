@@ -713,21 +713,22 @@ def set_roles(bot, game, lista_a_modificar):
 	# Me fijo en cada modulo que roles hay y de que afiliacion son, cambio uno por uno.
 	for modulo in game.modulos:
 		# Me fijo si el modulo incluye roles
-		modulo_actual = modules[modulo]["roles"]		
-		if not modulo_actual == None:
-			for afiliacion, rol in modules[modulo]["roles"].items():	
-				# Obtiene el indice y modifica el elemento en la lista 
-				indice = next((i for i, v in enumerate(lista_a_modificar) if v in afiliacion), -1)
-				if indice == -1:
-					bot.send_message(ADMIN, "Se quiso agregar un afiliacion (%s) y rol (%s), cuando no hay afiliaciones disponibles" % (afiliacion, rol))	
-				else:
-					bot.send_message(ADMIN, indice)
-					lista_a_modificar[indice] = rol
-				
-				#bot.send_message(ADMIN, indice)
-				'''for n, i in enumerate(a):
-				if i == 1:
-				a[n] = 10'''
+		if "roles" in modules[modulo]:
+			modulo_actual = modules[modulo]["roles"]		
+			if not modulo_actual == None:
+				for afiliacion, rol in modules[modulo]["roles"].items():	
+					# Obtiene el indice y modifica el elemento en la lista 
+					indice = next((i for i, v in enumerate(lista_a_modificar) if v in afiliacion), -1)
+					if indice == -1:
+						bot.send_message(ADMIN, "Se quiso agregar un afiliacion (%s) y rol (%s), cuando no hay afiliaciones disponibles" % (afiliacion, rol))	
+					else:
+						bot.send_message(ADMIN, indice)
+						lista_a_modificar[indice] = rol
+
+					#bot.send_message(ADMIN, indice)
+					'''for n, i in enumerate(a):
+					if i == 1:
+					a[n] = 10'''
 			
 def print_player_info(player_number):
     if player_number == 5:
