@@ -103,7 +103,12 @@ def asignar_equipo(bot, game):
 		game.board.state.equipo_cantidad_mision = int(game.board.misiones[turno_actual])
 	else:
 		game.board.state.equipo_cantidad_mision = int((game.board.misiones[turno_actual])[:-1])
-		
+	
+	# En la mision trampero se agrega siempre un miembro extra al equipo.
+	if "Trampero" in game.modulos:
+		game.board.state.equipo_cantidad_mision += 1
+	
+	
 	if(game.is_debugging):
 		bot.send_message(ADMIN, game.board.print_board(game.player_sequence))
 		bot.send_message(ADMIN, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
@@ -248,7 +253,8 @@ def count_votes(bot, game):
 		#game.board.state.nominated_chancellor = None
 		voting_success = True
 		bot.send_message(game.cid, voting_text, ParseMode.MARKDOWN)
-		bot.send_message(game.cid, "\nNo se puede hablar ahora.")
+		# Hasta que no se sepa se puede hablar luego de los votos.
+		#bot.send_message(game.cid, "\nNo se puede hablar ahora.")
 		game.history.append(("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes + 1) ) + voting_text)
 		log.info(game.history[game.board.state.currentround])
 		
@@ -323,7 +329,10 @@ def handle_team_voting(bot, update):
 		log.info(len(game.board.state.votos_mision))	
 		log.info(game.board.state.equipo_cantidad_mision)
 		if len(game.board.state.votos_mision) == game.board.state.equipo_cantidad_mision:
-			count_mission_votes(bot, game)
+			if "Trampero" in game.modulos:
+				elegir_carta_mision(bot, game, "Trampero")
+			else:
+				count_mission_votes(bot, game)
 	except Exception as e:
 		log.error(str(e))
 
@@ -336,6 +345,7 @@ def count_mission_votes(bot, game):
 		# Si ya se pregunto, o el usuario ya dijo que no la usaria...
 		preguntar_intencion_uso_carta(bot, game, "Vigilancia Estrecha 1-Uso", "vigilanciaestrecha")
 		return
+	
 	
 	turno_actual = len(game.board.state.resultado_misiones)
 	# La votacion ha finalizado.
@@ -403,7 +413,27 @@ def count_mission_votes(bot, game):
 		bot.send_message(game.cid, game.board.print_board(game.player_sequence))
 		start_next_round(bot, game)
 		
+def start_next_round(bot, game):
+	log.info('start_next_round called')
+	# start next round if there is no winner (or /cancel)
+	if game.board.state.game_endcode == 0:
+		# start new round
+		sleep(5)
+
+		# Averiguo si algun jugador tiene la carta de Lider Fuerte (Modulo Trama) y le pregunto si quiere usarla
+		if "Trama" in game.modulos:
+			# Veo si algun jugador tiene intencion de usar carta de trama
+			# Si ya se pregunto, o el usuario ya dijo que no la usaria...
+			preguntar_intencion_uso_carta(bot, game, "Lider Fuerte 1-Uso", "liderfuerte")
+			return
+
+		# if there is no special elected president in between
+		if game.board.state.lider_elegido is None:
+			increment_player_counter(game)
+		start_round(bot, game)
+		
 #Comienzan metodos de expansiones
+# Modulo Asesino
 def final_asesino(bot, game):
 	#Busco al Asesino y le mando un privado con todos los miembros de la resistencia
 	asesino = game.get_asesino()
@@ -458,24 +488,7 @@ def asesinar_miembro(bot, update):
 		log.error("Unknown error: " + repr(e))
 		log.exception(e)
 
-def start_next_round(bot, game):
-	log.info('start_next_round called')
-	# start next round if there is no winner (or /cancel)
-	if game.board.state.game_endcode == 0:
-		# start new round
-		sleep(5)
-
-		# Averiguo si algun jugador tiene la carta de Lider Fuerte (Modulo Trama) y le pregunto si quiere usarla
-		if "Trama" in game.modulos:
-			# Veo si algun jugador tiene intencion de usar carta de trama
-			# Si ya se pregunto, o el usuario ya dijo que no la usaria...
-			preguntar_intencion_uso_carta(bot, game, "Lider Fuerte 1-Uso", "liderfuerte")
-			return
-
-		# if there is no special elected president in between
-		if game.board.state.lider_elegido is None:
-			increment_player_counter(game)
-		start_round(bot, game)
+# Modulo Trama
 
 def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
 	strcid = str(game.cid)
@@ -485,7 +498,76 @@ def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
 	for uid in game.playerlist:
 		if "Lider Fuerte 1-Uso" in game.playerlist[uid].cartas_trama:
 			bot.send_message(uid, "¿Queres usar la carta: %s? % nombre_carta", reply_markup=desicion)
+
+# Modulo Trampero
+# Modulo Trama Motivo es para ver cual de los dos modulos esta usando el comando.
+def elegir_carta_mision(bot, game, motivo):
+	turno_actual = len(game.board.state.resultado_misiones)
+	log.info('elegir_carta_mision called')
+	strcid = str(game.cid)	
+	btns = []
+	
+	# Inicialmente se puede elegir a cualquiera para formar los equipos
+	# Menos los que esten en el equipo elegido
+	for player in game.board.state.equipo:		
+		btns.append([InlineKeyboardButton(player.name, callback_data=strcid + "_verificarcarta_" + str(player.uid))])
+	
+	equipoMarkup = InlineKeyboardMarkup(btns)	
+	
+	if(game.is_debugging):
+		bot.send_message(ADMIN, game.board.print_board(game.player_sequence))
+		bot.send_message(ADMIN, 'Por favor elegi al miembro de la mision al que quieres ver su carta de misión!', reply_markup=equipoMarkup)
+	else:
+		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
+		bot.send_message(game.board.state.lider_actual.uid, 'Por favor elegi al miembro de la mision al que quieres ver su carta de misión!', reply_markup=equipoMarkup)
+
+def ver_carta_mision(bot, update):	
+	log.info('ver_carta_mision called')
+	log.info(update.callback_query.data)
+	callback = update.callback_query
+	regex = re.search("(-[0-9]*)_equipo_([0-9]*)", callback.data)
+	cid = int(regex.group(1))
+	chosen_uid = int(regex.group(2))
+
+	try:
+		game = GamesController.games.get(cid, None)		
+		turno_actual = len(game.board.state.resultado_misiones)		
+		#log.info(game.playerlist)
+		#log.info(str(chosen_uid) in game.playerlist )
+		#log.info(chosen_uid in game.playerlist)        
+		log.info(chosen_uid)
+		
+		miembro_investigador = game.playerlist[callback.from_user.id]
+		miembro_elegido = game.playerlist[chosen_uid]
+		
+		log.info("El miembro %s (%d) eligio la carta de %s (%d)" % (
+			miembro_investigador.name, miembro_investigador.uid,
+			miembro_elegido.name, miembro_elegido.uid))
+		
+		# Muestro el texto de la carta de mision elegida
+		voto_mision = game.board.state.votos_mision[chosen_uid]
+		
+		bot.edit_message_text("La carta de %s es: %s!" % (miembro_elegido.name, voto_mision),
+				callback.from_user.id, callback.message.message_id)
+		
+		bot.send_message(game.cid,
+			"El miembro %s investigo la carta de %s!" % (
+			miembro_investigador.name, miembro_elegido.name))
+		
+		# Aca deberia en el futuro ver si es algo de plot card o de trampero o otro modulo	
+		# Calculo que podre asignar como puntos de acciones a cada jugador y si se hacen todos sigo.
+		
+		
+		if "Trampero" in game.modulos:
+			# En Trampero se remueve el voto de mision que se ve
+			del game.board.state.votos_mision[chosen_uid]
+			count_mission_votes(bot, game)
 			
+	except AttributeError as e:
+		log.error("ver_carta_mision: Game or board should not be None! Eror: " + str(e))
+	except Exception as e:
+		log.error("Unknown error: " + repr(e))
+		log.exception(e)
 	
 ##
 #
@@ -782,6 +864,7 @@ def main():
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(Exito|Fracaso)", callback=handle_team_voting))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_modulo_(.*)", callback=incluir_modulo))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_asesinato_(.*)", callback=asesinar_miembro))
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_verificarcarta_(.*)", callback=ver_carta_mision))
 	
 	# log all errors
 	dp.add_error_handler(error)
