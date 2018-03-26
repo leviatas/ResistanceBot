@@ -462,20 +462,20 @@ def start_next_round(bot, game):
 	log.info('start_next_round called')
 	# start next round if there is no winner (or /cancel)
 	if game.board.state.game_endcode == 0:
-        # start new round
-        sleep(5)
-        
-	# Averiguo si algun jugador tiene la carta de Lider Fuerte (Modulo Trama) y le pregunto si quiere usarla
-	if "Trama" in game.modulos:
-		# Veo si algun jugador tiene intencion de usar carta de trama
-		# Si ya se pregunto, o el usuario ya dijo que no la usaria...
-		preguntar_intencion_uso_carta(bot, game, "Lider Fuerte 1-Uso", "liderfuerte")
-		return
-		
-	# if there is no special elected president in between
-        if game.board.state.lider_elegido is None:
-            increment_player_counter(game)
-        start_round(bot, game)
+		# start new round
+		sleep(5)
+
+		# Averiguo si algun jugador tiene la carta de Lider Fuerte (Modulo Trama) y le pregunto si quiere usarla
+		if "Trama" in game.modulos:
+			# Veo si algun jugador tiene intencion de usar carta de trama
+			# Si ya se pregunto, o el usuario ya dijo que no la usaria...
+			preguntar_intencion_uso_carta(bot, game, "Lider Fuerte 1-Uso", "liderfuerte")
+			return
+
+		# if there is no special elected president in between
+		if game.board.state.lider_elegido is None:
+			increment_player_counter(game)
+		start_round(bot, game)
 
 def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
 	strcid = str(game.cid)
