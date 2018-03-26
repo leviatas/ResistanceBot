@@ -251,6 +251,13 @@ def count_votes(bot, game):
 		bot.send_message(game.cid, "\nNo se puede hablar ahora.")
 		game.history.append(("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes + 1) ) + voting_text)
 		log.info(game.history[game.board.state.currentround])
+		
+		# Si se juega con plot cards se tiene que preguntar si algun jugador tiene la carta de Sin Confianza
+		if "Trama" in game.modulos:
+			# Veo si algun jugador tiene intencion de usar carta de trama
+			# Si ya se pregunto, o el usuario ya dijo que no la usaria...
+			preguntar_intencion_uso_carta(bot, game, "Sin confianza 1-Uso", "sinconfianza")
+			return		
 		# Se resetea los votos fallidos
 		game.board.state.failed_votes = 0
 		voting_aftermath(bot, game, voting_success)
@@ -271,6 +278,12 @@ def count_votes(bot, game):
 
 
 def voting_aftermath(bot, game, voting_success):
+	# Antes que reciban las cartas se puede jugar una carta que obliga a jugar boca arriba su carta de mision.	
+	if "Trama" in game.modulos:
+			# Veo si algun jugador tiene intencion de usar carta de trama
+			# Si ya se pregunto, o el usuario ya dijo que no la usaria...
+			preguntar_intencion_uso_carta(bot, game, "En El Punto De Mira 1-Uso", "enelpuntodemira")
+			return
 	log.info('voting_aftermath called')
 	game.board.state.last_votes = {}
 	strcid = str(game.cid)
@@ -315,6 +328,15 @@ def handle_team_voting(bot, update):
 		log.error(str(e))
 
 def count_mission_votes(bot, game):
+	# Antes de contar los votos, si hay cartas de trama,
+	# preguntamos si algun jugador con la carta vigilancia estrecha quiere ver una carta de mision.
+	# Importante no se puede ver la misma carta en una misma mision	
+	if "Trama" in game.modulos:
+		# Veo si algun jugador tiene intencion de usar carta de trama
+		# Si ya se pregunto, o el usuario ya dijo que no la usaria...
+		preguntar_intencion_uso_carta(bot, game, "Vigilancia Estrecha 1-Uso", "vigilanciaestrecha")
+		return
+	
 	turno_actual = len(game.board.state.resultado_misiones)
 	# La votacion ha finalizado.
 	game.dateinitvote = None
@@ -437,19 +459,34 @@ def asesinar_miembro(bot, update):
 		log.exception(e)
 
 def start_next_round(bot, game):
-    log.info('start_next_round called')
-    # start next round if there is no winner (or /cancel)
-    if game.board.state.game_endcode == 0:
+	log.info('start_next_round called')
+	# start next round if there is no winner (or /cancel)
+	if game.board.state.game_endcode == 0:
         # start new round
         sleep(5)
         
-	
+	# Averiguo si algun jugador tiene la carta de Lider Fuerte (Modulo Trama) y le pregunto si quiere usarla
+	if "Trama" in game.modulos:
+		# Veo si algun jugador tiene intencion de usar carta de trama
+		# Si ya se pregunto, o el usuario ya dijo que no la usaria...
+		preguntar_intencion_uso_carta(bot, game, "Lider Fuerte 1-Uso", "liderfuerte")
+		return
+		
 	# if there is no special elected president in between
         if game.board.state.lider_elegido is None:
             increment_player_counter(game)
         start_round(bot, game)
 
-
+def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
+	strcid = str(game.cid)
+	[InlineKeyboardButton(name, callback_data=strcid + ("_%s_" % (accion_carta))+ str(uid))]
+	btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
+	desicion = InlineKeyboardMarkup(btns)
+	for uid in game.playerlist:
+		if "Lider Fuerte 1-Uso" in game.playerlist[uid].cartas_trama:
+			bot.send_message(uid, "¿Queres usar la carta: %s? % nombre_carta", reply_markup=desicion)
+			
+	
 ##
 #
 # End of round
