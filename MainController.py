@@ -181,6 +181,7 @@ def vote(bot, game):
 	log.info('Vote called')
 	#When voting starts we start the counter to see later with the vote command if we can see you voted.
 	game.dateinitvote = datetime.datetime.now()
+	game.board.state.fase_actual = "votacion_del_equipo_de_mision"
 	strcid = str(game.cid)
 	btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
 	voteMarkup = InlineKeyboardMarkup(btns)
@@ -294,6 +295,9 @@ def voting_aftermath(bot, game, voting_success):
 	game.board.state.last_votes = {}
 	strcid = str(game.cid)
 	if voting_success:
+		# Pongo para usar el call to vote
+		game.dateinitvote = datetime.datetime.now()
+		game.board.state.fase_actual = "conducir_la_mision"
 		#Si es exitoso reparto las cartas para votar
 		btns_resistencia = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito")]]
 		voteMarkupResistencia = InlineKeyboardMarkup(btns_resistencia)
