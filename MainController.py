@@ -59,6 +59,7 @@ cur.execute(query)
 
 def start_round(bot, game):
 	# Comienzo de nuevo turno se resetea el equipo elegido
+	game.board.state.fase_actual = "comienzo_de_ronda"
 	game.board.state.equipo = []
 	game.board.state.equipo_contador = 0
 	game.board.state.votos_mision = {}	
