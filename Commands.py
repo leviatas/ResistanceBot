@@ -155,7 +155,7 @@ def command_newgame(bot, update):
 						bot.send_message(cid, "Hay una votación en progreso utiliza /calltovote para decirles a los otros jugadores. ")
 				else:
 					if game.board.state.fase_actual == "conducir_la_mision":
-						voting_aftermath(bot, game, True)
+						MainController.voting_aftermath(bot, game, True)
 					else:
 						MainController.start_round(bot, game)
 			else:
