@@ -333,6 +333,7 @@ def handle_team_voting(bot, update):
 		log.info(len(game.board.state.votos_mision))	
 		log.info(game.board.state.equipo_cantidad_mision)
 		if len(game.board.state.votos_mision) == game.board.state.equipo_cantidad_mision:
+			game.dateinitvote = None
 			if "Trampero" in game.modulos:
 				elegir_carta_mision(bot, game, "Trampero")
 			else:
