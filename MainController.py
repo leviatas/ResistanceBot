@@ -336,6 +336,7 @@ def handle_team_voting(bot, update):
 		if len(game.board.state.votos_mision) == game.board.state.equipo_cantidad_mision:
 			game.dateinitvote = None
 			if "Trampero" in game.modulos:
+				bot.send_message(game.cid, "El lider de la misión entonces decide aislar a un miembro para ver sus inteciones")
 				elegir_carta_mision(bot, game, "Trampero")
 			else:
 				count_mission_votes(bot, game)
