@@ -314,7 +314,7 @@ def command_calltovote(bot, update):
 				if elapsed > datetime.timedelta(minutes=1):
 					# Only remember to vote to players that are still in the game
 					history_text = ""
-					if hasattr(game.board.state, 'fase_actual') or game.board.state.fase_actual is "votacion_del_equipo_de_mision":
+					if game.board.state.fase_actual is "votacion_del_equipo_de_mision":
 						for player in game.player_sequence:
 							# If the player is not in last_votes send him reminder
 							if player.uid not in game.board.state.last_votes:
@@ -323,7 +323,7 @@ def command_calltovote(bot, update):
 						for player in game.board.state.equipo:
 							# If the player is not in last_votes send him reminder
 							if player.uid not in game.board.state.votos_mision:
-								history_text += "Es hora de votar [%s](tg://user?id=%d)!\n" % (game.playerlist[player.uid].name, player.uid)
+								history_text += "Debe votar la misión [%s](tg://user?id=%d)!\n" % (game.playerlist[player.uid].name, player.uid)
 						
 					bot.send_message(cid, text=history_text, parse_mode=ParseMode.MARKDOWN)
 				else:
