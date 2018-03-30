@@ -487,7 +487,7 @@ def asesinar_miembro(bot, update):
 			end_game(bot, game, -2)
 		else:
 			text_asesinato += "Los restantes miembros de la resistencia protegen a su lider. El imperio tiene los días contados."
-			bot.send_message(game.cid, text_asesinato)
+			bot.send_message(game.uid, text_asesinato)
 			end_game(bot, game, 1)
 	except AttributeError as e:
 		log.error("asesinar_miembro: Game or board should not be None! Eror: " + str(e))
