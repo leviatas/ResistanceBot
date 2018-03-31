@@ -94,3 +94,11 @@ class Game(object):
 				miembros_elegidos += "%s - " % (player.name)
 		miembros_elegidos = miembros_elegidos[:-3]
 		return miembros_elegidos
+	
+	def get_badguys2(self):
+		espias = []
+		for uid in self.playerlist:
+			if self.playerlist[uid].afiliacion == "Espia":
+				espias.append(self.playerlist[uid])
+		return espias
+	
