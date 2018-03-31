@@ -117,10 +117,27 @@ modules = {
         "roles": {
             "Espia": "Asesino",
             "Resistencia": "Comandante"
-        },
-        "rules": [
-            "Asesino"
-        ]
+        }
+    },
+    "Asesino Comandante Falso: {
+        "roles": {
+            "Espia": "Comandante Falso"
+        }
+    },
+    "Asesino Guardaespaldas: {
+        "roles": {
+            "Resistencia": "Guardaespaldas"
+        }
+    },
+    "Asesino Encubierto: {
+        "roles": {
+            "Espia": "Encubierto"
+        }
+    },
+    "Asesino Espia Ciego: {
+        "roles": {
+            "Espia": "Espia Ciego"
+        }
     },
     "Desertor": {
         "roles": {
