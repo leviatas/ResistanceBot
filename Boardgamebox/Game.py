@@ -105,7 +105,7 @@ class Game(object):
 	def get_comandante(self):
 		espias = []
 		for uid in self.playerlist:
-			if self.playerlist[uid].rol == "Comandante" or self.playerlist[uid].rol == "Comandante Falso": 
+			if self.playerlist[uid].rol in ("Comandante", "Comandante Falso"): 
 				espias.append(self.playerlist[uid])
 		return espias
 	
