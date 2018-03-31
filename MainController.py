@@ -771,7 +771,7 @@ def inform_badguys(bot, game, player_number):
 					bot.send_message(uid, "Tus compañeros espías son: %s" % fstring)
 		elif afiliacion == "Resistencia":
 			if rol == "Comandante":
-				badguys = game.get_badguys()
+				badguys = game.get_badguys2()
 				fstring = ""
 				for f in badguys:
 					fstring += f.name + ", "
@@ -780,6 +780,16 @@ def inform_badguys(bot, game, player_number):
 					bot.send_message(uid, "Los espías son: %s" % fstring)
 				else:
 					bot.send_message(ADMIN, "Comandante: Los espías son: %s" % fstring)
+			if rol == "Guardaespaldas":	
+				badguys = game.get_comandantes()
+				fstring = ""
+				for f in badguys:
+					fstring += f.name + ", "
+				fstring = fstring[:-2]
+				if not game.is_debugging:
+					bot.send_message(uid, "El/los comandante/s es/son: %s" % fstring)
+				else:
+					bot.send_message(ADMIN, "Comandante: Los espías son: %s" % fstring)	
 			pass
 		else:
 			log.error("inform_badguys: no se que hacer con la afiliacion: %s" % afiliacion)
