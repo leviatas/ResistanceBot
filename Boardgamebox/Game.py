@@ -102,7 +102,7 @@ class Game(object):
 				espias.append(self.playerlist[uid])
 		return espias
 	
-	def get_comandante(self):
+	def get_comandantes(self):
 		espias = []
 		for uid in self.playerlist:
 			if self.playerlist[uid].rol in ("Comandante", "Comandante Falso"): 
