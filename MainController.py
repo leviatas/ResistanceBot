@@ -759,7 +759,7 @@ def inform_badguys(bot, game, player_number):
 		rol = game.playerlist[uid].rol
 		
 		
-		if afiliacion == "Espia" and rol not "Espia Ciego":			
+		if afiliacion == "Espia" and not (rol == "Espia Ciego"):			
 			if player_number > 4:
 				badguys = game.get_badguys()
 				fstring = ""
