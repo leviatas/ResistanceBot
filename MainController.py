@@ -207,9 +207,13 @@ def handle_voting(bot, update):
 	strcid = regex.group(1)
 	try:
 		game = GamesController.games[cid]
-		log.info(game.board.state.failed_votes)
-		log.info("Paso")
+		
 		uid = callback.from_user.id
+		
+		if not game.board.state.fase_actual == "votacion_del_equipo_de_mision":
+			bot.edit_message_text("No es el momento de votar!", uid, callback.message.message_id)
+			return
+		
 		bot.edit_message_text("Gracias por tu voto %s al equipo:\n%s" % (answer, game.get_equipo_actual_flat(False)), uid, callback.message.message_id)
 		log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
 
