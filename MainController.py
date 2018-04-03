@@ -611,7 +611,7 @@ def ver_carta_mision(bot, update):
 			"El miembro %s investigo la carta de %s!" % (
 			miembro_investigador.name, miembro_elegido.name))
 		
-		if game.board.state.fase_actual == "carta_mision_trampero"
+		if game.board.state.fase_actual == "carta_mision_trampero":
 			# En Trampero se remueve el voto de mision que se ve.
 			del game.board.state.votos_mision[chosen_uid]
 		count_mission_votes(bot, game)
