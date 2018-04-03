@@ -62,7 +62,13 @@ def start_round(bot, game):
 	game.board.state.fase_actual = "comienzo_de_ronda"
 	game.board.state.equipo = []
 	game.board.state.equipo_contador = 0
-	game.board.state.votos_mision = {}	
+	game.board.state.votos_mision = {}
+	
+	# Variables de Trama	
+	if "Trama" in game.modulos:
+		game.board.state.miembroenelpuntodemira = None
+		game.board.state.enesperadeaccion = {}
+	
 	Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround + 1), game)
 	log.info('start_round called')
 		
@@ -75,13 +81,20 @@ def start_round(bot, game):
 	else:
 		game.board.state.lider_actual = game.board.state.lider_elegido
 		game.board.state.lider_elegido = None
-	msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
-	bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
+		
+	# Si esta el modulo de Trama se reparten cartas de Trama 
+	if "Trama" in game.modulos:
+		# Solo el primer lider de cada ronda (el juego tiene solo 5) reparte cartas.
+		if game.board.state.failed_votes == 0:
+			repartir_cartas_trama(bot, game)					
+		
 	asignar_equipo(bot, game)
 	# --> nominate_chosen_chancellor --> vote --> handle_voting --> count_votes --> voting_aftermath --> draw_policies
 	# --> choose_policy --> pass_two_policies --> choose_policy --> enact_policy --> start_round
 
 def asignar_equipo(bot, game):
+	msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
+	bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
 	turno_actual = len(game.board.state.resultado_misiones)
 	log.info('asignar_equipo called')
 	strcid = str(game.cid)
@@ -117,7 +130,11 @@ def asignar_equipo(bot, game):
 		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
 		bot.send_message(game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
 
-
+def repartir_cartas_trama(bot, game):
+	log.info('repartir_cartas_trama called')
+	#game.board.state.lider_actual
+	
+	
 def asignar_miembro(bot, update):
 	
 	log.info('asignar_miembro called')
@@ -268,8 +285,9 @@ def count_votes(bot, game):
 		if "Trama" in game.modulos:
 			# Veo si algun jugador tiene intencion de usar carta de trama
 			# Si ya se pregunto, o el usuario ya dijo que no la usaria...
-			preguntar_intencion_uso_carta(bot, game, "Sin confianza 1-Uso", "sinconfianza")
-			return		
+			# Averiguo si algun jugador tiene carta para jugar primero antes de interrumpir.			
+			if preguntar_intencion_uso_carta(bot, game, "Sin confianza 1-Uso", "sinconfianza"):			
+				return		
 		# Se resetea los votos fallidos
 		game.board.state.failed_votes = 0
 		voting_aftermath(bot, game, voting_success)
@@ -277,47 +295,64 @@ def count_votes(bot, game):
 		log.info("Voting failed")
 		voting_text += "\nA la resistencia no le gusto el equipo de %s compuesto por:\n%s" % (
 			game.board.state.lider_actual.name, game.get_equipo_actual(False))		
-		game.board.state.failed_votes += 1
 		bot.send_message(game.cid, voting_text)
-		game.history.append(("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes) ) + voting_text)
-		log.info(game.history[game.board.state.currentround])
-		if game.board.state.failed_votes == 5:
+		game.history.append(("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes) ) + voting_text)		
+		votacion_fallida(bot, game)
+		
+def votacion_fallida(bot, game):
+	game.board.state.failed_votes += 1
+	if game.board.state.failed_votes == 5:
 			game.board.state.resultado_misiones.append("Fracaso")
 			game.history.append("La mision ha sido un fracaso debido a no decidirse!\n\n")
 			bot.send_message(game.cid, "La mision ha sido un fracaso debido a no decidirse!")
 		else:
-			voting_aftermath(bot, game, voting_success)
-
-
-def voting_aftermath(bot, game, voting_success):
-	# Antes que reciban las cartas se puede jugar una carta que obliga a jugar boca arriba su carta de mision.	
-	if "Trama" in game.modulos:
-			# Veo si algun jugador tiene intencion de usar carta de trama
-			# Si ya se pregunto, o el usuario ya dijo que no la usaria...
-			preguntar_intencion_uso_carta(bot, game, "En El Punto De Mira 1-Uso", "enelpuntodemira")
-			return
+			voting_aftermath(bot, game, False)
+			
+def voting_aftermath(bot, game, voting_success):	
 	log.info('voting_aftermath called')
 	game.board.state.last_votes = {}
 	strcid = str(game.cid)
 	if voting_success:
-		# Pongo para usar el call to vote
-		game.dateinitvote = datetime.datetime.now()
-		game.board.state.fase_actual = "conducir_la_mision"
-		#Si es exitoso reparto las cartas para votar
-		btns_resistencia = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito")]]
-		voteMarkupResistencia = InlineKeyboardMarkup(btns_resistencia)
-		btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
-		voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
-		for player in game.board.state.equipo:
-			log.info(player.uid)
-			if player.afiliacion == "Resistencia":
-				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
-			else:
-				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)				
+		# Antes que reciban las cartas se puede jugar una carta que obliga a jugar boca arriba su carta de mision.	
+		if "Trama" in game.modulos:
+			# Veo si algun jugador tiene intencion de usar carta de trama
+			# Si ya se pregunto, o el usuario ya dijo que no la usaria...
+			if preguntar_intencion_uso_carta(bot, game, "En El Punto De Mira 1-Uso", "enelpuntodemira"):
+				return
+		inicio_votacion_equipo(bot, game)						
 	else:		
 		bot.send_message(game.cid, game.board.print_board(game.player_sequence))
 		start_next_round(bot, game)
+		
+def inicio_votacion_equipo(bot, game):
+	# Pongo para usar el call to vote
+	log.info('inicio_votacion_equipo called')
+	game.dateinitvote = datetime.datetime.now()
+	game.board.state.fase_actual = "conducir_la_mision"
 	
+	#Si es exitoso reparto las cartas para votar
+	btns_resistencia = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito")]]
+	voteMarkupResistencia = InlineKeyboardMarkup(btns_resistencia)
+
+	btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
+	voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
+	
+	for player in game.board.state.equipo:
+		if player.uid != game.board.state.miembroenelpuntodemira
+			enviar_votacion_equipo(player.uid)
+
+def enviar_votacion_equipo(uid):
+	btns_resistencia = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito")]]
+	voteMarkupResistencia = InlineKeyboardMarkup(btns_resistencia)
+
+	btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
+	voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
+		
+	if player.afiliacion == "Resistencia":
+		bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
+	else:
+		bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
+		
 def handle_team_voting(bot, update):
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
@@ -334,30 +369,34 @@ def handle_team_voting(bot, update):
 		#if uid not in game.board.state.last_votes:
 		game.board.state.votos_mision[uid] = answer
 		
+		# Si hay alguien en el punto de mira...
+		# y es el jugador que recien voto...
+		if game.board.state.miembroenelpuntodemira is not None:
+			if uid == game.board.state.miembroenelpuntodemira:
+				inicio_votacion_equipo(bot, game)
+				
+		
 		#Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
-		log.info(len(game.board.state.votos_mision))	
-		log.info(game.board.state.equipo_cantidad_mision)
+		#log.info(len(game.board.state.votos_mision))	
+		#log.info(game.board.state.equipo_cantidad_mision)
 		if len(game.board.state.votos_mision) == game.board.state.equipo_cantidad_mision:
 			game.dateinitvote = None
 			if "Trampero" in game.modulos:
+				game.board.state.fase_actual = "carta_mision_trampero"
 				bot.send_message(game.cid, "El lider de la misión entonces decide aislar a un miembro para ver sus inteciones")
-				elegir_carta_mision(bot, game, "Trampero")
+				elegir_carta_mision(bot, game)
 			else:
+				# Antes de contar los votos, si hay cartas de trama,
+				# preguntamos si algun jugador con la carta vigilancia estrecha quiere ver una carta de mision.
+				# Importante no se puede ver la misma carta en una misma mision	
+				if "Trama" in game.modulos:
+					if preguntar_intencion_uso_carta(bot, game, "Vigilancia Estrecha 1-Uso", "vigilanciaestrecha"):
+						return				
 				count_mission_votes(bot, game)
 	except Exception as e:
 		log.error(str(e))
 
 def count_mission_votes(bot, game):
-	# Antes de contar los votos, si hay cartas de trama,
-	# preguntamos si algun jugador con la carta vigilancia estrecha quiere ver una carta de mision.
-	# Importante no se puede ver la misma carta en una misma mision	
-	if "Trama" in game.modulos:
-		# Veo si algun jugador tiene intencion de usar carta de trama
-		# Si ya se pregunto, o el usuario ya dijo que no la usaria...
-		preguntar_intencion_uso_carta(bot, game, "Vigilancia Estrecha 1-Uso", "vigilanciaestrecha")
-		return
-	
-	
 	turno_actual = len(game.board.state.resultado_misiones)
 	# La votacion ha finalizado.
 	game.dateinitvote = None
@@ -434,10 +473,9 @@ def start_next_round(bot, game):
 		# Averiguo si algun jugador tiene la carta de Lider Fuerte (Modulo Trama) y le pregunto si quiere usarla
 		if "Trama" in game.modulos:
 			# Veo si algun jugador tiene intencion de usar carta de trama
-			# Si ya se pregunto, o el usuario ya dijo que no la usaria...
-			preguntar_intencion_uso_carta(bot, game, "Lider Fuerte 1-Uso", "liderfuerte")
-			return
-
+			# Si ya se pregunto, o el usuario ya dijo que no la usaria...			
+			if preguntar_intencion_uso_carta(bot, game, "Lider Fuerte 1-Uso", "liderfuerte"):
+				return
 		# if there is no special elected president in between
 		if game.board.state.lider_elegido is None:
 			increment_player_counter(game)
@@ -500,30 +538,36 @@ def asesinar_miembro(bot, update):
 		log.exception(e)
 
 # Modulo Trama
-
 def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
+	result = False
+	game.board.state.fase_actual = "plot_ " + nombre_carta"
+	
+	bot.send_message(game.cid, "Los jugadores con la carta %s deben decidir si la usan recuerden que si muchos quieren usarla hay prioridad al más cercano al lider actual" % (nombre_carta))
+	
 	strcid = str(game.cid)
-	[InlineKeyboardButton(name, callback_data=strcid + ("_%s_" % (accion_carta))+ str(uid))]
-	btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
+	btns = [[InlineKeyboardButton("Si", callback_data=strcid + ("_%s_" % (accion_carta)) + "Si"), 
+		 InlineKeyboardButton("No", callback_data=strcid + ("_%s_" % (accion_carta)) + "No")]]
 	desicion = InlineKeyboardMarkup(btns)
 	for uid in game.playerlist:
-		if "Lider Fuerte 1-Uso" in game.playerlist[uid].cartas_trama:
-			bot.send_message(uid, "¿Queres usar la carta: %s? % nombre_carta", reply_markup=desicion)
+		if nombre_carta in game.playerlist[uid].cartas_trama:
+			game.board.state.enesperadeaccion[uid] = nombre_carta
+			bot.send_message(uid, "¿Queres usar la carta: %s?" % (nombre_carta), reply_markup=desicion)
+			result = True
+	return result
 
 # Modulo Trampero
-# Modulo Trama Motivo es para ver cual de los dos modulos esta usando el comando.
-def elegir_carta_mision(bot, game, motivo):
+# Modulo Trama
+def elegir_carta_mision(bot, game):
 	turno_actual = len(game.board.state.resultado_misiones)
 	log.info('elegir_carta_mision called')
 	strcid = str(game.cid)	
 	btns = []
 	
-	# Inicialmente se puede elegir a cualquiera para formar los equipos
-	# Menos los que esten en el equipo elegido
+	# Inicialmente se puede elegir a cualquiera para ver la carta de mision, a menos que este excluido
 	for player in game.board.state.equipo:		
 		btns.append([InlineKeyboardButton(player.name, callback_data=strcid + "_verificarcarta_" + str(player.uid))])
 	
-	equipoMarkup = InlineKeyboardMarkup(btns)	
+	equipoMarkup = InlineKeyboardMarkup(btns)
 	
 	if(game.is_debugging):
 		bot.send_message(ADMIN, game.board.print_board(game.player_sequence))
@@ -532,6 +576,8 @@ def elegir_carta_mision(bot, game, motivo):
 		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
 		bot.send_message(game.board.state.lider_actual.uid, 'Por favor elegi al miembro de la mision al que quieres ver su carta de misión!', reply_markup=equipoMarkup)
 
+
+		
 def ver_carta_mision(bot, update):	
 	log.info('ver_carta_mision called')
 	log.info(update.callback_query.data)
@@ -565,14 +611,10 @@ def ver_carta_mision(bot, update):
 			"El miembro %s investigo la carta de %s!" % (
 			miembro_investigador.name, miembro_elegido.name))
 		
-		# Aca deberia en el futuro ver si es algo de plot card o de trampero o otro modulo	
-		# Calculo que podre asignar como puntos de acciones a cada jugador y si se hacen todos sigo.
-		
-		
-		if "Trampero" in game.modulos:
-			# En Trampero se remueve el voto de mision que se ve
+		if game.board.state.fase_actual == "carta_mision_trampero"
+			# En Trampero se remueve el voto de mision que se ve.
 			del game.board.state.votos_mision[chosen_uid]
-			count_mission_votes(bot, game)
+		count_mission_votes(bot, game)
 			
 	except AttributeError as e:
 		log.error("ver_carta_mision: Game or board should not be None! Eror: " + str(e))
@@ -733,7 +775,7 @@ def set_roles(bot, game, lista_a_modificar):
 					if indice == -1:
 						bot.send_message(ADMIN, "Se quiso agregar un afiliacion (%s) y rol (%s), cuando no hay afiliaciones disponibles" % (afiliacion, rol))	
 					else:
-						bot.send_message(ADMIN, indice)
+						#bot.send_message(ADMIN, indice)
 						lista_a_modificar[indice] = rol
 
 					#bot.send_message(ADMIN, indice)
@@ -824,6 +866,205 @@ def error(bot, update, error):
     #bot.send_message(387393551, 'Update "%s" caused error "%s"' % (update, error) ) 
     logger.warning('Update "%s" caused error "%s"' % (update, error))
 
+def carta_plot_sinconfianza(bot, update):	
+	callback = update.callback_query
+	log.info('handle_voting called: %s' % callback.data)
+	regex = re.search("(-[0-9]*)_sinconfianza_(Si|No)", callback.data)
+	cid = int(regex.group(1))
+	strcid = regex.group(1)
+	
+	answer = regex.group(2)
+	try:
+		game = GamesController.games[cid]		
+		uid = callback.from_user.id
+		nombre_carta = 'Sin confianza 1-Uso'
+		fase = "plot_" + nombre_carta
+		
+		if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
+			bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
+			return
+		if answer == "Si":
+			# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en lider fuerte
+			log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+			bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))
+			bot.send_message(cid, "La votacion exitosa se convierte en fallo")
+			game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
+			game.playerlist[uid].cartas_trama.remove(nombre_carta)
+			game.board.state.enesperadeaccion = {}
+			votacion_fallida(bot, game)
+		else:			
+			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+			bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))			
+			# Quito la intencion del usuario
+			game.board.state.enesperadeaccion.pop(uid, None)
+			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
+			# Empty dict bool as false, o sea que si esta vacia continuo.
+			if not game.board.state.enesperadeaccion:
+				game.board.state.failed_votes = 0
+				voting_aftermath(bot, game, True)			
+				
+	except Exception as e:
+		log.error(str(e))
+
+def carta_plot_enelpuntodemira(bot, update):	
+	callback = update.callback_query
+	log.info('handle_voting called: %s' % callback.data)
+	regex = re.search("(-[0-9]*)_enelpuntodemira_(Si|No)", callback.data)
+	cid = int(regex.group(1))
+	strcid = regex.group(1)
+	
+	answer = regex.group(2)
+	try:
+		game = GamesController.games[cid]		
+		uid = callback.from_user.id
+		
+		nombre_carta = 'En El Punto De Mira 1-Uso'
+		fase = "plot_" + nombre_carta
+		
+		if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
+			bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
+			return
+		
+		if answer == "Si":
+			# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
+			log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+			bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))	
+			game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
+			game.playerlist[uid].cartas_trama.remove('En El Punto De Mira 1-Uso')
+			elegir_miembro_carta_plot_enelpuntodemira(bot, game, uid)
+		else:
+			# En este caso no se pregunta a otros jugadores ya que hay solo 1 carta de estas,
+			# aunque se podria poner como base que siempre se pregunte...
+			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+			bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))
+			# Quito la intencion del usuario
+			game.board.state.enesperadeaccion.pop(uid, None)
+			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
+			if not game.board.state.enesperadeaccion:
+				inicio_votacion_equipo(bot, game)
+			
+	except Exception as e:
+		log.error(str(e))
+		
+def elegir_miembro_carta_plot_enelpuntodemira(bot, game, uid):	
+	callback = update.callback_query
+	log.info('elegir_miembro_carta_plot_enelpuntodemira called: %s' % callback.data)	
+	try:		
+		btns = []	
+		# Doy opcion de elegir cualquier miembro el cual debera poner su carta de mision adelantada
+		for player in game.board.state.equipo:		
+			btns.append([InlineKeyboardButton(player.name, callback_data=strcid + "_forzarvotomision_" + str(player.uid))])
+
+		equipoMarkup = InlineKeyboardMarkup(btns)	
+
+		if(game.is_debugging):
+			bot.send_message(ADMIN, game.board.print_board(game.player_sequence))
+			bot.send_message(ADMIN, 'Por favor elegi al miembro de la mision al que quieres forzar a jugar su carta de mision por adelantado!', reply_markup=equipoMarkup)
+		else:
+			bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
+			bot.send_message(game.board.state.lider_actual.uid, 'Por favor elegi al miembro de la mision al que quieres forzar a jugar su carta de mision por adelantado!', reply_markup=equipoMarkup)
+			
+	except Exception as e:
+		log.error(str(e))
+
+def forzar_jugar_carta_mision_adelantada(bot, update):
+	log.info('forzar_jugar_carta_mision_adelantada called')
+	log.info(update.callback_query.data)
+	callback = update.callback_query
+	regex = re.search("(-[0-9]*)_forzarvotomision_([0-9]*)", callback.data)
+	cid = int(regex.group(1))
+	chosen_uid = int(regex.group(2))
+	
+	try:
+		# Se envia al jugar la opcion de votar normal.
+		# La diferencia es que esta se muestra el resultado y hace que el resto siga votando
+		game.board.state.miembroenelpuntodemira = chosen_uid
+		enviar_votacion_equipo(chosen_uid)		
+	except AttributeError as e:
+		log.error("forzar_jugar_carta_mision_adelantada: Game or board should not be None! Eror: " + str(e))
+	except Exception as e:
+		log.error("Unknown error: " + repr(e))
+		log.exception(e)
+	
+		
+def carta_plot_vigilanciaestrecha(bot, update):	
+	callback = update.callback_query
+	log.info('handle_voting called: %s' % callback.data)
+	regex = re.search("(-[0-9]*)_vigilanciaestrecha_(Si|No)", callback.data)
+	cid = int(regex.group(1))
+	strcid = regex.group(1)
+	
+	answer = regex.group(2)
+	carta = "Vigilancia Estrecha"
+	try:
+		game = GamesController.games[cid]		
+		uid = callback.from_user.id
+		
+		nombre_carta = 'Vigilancia Estrecha 1-Uso'
+		fase = "plot_" + nombre_carta
+		
+		if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
+			bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
+			return
+				
+		if answer == "Si":
+			# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
+			log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+			bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))
+			game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
+			game.playerlist[uid].cartas_trama.remove(nombre_carta)
+			elegir_carta_mision(bot, game)
+		else:
+			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+			bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))
+			# Quito la intencion del usuario
+			game.board.state.enesperadeaccion.pop(uid, None)
+			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
+			if not game.board.state.enesperadeaccion:
+				count_mission_votes(bot, game)
+			
+	except Exception as e:
+		log.error(str(e))
+
+def carta_plot_liderfuerte(bot, update):	
+	callback = update.callback_query
+	log.info('handle_voting called: %s' % callback.data)
+	regex = re.search("(-[0-9]*)_liderfuerte_(Si|No)", callback.data)
+	cid = int(regex.group(1))
+	strcid = regex.group(1)
+	
+	answer = regex.group(2)
+	try:
+		game = GamesController.games[cid]		
+		uid = callback.from_user.id
+		
+		nombre_carta = 'Lider Fuerte 1-Uso'
+		fase = "plot_" + nombre_carta
+		
+		if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
+			bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
+			return
+				
+		if answer == "Si":
+			# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
+			log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+			bot.send_message(cid, "Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
+			game.board.state.lider_elegido = game.playerlist[uid]
+			game.playerlist[uid].cartas_trama.remove('Lider Fuerte 1-Uso')
+			game.board.state.enesperadeaccion = {}
+			start_round(bot, game)
+		else:
+			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+			bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))
+			# Quito la intencion del usuario
+			game.board.state.enesperadeaccion.pop(uid, None)
+			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
+			if not game.board.state.enesperadeaccion:
+				start_round(bot, game)
+			
+	except Exception as e:
+		log.error(str(e))
+		
 def main():
 	GamesController.init() #Call only once
 	#initialize_testdata()
@@ -890,6 +1131,14 @@ def main():
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_modulo_(.*)", callback=incluir_modulo))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_asesinato_(.*)", callback=asesinar_miembro))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_verificarcarta_(.*)", callback=ver_carta_mision))
+	
+	# Comandos de cartas de trama
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_sinconfianza_(Si|No)", callback=carta_plot_sinconfianza))
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_enelpuntodemira_(Si|No)", callback=carta_plot_enelpuntodemira))
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_forzarvotomision_(.*)", callback=forzar_jugar_carta_mision_adelantada))	
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_vigilanciaestrecha_(Si|No)", callback=carta_plot_vigilanciaestrecha))
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_liderfuerte_(Si|No)", callback=carta_plot_liderfuerte))
+	
 	
 	# log all errors
 	dp.add_error_handler(error)
