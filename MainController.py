@@ -384,29 +384,24 @@ def inicio_votacion_equipo(bot, game):
 	log.info('inicio_votacion_equipo called')
 	game.dateinitvote = datetime.datetime.now()
 	game.board.state.fase_actual = "conducir_la_mision"
+	
+	if "Trama" in game.modulos:
+		for player in game.board.state.equipo:
+			if player.uid != game.board.state.miembroenelpuntodemira:
+				enviar_votacion_equipo(bot, game, player)		
+	else:
+		for player in game.board.state.equipo:
+			enviar_votacion_equipo(bot, game, player)
+
+def enviar_votacion_equipo(bot, game, player):
 	strcid = str(game.cid)
-	#Si es exitoso reparto las cartas para votar
+	
 	btns_resistencia = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito")]]
 	voteMarkupResistencia = InlineKeyboardMarkup(btns_resistencia)
 
 	btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
 	voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
 	
-	if "Trama" in game.modulos:
-		for player in game.board.state.equipo:
-			if player.uid != game.board.state.miembroenelpuntodemira:
-				enviar_votacion_equipo(player.uid, strcid)		
-	else:
-		for player in game.board.state.equipo:
-			enviar_votacion_equipo(player.uid, strcid)
-
-def enviar_votacion_equipo(uid, strcid):
-	btns_resistencia = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito")]]
-	voteMarkupResistencia = InlineKeyboardMarkup(btns_resistencia)
-
-	btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
-	voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
-		
 	if player.afiliacion == "Resistencia":
 		bot.send_message(uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
 	else:
@@ -1038,9 +1033,12 @@ def forzar_jugar_carta_mision_adelantada(bot, update):
 	
 	try:
 		# Se envia al jugar la opcion de votar normal.
-		# La diferencia es que esta se muestra el resultado y hace que el resto siga votando
+		# La diferencia es que esta se muestra el resultado y hace que el resto siga votando		
+		game = GamesController.games[cid]
+		player = game.playerlist[uid]		
 		game.board.state.miembroenelpuntodemira = chosen_uid
-		enviar_votacion_equipo(chosen_uid, strcid)		
+		
+		enviar_votacion_equipo(bot, game, player)
 	except AttributeError as e:
 		log.error("forzar_jugar_carta_mision_adelantada: Game or board should not be None! Eror: " + str(e))
 	except Exception as e:
