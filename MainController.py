@@ -92,9 +92,69 @@ def start_round(bot, game):
 	# --> nominate_chosen_chancellor --> vote --> handle_voting --> count_votes --> voting_aftermath --> draw_policies
 	# --> choose_policy --> pass_two_policies --> choose_policy --> enact_policy --> start_round
 
+def repartir_cartas_trama(bot, game):
+	log.info('repartir_cartas_trama called')
+	#game.board.state.lider_actual
+	cantidad_sacar = 0	
+	if game.board.num_players == 5 or game.board.num_players == 6:
+		cantidad_sacar = 1
+	elif game.board.num_players == 7 or game.board.num_players == 8:
+		cantidad_sacar = 2
+	elif game.board.num_players == 9 or game.board.num_players == 10:
+		cantidad_sacar = 3		
+	for i in range(cantidad_sacar):
+                game.board.state.cartas_trama_obtenidas.append(game.board.cartastrama.pop(0))
+
+def elegir_carta_de_trama_a_repartir(bot, game):
+	btns = []	
+	for carta in game.board.state.cartas_trama_obtenidas:
+		btns.append([InlineKeyboardButton(carta, callback_data=strcid + "_elegircartatrama_" + carta)])		
+	cartasMarkup = InlineKeyboardMarkup(btns)
+	
+	if(game.is_debugging):
+		bot.send_message(ADMIN, game.board.print_board(game.player_sequence))
+		bot.send_message(ADMIN, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
+	else:
+		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
+		bot.send_message(game.board.state.lider_actual.uid, 'Elige la primera carta a repartir!', reply_markup=cartasMarkup)
+		
+def elegir_jugador_para_dar_carta_de_trama(bot, game):
+	callback = update.callback_query
+	log.info('handle_voting called: %s' % callback.data)
+	regex = re.search("(-[0-9]*)_(.*)", callback.data)
+	cid = int(regex.group(1))
+	answer = regex.group(2)
+	strcid = regex.group(1)
+	try:
+		game = GamesController.games[cid]
+		uid = callback.from_user.id
+				
+		if not game.board.state.fase_actual == "votacion_del_equipo_de_mision":
+			bot.edit_message_text("No es el momento de votar!", uid, callback.message.message_id)
+			return
+
+		bot.edit_message_text("Gracias por tu voto %s al equipo:\n%s" % (answer, game.get_equipo_actual_flat(False)), uid, callback.message.message_id)
+		log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
+
+		#if uid not in game.board.state.last_votes:
+		game.board.state.last_votes[uid] = answer
+
+		#Allow player to change his vote
+		btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
+		voteMarkup = InlineKeyboardMarkup(btns)
+		bot.send_message(uid, "Puedes cambiar tu voto aquí.\n%s" % (game.board.state.mensaje_votacion), reply_markup=voteMarkup)
+		Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
+		if len(game.board.state.last_votes) == len(game.player_sequence):
+			count_votes(bot, game)
+	except Exception as e:
+		log.error(str(e))
+
+	
 def asignar_equipo(bot, game):
-	msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
-	bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
+	if game.board.state.equipo_contador == 0:
+		msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
+		bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
+	
 	turno_actual = len(game.board.state.resultado_misiones)
 	log.info('asignar_equipo called')
 	strcid = str(game.cid)
@@ -130,10 +190,6 @@ def asignar_equipo(bot, game):
 		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
 		bot.send_message(game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
 
-def repartir_cartas_trama(bot, game):
-	log.info('repartir_cartas_trama called')
-	#game.board.state.lider_actual
-	
 	
 def asignar_miembro(bot, update):
 	
@@ -337,8 +393,12 @@ def inicio_votacion_equipo(bot, game):
 	btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
 	voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
 	
-	for player in game.board.state.equipo:
-		if player.uid != game.board.state.miembroenelpuntodemira:
+	if "Trama" in game.modulos:
+		for player in game.board.state.equipo:
+			if player.uid != game.board.state.miembroenelpuntodemira:
+				enviar_votacion_equipo(player.uid)		
+	else:
+		for player in game.board.state.equipo:
 			enviar_votacion_equipo(player.uid)
 
 def enviar_votacion_equipo(uid):
@@ -1133,6 +1193,7 @@ def main():
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_verificarcarta_(.*)", callback=ver_carta_mision))
 	
 	# Comandos de cartas de trama
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_elegircartatrama_(.*)", callback=elegir_jugador_para_dar_carta_de_trama))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_sinconfianza_(Si|No)", callback=carta_plot_sinconfianza))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_enelpuntodemira_(Si|No)", callback=carta_plot_enelpuntodemira))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_forzarvotomision_(.*)", callback=forzar_jugar_carta_mision_adelantada))	
