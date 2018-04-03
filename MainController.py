@@ -160,9 +160,7 @@ def dar_carta_trama(bot, game):
 		miembro_elegido = game.playerlist[chosen_uid]		
 		carta = game.board.state.carta_actual
 		
-		log.info("El lider %s (%d) le dio la carta %s a %s (%d)" % (
-			game.board.state.lider_actual.name, game.board.state.lider_actual.uid, carta
-			miembro_elegido.name, miembro_elegido.uid))
+		log.info("El lider %s (%d) le dio la carta %s a %s (%d)" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, carta, miembro_elegido.name, miembro_elegido.uid))
 		bot.edit_message_text("Tú elegiste a %s para la carta %s!" % (miembro_elegido.name, carta),
 				callback.from_user.id, callback.message.message_id)
 		
