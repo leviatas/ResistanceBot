@@ -25,6 +25,12 @@ class State(object):
         # Fase Actual
         self.fase_actual = None
         
+        # Variables de modulo de trama
+        self.miembroenelpuntodemira = None
+        self.enesperadeaccion = {}
+        self.cartas_trama = []
+        self.cartas_trama_obtenidas = []
+        
         self.chancellor = None
         self.dead = 0
         self.last_votes = {}
