@@ -425,11 +425,11 @@ def handle_team_voting(bot, update):
 		
 		# Si hay alguien en el punto de mira...
 		# y es el jugador que recien voto...
-		if game.board.state.miembroenelpuntodemira is not None:
-			if uid == game.board.state.miembroenelpuntodemira:
-				inicio_votacion_equipo(bot, game)
-				
-		
+		if "Trama" in game.modulos:
+			if game.board.state.miembroenelpuntodemira is not None:
+				if uid == game.board.state.miembroenelpuntodemira:
+					inicio_votacion_equipo(bot, game)
+					
 		#Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
 		#log.info(len(game.board.state.votos_mision))	
 		#log.info(game.board.state.equipo_cantidad_mision)
