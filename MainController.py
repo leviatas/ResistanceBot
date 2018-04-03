@@ -302,11 +302,11 @@ def count_votes(bot, game):
 def votacion_fallida(bot, game):
 	game.board.state.failed_votes += 1
 	if game.board.state.failed_votes == 5:
-			game.board.state.resultado_misiones.append("Fracaso")
-			game.history.append("La mision ha sido un fracaso debido a no decidirse!\n\n")
-			bot.send_message(game.cid, "La mision ha sido un fracaso debido a no decidirse!")
-		else:
-			voting_aftermath(bot, game, False)
+		game.board.state.resultado_misiones.append("Fracaso")
+		game.history.append("La mision ha sido un fracaso debido a no decidirse!\n\n")
+		bot.send_message(game.cid, "La mision ha sido un fracaso debido a no decidirse!")
+	else:
+		voting_aftermath(bot, game, False)
 			
 def voting_aftermath(bot, game, voting_success):	
 	log.info('voting_aftermath called')
