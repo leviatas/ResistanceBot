@@ -338,7 +338,7 @@ def inicio_votacion_equipo(bot, game):
 	voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
 	
 	for player in game.board.state.equipo:
-		if player.uid != game.board.state.miembroenelpuntodemira
+		if player.uid != game.board.state.miembroenelpuntodemira:
 			enviar_votacion_equipo(player.uid)
 
 def enviar_votacion_equipo(uid):
