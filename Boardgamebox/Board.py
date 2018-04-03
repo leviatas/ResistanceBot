@@ -8,7 +8,13 @@ class Board(object):
         self.num_players = playercount
         self.misiones = playerSets[self.num_players]["misiones"]
         
-        #self.plotcards = random.sample(playerSets[self.num_players]["plot"], len(playerSets[self.num_players]["plot"]))
+        # Si hay cartas de trama las incluyo
+        if "Trama" in game.modulos:
+            tempdeck = playerSets["modules"]["Trama"]["plot"][5]
+            if self.num_players > 6:
+                tempdeck += playerSets["modules"]["Trama"]["plot"][7]            
+            self.cartastrama = random.sample(tempdeck, len(tempdeck))
+            
         self.discards = []
         self.previous = []
    
