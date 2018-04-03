@@ -128,6 +128,23 @@ def command_help(bot, update):
         help_text += i + "\n"
     bot.send_message(cid, help_text)
 
+def reload_game(bot, game, cid):
+	GamesController.games[cid] = game
+	bot.send_message(cid, "Hay un juego comenzado en este chat. Si quieres terminarlo escribe /cancelgame!")				
+	bot.send_message(cid, game.board.print_board(game.player_sequence))				
+	# Ask the president to choose a chancellor
+
+	if game.board.state.fase_actual == "votacion_del_equipo_de_mision":
+		if len(game.board.state.last_votes) == len(game.player_sequence):
+			MainController.count_votes(bot, game)
+		else:
+			bot.send_message(cid, "Hay una votación en progreso utiliza /calltovote para decirles a los otros jugadores. ")
+	else:
+		if game.board.state.fase_actual == "conducir_la_mision":
+			MainController.voting_aftermath(bot, game, True)
+		else:
+			MainController.start_round(bot, game)
+
 def command_newgame(bot, update):  
 	cid = update.message.chat_id
 		
@@ -143,22 +160,8 @@ def command_newgame(bot, update):
 			#Search game in DB
 			game = load_game(cid)			
 			if game:
-				GamesController.games[cid] = game
-				bot.send_message(cid, "Hay un juego comenzado en este chat. Si quieres terminarlo escribe /cancelgame!")				
-				bot.send_message(cid, game.board.print_board(game.player_sequence))				
-				# Ask the president to choose a chancellor
-								
-				if game.board.state.fase_actual == "votacion_del_equipo_de_mision":
-					if len(game.board.state.last_votes) == len(game.player_sequence):
-						MainController.count_votes(bot, game)
-					else:
-						bot.send_message(cid, "Hay una votación en progreso utiliza /calltovote para decirles a los otros jugadores. ")
-				else:
-					if game.board.state.fase_actual == "conducir_la_mision":
-						MainController.voting_aftermath(bot, game, True)
-					else:
-						MainController.start_round(bot, game)
-			else:
+				reload_game(bot, game, cid)
+			else:				
 				GamesController.games[cid] = Game(cid, update.message.from_user.id)
 				bot.send_message(cid, "Nuevo juego creado! Cada jugador debe unirse al juego con el comando /join.\nEl iniciador del juego (o el administrador) pueden unirse tambien y escribir /startgame cuando todos se hayan unido al juego!")
 				bot.send_message(cid, "Comenzamos eligiendo los modulos a incluir")
@@ -490,21 +493,9 @@ def command_reloadgame(bot, update):
 			#Search game in DB
 			game = load_game(cid)			
 			if game:
-				GamesController.games[cid] = game
-				bot.send_message(cid, "Hay un juego comenzado en este chat. Si quieres terminarlo escribe /cancelgame!")				
-				bot.send_message(cid, game.board.print_board(game.player_sequence))				
-				# Ask the president to choose a chancellor
-								
-				if not game.board.state.equipo_contador == 0:
-					if len(game.board.state.last_votes) == len(game.player_sequence):
-						MainController.count_votes(bot, game)
-					else:
-						bot.send_message(cid, "Hay una votación en progreso utiliza /calltovote para decirles a los otros jugadores. ")
-				else:				
-					MainController.start_round(bot, game)
+				reload_game(bot, game, cid)
 			else:
-				GamesController.games[cid] = Game(cid, update.message.from_user.id)
-				bot.send_message(cid, "Nuevo juego creado! Cada jugador debe unirse al juego con el comando /join.\nEl iniciador del juego (o el administrador) pueden unirse tambien y escribir /startgame cuando todos se hayan unido al juego!")
+				bot.send_message(cid, "No hay juego que recargar, crea un nuevo juego con /newgame")
 			
 			
 	except Exception as e:
