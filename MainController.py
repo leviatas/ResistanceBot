@@ -395,12 +395,12 @@ def inicio_votacion_equipo(bot, game):
 	if "Trama" in game.modulos:
 		for player in game.board.state.equipo:
 			if player.uid != game.board.state.miembroenelpuntodemira:
-				enviar_votacion_equipo(player.uid)		
+				enviar_votacion_equipo(player.uid, strcid)		
 	else:
 		for player in game.board.state.equipo:
-			enviar_votacion_equipo(player.uid)
+			enviar_votacion_equipo(player.uid, strcid)
 
-def enviar_votacion_equipo(uid):
+def enviar_votacion_equipo(uid, strcid):
 	btns_resistencia = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito")]]
 	voteMarkupResistencia = InlineKeyboardMarkup(btns_resistencia)
 
@@ -1032,13 +1032,15 @@ def forzar_jugar_carta_mision_adelantada(bot, update):
 	callback = update.callback_query
 	regex = re.search("(-[0-9]*)_forzarvotomision_([0-9]*)", callback.data)
 	cid = int(regex.group(1))
+	strcid = regex.group(1)
+	
 	chosen_uid = int(regex.group(2))
 	
 	try:
 		# Se envia al jugar la opcion de votar normal.
 		# La diferencia es que esta se muestra el resultado y hace que el resto siga votando
 		game.board.state.miembroenelpuntodemira = chosen_uid
-		enviar_votacion_equipo(chosen_uid)		
+		enviar_votacion_equipo(chosen_uid, strcid)		
 	except AttributeError as e:
 		log.error("forzar_jugar_carta_mision_adelantada: Game or board should not be None! Eror: " + str(e))
 	except Exception as e:
