@@ -403,9 +403,9 @@ def enviar_votacion_equipo(bot, game, player):
 	voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
 	
 	if player.afiliacion == "Resistencia":
-		bot.send_message(uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
+		bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
 	else:
-		bot.send_message(uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
+		bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
 		
 def handle_team_voting(bot, update):
 	callback = update.callback_query
