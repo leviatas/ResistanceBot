@@ -86,8 +86,8 @@ def start_round(bot, game):
 	if "Trama" in game.modulos:
 		# Solo el primer lider de cada ronda (el juego tiene solo 5) reparte cartas.
 		if game.board.state.failed_votes == 0:
-			repartir_cartas_trama(bot, game)					
-		
+			repartir_cartas_trama(bot, game)
+			return		
 	asignar_equipo(bot, game)
 	# --> nominate_chosen_chancellor --> vote --> handle_voting --> count_votes --> voting_aftermath --> draw_policies
 	# --> choose_policy --> pass_two_policies --> choose_policy --> enact_policy --> start_round
@@ -104,6 +104,7 @@ def repartir_cartas_trama(bot, game):
 		cantidad_sacar = 3		
 	for i in range(cantidad_sacar):
                 game.board.state.cartas_trama_obtenidas.append(game.board.cartastrama.pop(0))
+	elegir_carta_de_trama_a_repartir(bot, game)
 
 def elegir_carta_de_trama_a_repartir(bot, game):
 	btns = []	
@@ -129,26 +130,78 @@ def elegir_jugador_para_dar_carta_de_trama(bot, game):
 		game = GamesController.games[cid]
 		uid = callback.from_user.id
 				
-		if not game.board.state.fase_actual == "votacion_del_equipo_de_mision":
-			bot.edit_message_text("No es el momento de votar!", uid, callback.message.message_id)
+		if not game.board.state.fase_actual == "comienzo_de_ronda":
+			bot.edit_message_text("No es el momento de dar cartas de trama!", uid, callback.message.message_id)
 			return
-
-		bot.edit_message_text("Gracias por tu voto %s al equipo:\n%s" % (answer, game.get_equipo_actual_flat(False)), uid, callback.message.message_id)
-		log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
-
-		#if uid not in game.board.state.last_votes:
-		game.board.state.last_votes[uid] = answer
-
-		#Allow player to change his vote
-		btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
-		voteMarkup = InlineKeyboardMarkup(btns)
-		bot.send_message(uid, "Puedes cambiar tu voto aquí.\n%s" % (game.board.state.mensaje_votacion), reply_markup=voteMarkup)
-		Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
-		if len(game.board.state.last_votes) == len(game.player_sequence):
-			count_votes(bot, game)
+		
+		btns = []
+		game.board.state.carta_actual = answer
+		# Inicialmente se puede elegir a cualquiera para formar los equipos
+		# Menos los que esten en el equipo elegido
+		for uid in game.playerlist:
+			if game.playerlist[uid] not in game.board.state.equipo:
+				name = game.playerlist[uid].name
+				btns.append([InlineKeyboardButton(name, callback_data=strcid + "_darcartatrama_" + str(uid))])
+				
 	except Exception as e:
 		log.error(str(e))
+		
+def dar_carta_trama(bot, game):
+	log.info('dar_carta_trama called')
+	log.info(update.callback_query.data)
+	callback = update.callback_query
+	regex = re.search("(-[0-9]*)_equipo_([0-9]*)", callback.data)
+	cid = int(regex.group(1))
+	chosen_uid = int(regex.group(2))
 
+	try:
+		game = GamesController.games.get(cid, None)
+		log.info(chosen_uid)
+		miembro_elegido = game.playerlist[chosen_uid]		
+		carta = game.board.state.carta_actual
+		
+		log.info("El lider %s (%d) le dio la carta %s a %s (%d)" % (
+			game.board.state.lider_actual.name, game.board.state.lider_actual.uid, carta
+			miembro_elegido.name, miembro_elegido.uid))
+		bot.edit_message_text("Tú elegiste a %s para la carta %s!" % (miembro_elegido.name, carta),
+				callback.from_user.id, callback.message.message_id)
+		
+		bot.send_message(game.cid,
+			"El lider %s le dio a %s la carta %s!" % (
+			game.board.state.lider_actual.name, miembro_elegido.name, carta))
+		
+		#Agrego uno al contador de Miembros, minimo hay 2 por misión.
+		#Lo agrego al equipo
+				
+		# Si es de 1 uso, se la dejo al jugador en sus cartas disponibles
+		if "1-Uso" in carta:
+			miembro_elegido.cartas_trama.append(carta)		
+		elif "Permanente" in carta:
+			# Actualmente solo hay 1 carta permanente
+			miembro_elegido.creador_de_opinion = True
+		elif "Inmediata" in carta:
+			if carta == "Comunicación Intervenida Inmediata":
+				return
+			if carta == "Compartir Opinión Inmediata":
+				return
+			if carta == "Establecer Confianza Inmediata":
+				return		
+		
+		# Remuevo la carta entregada
+		game.board.state.cartas_trama_obtenidas.remove(carta)
+		game.board.state.carta_actual =  None
+		
+		# Si la lista es vacia...
+		if not game.board.state.cartas_trama_obtenidas:
+			asignar_equipo(bot, game)
+		else:
+			elegir_carta_de_trama_a_repartir(bot, game)
+		
+	except AttributeError as e:
+		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
+	except Exception as e:
+		log.error("Unknown error: " + repr(e))
+		log.exception(e)
 	
 def asignar_equipo(bot, game):
 	if game.board.state.equipo_contador == 0:
@@ -553,7 +606,7 @@ def final_asesino(bot, game):
 	if game.is_debugging:
 		bot.send_message(ADMIN, '¿A quien vas a asesinar? Puedes hablar con tu compañero al respecto', reply_markup=miembros_resistencia_markup)		
 	else:
-		bot.send_message(asesino.cid, '¿A quien vas a asesinar? Puedes hablar con tu compañero al respecto', reply_markup=miembros_resistencia_markup)		
+		bot.send_message(asesino.uid, '¿A quien vas a asesinar? Puedes hablar con tu compañero al respecto', reply_markup=miembros_resistencia_markup)		
 
 def asesinar_miembro(bot, update):	
 	log.info('asesinar_miembro called')
@@ -1193,6 +1246,7 @@ def main():
 	
 	# Comandos de cartas de trama
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_elegircartatrama_(.*)", callback=elegir_jugador_para_dar_carta_de_trama))
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_darcartatrama_(.*)", callback=dar_carta_trama))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_sinconfianza_(Si|No)", callback=carta_plot_sinconfianza))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_enelpuntodemira_(Si|No)", callback=carta_plot_enelpuntodemira))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_forzarvotomision_(.*)", callback=forzar_jugar_carta_mision_adelantada))	
