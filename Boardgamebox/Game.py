@@ -109,3 +109,10 @@ class Game(object):
 				espias.append(self.playerlist[uid])
 		return espias
 	
+	def jugador_con_carta(self, nombre_carta):
+		result = False
+		for uid in self.playerlist:
+			if nombre_carta in self.playerlist[uid].cartas_trama:
+				return True
+		return result
+	
