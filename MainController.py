@@ -406,13 +406,11 @@ def enviar_votacion_equipo(uid, strcid):
 
 	btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
 	voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
-	
-	player = game.playerlist[uid]
-	
+		
 	if player.afiliacion == "Resistencia":
-		bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
+		bot.send_message(uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
 	else:
-		bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
+		bot.send_message(uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
 		
 def handle_team_voting(bot, update):
 	callback = update.callback_query
