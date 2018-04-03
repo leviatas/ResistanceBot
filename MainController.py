@@ -540,7 +540,7 @@ def asesinar_miembro(bot, update):
 # Modulo Trama
 def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
 	result = False
-	game.board.state.fase_actual = "plot_ " + nombre_carta"
+	game.board.state.fase_actual = "plot_" + nombre_carta
 	
 	bot.send_message(game.cid, "Los jugadores con la carta %s deben decidir si la usan recuerden que si muchos quieren usarla hay prioridad al más cercano al lider actual" % (nombre_carta))
 	
