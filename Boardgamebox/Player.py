@@ -8,4 +8,5 @@ class Player(object):
         self.was_investigated = False
         self.is_the_insquisitor = False
         self.was_the_insquisitor = False
-        self.cartas_trama = []     
+        self.creador_de_opinion = False
+        self.cartas_trama = []
