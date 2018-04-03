@@ -367,7 +367,6 @@ def votacion_fallida(bot, game):
 def voting_aftermath(bot, game, voting_success):	
 	log.info('voting_aftermath called')
 	game.board.state.last_votes = {}
-	strcid = str(game.cid)
 	if voting_success:
 		# Antes que reciban las cartas se puede jugar una carta que obliga a jugar boca arriba su carta de mision.	
 		if "Trama" in game.modulos:
@@ -385,7 +384,7 @@ def inicio_votacion_equipo(bot, game):
 	log.info('inicio_votacion_equipo called')
 	game.dateinitvote = datetime.datetime.now()
 	game.board.state.fase_actual = "conducir_la_mision"
-	
+	strcid = str(game.cid)
 	#Si es exitoso reparto las cartas para votar
 	btns_resistencia = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito")]]
 	voteMarkupResistencia = InlineKeyboardMarkup(btns_resistencia)
