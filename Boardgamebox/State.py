@@ -30,6 +30,7 @@ class State(object):
         self.enesperadeaccion = {}
         self.cartas_trama = []
         self.cartas_trama_obtenidas = []
+        self.carta_actual = None
         
         self.chancellor = None
         self.dead = 0
