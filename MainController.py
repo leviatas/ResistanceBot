@@ -186,34 +186,35 @@ def dar_carta_trama(bot, update):
 			miembro_elegido.creador_de_opinion = True
 		elif "Inmediata" in carta:
 			if carta == "Comunicación Intervenida Inmediata":
-				# El jugador que recibe la carte debe investigar un jugador adyacente
+				# El jugador que recibe la carte debe investigar un jugador adyacente				
 				menu_investigar_jugador(bot, game, chosen_uid)
 				return
 			if carta == "Compartir Opinión Inmediata":
-				# El jugador tiene que mostrar su carta a un jugador adyacente a él
+				# El jugador tiene que mostrar su carta a un jugador adyacente a él				
 				menu_revelarse_a_jugador(bot, game, chosen_uid)
 				return
 			if carta == "Establecer Confianza Inmediata":
-				# La ejecuto inmediatamente ya que es simplemente mostrar la afiliacion del lider
+				# La ejecuto inmediatamente ya que es simplemente mostrar la afiliacion del lider				
 				mostrar_afiliacion(bot, game, chosen_uid, game.board.state.lider_actual.uid)
 				return
-			
-		# Remuevo la carta entregada asi se siguen repartiendo las siguientes cartas
-		game.board.state.cartas_trama_obtenidas.remove(carta)
-		game.board.state.carta_actual =  None
-		
-		# Si la lista es vacia...
-		if not game.board.state.cartas_trama_obtenidas:
-			asignar_equipo(bot, game)
-		else:
-			elegir_carta_de_trama_a_repartir(bot, game)
-		
+		verificar_cartas_a_entregar(bot, game)
 	except AttributeError as e:
 		log.error("dar_carta_trama: Game or board should not be None! Eror: " + str(e))
 	except Exception as e:
 		log.error("Unknown error: " + repr(e))
 		log.exception(e)
 
+def verificar_cartas_a_entregar(bot, game):
+	# Remuevo la carta entregada asi se siguen repartiendo las siguientes cartas
+	game.board.state.cartas_trama_obtenidas.remove(game.board.state.carta_actual)
+	game.board.state.carta_actual =  None
+
+	# Si la lista es vacia...
+	if not game.board.state.cartas_trama_obtenidas:
+		asignar_equipo(bot, game)
+	else:
+		elegir_carta_de_trama_a_repartir(bot, game)
+		
 def menu_investigar_jugador(bot, game, uidinvestigador):
 	log.info('investigar_jugador called')
 	strcid = str(game.cid)
@@ -248,15 +249,15 @@ def investigar_jugador(bot, update):
 	caller_uid = callback.from_user.id
 	try:
 		game = GamesController.games.get(cid, None)
-		mostrar_afiliacion(bot, game, caller_uid, chosen_uid)		
+		mostrar_afiliacion(bot, game, caller_uid, chosen_uid)
+		verificar_cartas_a_entregar(bot, game)
 	except AttributeError as e:
 		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
 	except Exception as e:
 		log.error("Unknown error: " + repr(e))
 		log.exception(e)
 
-def revelarse_jugador(bot, update):
-	
+def revelarse_jugador(bot, update):	
 	log.info('asignar_miembro called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
@@ -267,6 +268,7 @@ def revelarse_jugador(bot, update):
 	try:
 		game = GamesController.games.get(cid, None)
 		mostrar_afiliacion(bot, game, chosen_uid, caller_uid)
+		verificar_cartas_a_entregar(bot, game)
 	except AttributeError as e:
 		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
 	except Exception as e:
