@@ -766,9 +766,7 @@ def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
 	log.info('preguntar_intencion_uso_carta called')
 	result = False
 	game.board.state.fase_actual = "plot_" + nombre_carta
-	
-	bot.send_message(game.cid, "Los jugadores con la carta %s deben decidir si la usan recuerden que si muchos quieren usarla hay prioridad al más cercano al lider actual" % (nombre_carta))
-	
+		
 	strcid = str(game.cid)
 	btns = [[InlineKeyboardButton("Si", callback_data=strcid + ("_%s_" % (accion_carta)) + "Si"), 
 		 InlineKeyboardButton("No", callback_data=strcid + ("_%s_" % (accion_carta)) + "No")]]
@@ -778,6 +776,9 @@ def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
 			game.board.state.enesperadeaccion[uid] = nombre_carta
 			bot.send_message(uid, "¿Queres usar la carta: %s?" % (nombre_carta), reply_markup=desicion)
 			result = True
+	if result:
+		bot.send_message(game.cid, "Los jugadores con la carta %s deben decidir si la usan recuerden que si muchos quieren usarla hay prioridad al más cercano al lider actual" % (nombre_carta))		
+	
 	return result
 
 # Modulo Trampero
