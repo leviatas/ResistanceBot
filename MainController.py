@@ -126,7 +126,7 @@ def elegir_carta_de_trama_a_repartir(bot, game):
 def elegir_jugador_para_dar_carta_de_trama(bot, update):
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
-	regex = re.search("(-[0-9]*)_(.*)", callback.data)
+	regex = re.search("(-[0-9]*)_elegircartatrama_(.*)", callback.data)
 	cid = int(regex.group(1))
 	answer = regex.group(2)
 	strcid = regex.group(1)
