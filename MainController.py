@@ -144,7 +144,10 @@ def elegir_jugador_para_dar_carta_de_trama(bot, game):
 			name = game.playerlist[uid].name
 			btns.append([InlineKeyboardButton(name, callback_data=strcid + "_darcartatrama_" + str(uid))])
 		jugadoresMarkup = InlineKeyboardMarkup(btns)
-		bot.send_message(game.board.state.lider_actual.uid, 'Elige al jugador que le quieres dar la carta %s!' % (game.board.state.carta_actual), reply_markup=jugadoresMarkup)
+		if game.is_debugging:
+			bot.send_message(ADMIN, 'Elige al jugador que le quieres dar la carta %s!' % (game.board.state.carta_actual), reply_markup=jugadoresMarkup)
+		else:
+			bot.send_message(game.board.state.lider_actual.uid, 'Elige al jugador que le quieres dar la carta %s!' % (game.board.state.carta_actual), reply_markup=jugadoresMarkup)
 	except Exception as e:
 		log.error(str(e))
 		
