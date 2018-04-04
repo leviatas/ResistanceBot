@@ -306,6 +306,7 @@ def mostrar_afiliacion(bot, game, uidinvestigador, uidinvestigado):
 def asignar_equipo(bot, game):
 	log.info(game.board.state.equipo_contador)
 	if game.board.state.equipo_contador == 0:
+		game.board.state.fase_actual = "asignar_equipo"
 		msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
 		bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
 	
@@ -756,6 +757,7 @@ def asesinar_miembro(bot, update):
 
 # Modulo Trama
 def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
+	log.info('preguntar_intencion_uso_carta called')
 	result = False
 	game.board.state.fase_actual = "plot_" + nombre_carta
 	
