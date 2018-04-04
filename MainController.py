@@ -141,6 +141,7 @@ def elegir_jugador_para_dar_carta_de_trama(bot, update):
 		game.board.state.carta_actual = answer
 		# Inicialmente se puede elegir a cualquiera para formar los equipos
 		# Menos los que esten en el equipo elegido
+		bot.edit_message_text("Has elegido la carta %s!" % (answer), uid, callback.message.message_id)
 		for uid in game.playerlist:
 			if uid != game.board.state.lider_actual.uid:
 				name = game.playerlist[uid].name
