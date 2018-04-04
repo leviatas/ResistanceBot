@@ -201,6 +201,7 @@ def dar_carta_trama(bot, update):
 			if carta == "Establecer Confianza Inmediata":
 				# La ejecuto inmediatamente ya que es simplemente mostrar la afiliacion del lider				
 				mostrar_afiliacion(bot, game, chosen_uid, game.board.state.lider_actual.uid)
+				verificar_cartas_a_entregar(bot, game)
 				return
 		verificar_cartas_a_entregar(bot, game)
 	except AttributeError as e:
