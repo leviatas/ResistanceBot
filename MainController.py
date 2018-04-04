@@ -134,7 +134,7 @@ def elegir_jugador_para_dar_carta_de_trama(bot, update):
 		game = GamesController.games[cid]
 		uid = callback.from_user.id
 				
-		if not game.board.state.fase_actual == "comienzo_de_ronda":
+		if not game.board.state.fase_actual == "repartir_cartas_trama":
 			bot.edit_message_text("No es el momento de dar cartas de trama!", uid, callback.message.message_id)
 			return		
 		btns = []
