@@ -123,7 +123,7 @@ def elegir_carta_de_trama_a_repartir(bot, game):
 		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
 		bot.send_message(game.board.state.lider_actual.uid, 'Elige la primera carta a repartir!', reply_markup=cartasMarkup)
 		
-def elegir_jugador_para_dar_carta_de_trama(bot, game):
+def elegir_jugador_para_dar_carta_de_trama(bot, update):
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_(.*)", callback.data)
@@ -185,11 +185,11 @@ def dar_carta_trama(bot, game):
 		elif "Inmediata" in carta:
 			if carta == "Comunicación Intervenida Inmediata":
 				# El jugador que recibe la carte debe investigar un jugador adyacente
-				investigar_jugador(bot, game, chosen_uid)
+				menu_investigar_jugador(bot, game, chosen_uid)
 				return
 			if carta == "Compartir Opinión Inmediata":
 				# El jugador tiene que mostrar su carta a un jugador adyacente a él
-				revelarse_a_jugador(bot, game, chosen_uid)
+				menu_revelarse_a_jugador(bot, game, chosen_uid)
 				return
 			if carta == "Establecer Confianza Inmediata":
 				# La ejecuto inmediatamente ya que es simplemente mostrar la afiliacion del lider
@@ -212,7 +212,7 @@ def dar_carta_trama(bot, game):
 		log.error("Unknown error: " + repr(e))
 		log.exception(e)
 
-def investigar_jugador(bot, game, uidinvestigador):
+def menu_investigar_jugador(bot, game, uidinvestigador):
 	log.info('investigar_jugador called')
 	strcid = str(game.cid)
 	btns = []
@@ -224,7 +224,7 @@ def investigar_jugador(bot, game, uidinvestigador):
 	jugadoresMarkup = InlineKeyboardMarkup(btns)
 	bot.send_message(uidinvestigador, 'Elige al jugador al que quieres investigar!', reply_markup=jugadoresMarkup)
 
-def revelarse_jugador(bot, game, uidrevelado):
+def menu_revelarse_a_jugador(bot, game, uidrevelado):
 	log.info('revelarse_a_jugador called')
 	strcid = str(game.cid)
 	btns = []
@@ -252,7 +252,7 @@ def investigar_jugador(bot, update):
 		log.error("Unknown error: " + repr(e))
 		log.exception(e)
 
-def investigar_jugador(bot, update):
+def revelarse_jugador(bot, update):
 	
 	log.info('asignar_miembro called')
 	log.info(update.callback_query.data)
