@@ -1176,7 +1176,8 @@ def carta_plot_enelpuntodemira(bot, update):
 		
 def elegir_miembro_carta_plot_enelpuntodemira(bot, game, uid):
 	log.info('elegir_miembro_carta_plot_enelpuntodemira called')	
-	try:		
+	try:
+		strcid = str(game.cid)	
 		btns = []	
 		# Doy opcion de elegir cualquier miembro el cual debera poner su carta de mision adelantada
 		for player in game.board.state.equipo:		
