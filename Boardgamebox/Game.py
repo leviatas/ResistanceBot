@@ -116,3 +116,9 @@ class Game(object):
 				return True
 		return result
 	
+	def get_creadores_de_opinion(self):
+		creador_de_opinion = []
+		for uid in self.playerlist:
+			if self.playerlist[uid].creador_de_opinion:
+				creador_de_opinion.append(self.playerlist[uid])
+		return creador_de_opinion
