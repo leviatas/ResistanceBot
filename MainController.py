@@ -256,6 +256,9 @@ def investigar_jugador(bot, update):
 	try:
 		game = GamesController.games.get(cid, None)
 		mostrar_afiliacion(bot, game, caller_uid, chosen_uid)
+		miembro_elegido = game.playerlist[chosen_uid]	
+		bot.edit_message_text("Tú has investigado a %s!" % (miembro_elegido.name),
+				callback.from_user.id, callback.message.message_id)	
 		verificar_cartas_a_entregar(bot, game)
 	except AttributeError as e:
 		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
@@ -274,6 +277,9 @@ def revelarse_jugador(bot, update):
 	try:
 		game = GamesController.games.get(cid, None)
 		mostrar_afiliacion(bot, game, chosen_uid, caller_uid)
+		miembro_elegido = game.playerlist[chosen_uid]	
+		bot.edit_message_text("Te has revelado a %s!" % (miembro_elegido.name),
+				callback.from_user.id, callback.message.message_id)
 		verificar_cartas_a_entregar(bot, game)
 	except AttributeError as e:
 		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
