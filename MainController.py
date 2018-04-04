@@ -556,10 +556,13 @@ def enviar_votacion_equipo(bot, game, player):
 	btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
 	voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
 	
-	if player.afiliacion == "Resistencia":
-		bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
-	else:
-		bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
+	if game.is_debugging:
+		bot.send_message(ADMIN, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
+	else:		
+		if player.afiliacion == "Resistencia":
+			bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
+		else:
+			bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
 		
 def handle_team_voting(bot, update):
 	callback = update.callback_query
@@ -587,6 +590,12 @@ def handle_team_voting(bot, update):
 		#Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
 		#log.info(len(game.board.state.votos_mision))	
 		#log.info(game.board.state.equipo_cantidad_mision)
+		
+		# Pretendo que todos votan juntos de una sola forma.
+		if game.is_debugging:
+			for player in game.board.state.equipo:
+				game.board.state.votos_mision[player.uid] = answer
+		
 		if len(game.board.state.votos_mision) == game.board.state.equipo_cantidad_mision:
 			game.dateinitvote = None
 			if "Trampero" in game.modulos:
