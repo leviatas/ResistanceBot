@@ -107,6 +107,11 @@ def repartir_cartas_trama(bot, game):
 	'''
 	for i in range(cantidad_sacar):
                 game.board.state.cartas_trama_obtenidas.append(game.board.cartastrama.pop(0))
+	# Le muestro a todos los jugadores las cartas que ha obtenido el lider
+	cartas_disponibles = ""
+	for carta in game.board.state.cartas_trama_obtenidas:
+		cartas_disponibles += carta + ", "
+	bot.send_message(game.cid, "Las cartas que ha obtenido el lider son: " % cartas_disponibles[:-2]
 	elegir_carta_de_trama_a_repartir(bot, game)
 
 def elegir_carta_de_trama_a_repartir(bot, game):
