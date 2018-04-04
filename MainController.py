@@ -296,7 +296,8 @@ def get_jugadores_adjacentes(game, uidjugador):
 	else:
 		indexJugadorALaIzquierda = indexJugadorRevelado + 1
 		indexJugadorALaDerecha = indexJugadorRevelado - 1
-		
+	log.info('El indice del jugador a la derecha es %d' % (indexJugadorALaDerecha))
+	log.info('El indice del jugador a la izquierda es %d' % (indexJugadorALaIzquierda))
 	return [game.playerlist[indexJugadorALaIzquierda], game.playerlist[indexJugadorALaDerecha]]
 	
 def mostrar_afiliacion(bot, game, uidinvestigador, uidinvestigado):
