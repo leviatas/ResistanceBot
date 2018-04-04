@@ -94,19 +94,22 @@ def start_round(bot, game):
 
 def repartir_cartas_trama(bot, game):
 	log.info('repartir_cartas_trama called')
+	game.board.state.fase_actual = "repartir_cartas_trama"
 	#game.board.state.lider_actual
-	cantidad_sacar = 0	
-	if game.board.num_players == 5 or game.board.num_players == 6:
+	cantidad_sacar = int(ceil((game.board.num_players - 4)/2))		
+	'''if game.board.num_players == 5 or game.board.num_players == 6:
 		cantidad_sacar = 1
 	elif game.board.num_players == 7 or game.board.num_players == 8:
 		cantidad_sacar = 2
 	elif game.board.num_players == 9 or game.board.num_players == 10:
-		cantidad_sacar = 3		
+		cantidad_sacar = 3
+	'''
 	for i in range(cantidad_sacar):
                 game.board.state.cartas_trama_obtenidas.append(game.board.cartastrama.pop(0))
 	elegir_carta_de_trama_a_repartir(bot, game)
 
 def elegir_carta_de_trama_a_repartir(bot, game):
+	strcid = str(game.cid)
 	btns = []	
 	for carta in game.board.state.cartas_trama_obtenidas:
 		btns.append([InlineKeyboardButton(carta, callback_data=strcid + "_elegircartatrama_" + carta)])		
@@ -114,7 +117,7 @@ def elegir_carta_de_trama_a_repartir(bot, game):
 	
 	if(game.is_debugging):
 		bot.send_message(ADMIN, game.board.print_board(game.player_sequence))
-		bot.send_message(ADMIN, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
+		bot.send_message(ADMIN, 'Elige la primera carta a repartir!', reply_markup=equipoMarkup)
 	else:
 		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
 		bot.send_message(game.board.state.lider_actual.uid, 'Elige la primera carta a repartir!', reply_markup=cartasMarkup)
@@ -132,17 +135,16 @@ def elegir_jugador_para_dar_carta_de_trama(bot, game):
 				
 		if not game.board.state.fase_actual == "comienzo_de_ronda":
 			bot.edit_message_text("No es el momento de dar cartas de trama!", uid, callback.message.message_id)
-			return
-		
+			return		
 		btns = []
 		game.board.state.carta_actual = answer
 		# Inicialmente se puede elegir a cualquiera para formar los equipos
 		# Menos los que esten en el equipo elegido
 		for uid in game.playerlist:
-			if game.playerlist[uid] not in game.board.state.equipo:
-				name = game.playerlist[uid].name
-				btns.append([InlineKeyboardButton(name, callback_data=strcid + "_darcartatrama_" + str(uid))])
-				
+			name = game.playerlist[uid].name
+			btns.append([InlineKeyboardButton(name, callback_data=strcid + "_darcartatrama_" + str(uid))])
+		jugadoresMarkup = InlineKeyboardMarkup(btns)
+		bot.send_message(game.board.state.lider_actual.uid, 'Elige al jugador que le quieres dar la carta %s!' % (game.board.state.carta_actual), reply_markup=jugadoresMarkup)
 	except Exception as e:
 		log.error(str(e))
 		
@@ -162,8 +164,7 @@ def dar_carta_trama(bot, game):
 		
 		log.info("El lider %s (%d) le dio la carta %s a %s (%d)" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, carta, miembro_elegido.name, miembro_elegido.uid))
 		bot.edit_message_text("Tú elegiste a %s para la carta %s!" % (miembro_elegido.name, carta),
-				callback.from_user.id, callback.message.message_id)
-		
+				callback.from_user.id, callback.message.message_id)		
 		bot.send_message(game.cid,
 			"El lider %s le dio a %s la carta %s!" % (
 			game.board.state.lider_actual.name, miembro_elegido.name, carta))
@@ -172,31 +173,120 @@ def dar_carta_trama(bot, game):
 		#Lo agrego al equipo
 				
 		# Si es de 1 uso, se la dejo al jugador en sus cartas disponibles
-		if "1-Uso" in carta or "Inmediata" in carta:
+		if "1-Uso" in carta:
 			miembro_elegido.cartas_trama.append(carta)		
 		elif "Permanente" in carta:
 			# Actualmente solo hay 1 carta permanente
 			miembro_elegido.creador_de_opinion = True
-		
-		# Remuevo la carta entregada
+		elif "Inmediata" in carta:
+			if carta == "Comunicación Intervenida Inmediata":
+				# El jugador que recibe la carte debe investigar un jugador adyacente
+				investigar_jugador(bot, game, chosen_uid)
+				return
+			if carta == "Compartir Opinión Inmediata":
+				# El jugador tiene que mostrar su carta a un jugador adyacente a él
+				revelarse_a_jugador(bot, game, chosen_uid)
+				return
+			if carta == "Establecer Confianza Inmediata":
+				# La ejecuto inmediatamente ya que es simplemente mostrar la afiliacion del lider
+				mostrar_afiliacion(bot, game, chosen_uid, game.board.state.lider_actual.uid)
+				return
+			
+		# Remuevo la carta entregada asi se siguen repartiendo las siguientes cartas
 		game.board.state.cartas_trama_obtenidas.remove(carta)
 		game.board.state.carta_actual =  None
 		
 		# Si la lista es vacia...
 		if not game.board.state.cartas_trama_obtenidas:
-			executar_cartas_obtenidas(bot, game)
+			asignar_equipo(bot, game)
 		else:
 			elegir_carta_de_trama_a_repartir(bot, game)
 		
+	except AttributeError as e:
+		log.error("dar_carta_trama: Game or board should not be None! Eror: " + str(e))
+	except Exception as e:
+		log.error("Unknown error: " + repr(e))
+		log.exception(e)
+
+def investigar_jugador(bot, game, uidinvestigador):
+	log.info('investigar_jugador called')
+	strcid = str(game.cid)
+	btns = []
+	# Le muestro a todos menos el investigador
+	for uid in game.playerlist:
+		if game.playerlist[uid] != uidinvestigador:
+			name = game.playerlist[uid].name
+			btns.append([InlineKeyboardButton(name, callback_data=strcid + "_investigar_" + str(uid))])
+	jugadoresMarkup = InlineKeyboardMarkup(btns)
+	bot.send_message(uidinvestigador, 'Elige al jugador al que quieres investigar!', reply_markup=jugadoresMarkup)
+
+def revelarse_jugador(bot, game, uidrevelado):
+	log.info('revelarse_a_jugador called')
+	strcid = str(game.cid)
+	btns = []
+	# Le muestro solo los jugadores adyacentes		
+	listaJugadoresDisponibles = get_jugadores_adjacentes(game, uidrevelado)
+	
+	for player in listaJugadoresDisponibles:
+		btns.append([InlineKeyboardButton(player.name, callback_data=strcid + "_revelarse_" + str(player.uid))])
+	jugadoresMarkup = InlineKeyboardMarkup(btns)
+	bot.send_message(uidrevelado, 'Elige al jugador que le quieres mostrar tu afiliacion!', reply_markup=jugadoresMarkup)
+
+def investigar_jugador(bot, update):	
+	log.info('asignar_miembro called')
+	log.info(update.callback_query.data)
+	callback = update.callback_query
+	regex = re.search("(-[0-9]*)_equipo_([0-9]*)", callback.data)
+	cid = int(regex.group(1))
+	chosen_uid = int(regex.group(2))
+	caller_uid = callback.from_user.id
+	try:
+		mostrar_afiliacion(bot, game, caller_uid, chosen_uid)		
+	except AttributeError as e:
+		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
+	except Exception as e:
+		log.error("Unknown error: " + repr(e))
+		log.exception(e)
+
+def investigar_jugador(bot, update):
+	
+	log.info('asignar_miembro called')
+	log.info(update.callback_query.data)
+	callback = update.callback_query
+	regex = re.search("(-[0-9]*)_equipo_([0-9]*)", callback.data)
+	cid = int(regex.group(1))
+	chosen_uid = int(regex.group(2))
+	caller_uid = callback.from_user.id
+	try:
+		mostrar_afiliacion(bot, game, chosen_uid, caller_uid)
 	except AttributeError as e:
 		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
 	except Exception as e:
 		log.error("Unknown error: " + repr(e))
 		log.exception(e)
 	
-def executar_cartas_obtenidas(bot, game):
-	# Recorro la lista desde el lider actual
-	indice = 0
+def get_jugadores_adjacentes(game, uidjugador):
+	indexJugadorRevelado = game.player_sequence.index(game.playerlist[uidjugador])
+	indexJugadorALaDerecha = None
+	indexJugadorALaIzquierda = None
+	# Si es el primer jugador obtengo el segundo y el ultimo
+	if indexJugadorRevelado == 0:
+		indexJugadorALaIzquierda = indexJugadorRevelado + 1
+		indexJugadorALaDerecha = len(game.player_sequence) - 1
+	# Si es el ultimo jugador es el jugador primero y el ante ultimo.
+	elif indexJugadorRevelado == len(game.player_sequence) - 1:
+		indexJugadorALaIzquierda = 0
+		indexJugadorALaDerecha = indexJugadorRevelado - 1
+	else:
+		indexJugadorALaIzquierda = indexJugadorRevelado + 1
+		indexJugadorALaDerecha = indexJugadorRevelado - 1
+		
+	return [game.playerlist[indexJugadorALaIzquierda], game.playerlist[indexJugadorALaDerecha]]
+	
+def mostrar_afiliacion(bot, game, uidinvestigador, uidinvestigado):
+	investigado = game.playerlist[uidinvestigado]
+	bot.send_message(uidinvestigador ,"Has investigado a %s y su afiliación es %s" % (investigado.name, investigado.afiliacion))
+		
 def asignar_equipo(bot, game):
 	if game.board.state.equipo_contador == 0:
 		msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
@@ -1241,6 +1331,8 @@ def main():
 	# Comandos de cartas de trama
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_elegircartatrama_(.*)", callback=elegir_jugador_para_dar_carta_de_trama))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_darcartatrama_(.*)", callback=dar_carta_trama))
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_revelarse_(.*)", callback=revelarse_jugador))
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_investigar_(.*)", callback=investigar_jugador))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_sinconfianza_(Si|No)", callback=carta_plot_sinconfianza))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_enelpuntodemira_(Si|No)", callback=carta_plot_enelpuntodemira))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_forzarvotomision_(.*)", callback=forzar_jugar_carta_mision_adelantada))	
