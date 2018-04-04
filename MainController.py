@@ -309,7 +309,7 @@ def asignar_equipo(bot, game):
 		game.board.state.fase_actual = "asignar_equipo"
 		msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
 		bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
-	
+		Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)	
 	turno_actual = len(game.board.state.resultado_misiones)
 	log.info('asignar_equipo called')
 	strcid = str(game.cid)
