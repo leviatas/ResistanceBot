@@ -302,6 +302,7 @@ def mostrar_afiliacion(bot, game, uidinvestigador, uidinvestigado):
 		bot.send_message(game.cid ,"El jugador %s ha investigado a %s" % (investigador.name, investigado.name))
 		
 def asignar_equipo(bot, game):
+	log.info(game.board.state.equipo_contador)
 	if game.board.state.equipo_contador == 0:
 		msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
 		bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
