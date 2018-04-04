@@ -6,6 +6,7 @@ import json
 import logging as log
 import random
 import re
+import math
 from random import randrange
 from time import sleep
 
@@ -96,7 +97,7 @@ def repartir_cartas_trama(bot, game):
 	log.info('repartir_cartas_trama called')
 	game.board.state.fase_actual = "repartir_cartas_trama"
 	#game.board.state.lider_actual
-	cantidad_sacar = int(ceil((game.board.num_players - 4)/2))		
+	cantidad_sacar = int(math.ceil((game.board.num_players - 4)/2))		
 	'''if game.board.num_players == 5 or game.board.num_players == 6:
 		cantidad_sacar = 1
 	elif game.board.num_players == 7 or game.board.num_players == 8:
