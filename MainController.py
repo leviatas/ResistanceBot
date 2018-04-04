@@ -1117,6 +1117,7 @@ def carta_plot_sinconfianza(bot, update):
 			game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
 			game.playerlist[uid].cartas_trama.remove(nombre_carta)
 			game.board.state.enesperadeaccion = {}
+			bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
 			votacion_fallida(bot, game)
 		else:			
 			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
@@ -1157,6 +1158,7 @@ def carta_plot_enelpuntodemira(bot, update):
 			bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))	
 			game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
 			game.playerlist[uid].cartas_trama.remove('En El Punto De Mira 1-Uso')
+			bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
 			elegir_miembro_carta_plot_enelpuntodemira(bot, game, uid)
 		else:
 			# En este caso no se pregunta a otros jugadores ya que hay solo 1 carta de estas,
@@ -1207,9 +1209,10 @@ def forzar_jugar_carta_mision_adelantada(bot, update):
 		# Se envia al jugar la opcion de votar normal.
 		# La diferencia es que esta se muestra el resultado y hace que el resto siga votando		
 		game = GamesController.games[cid]
-		player = game.playerlist[uid]		
+		uid = callback.from_user.id
+		player = game.playerlist[uid]	
 		game.board.state.miembroenelpuntodemira = chosen_uid
-		
+		bot.edit_message_text("Has forzado a %s a jugar su carta boca arriba!" % (player.name), uid, callback.message.message_id)
 		enviar_votacion_equipo(bot, game, player)
 	except AttributeError as e:
 		log.error("forzar_jugar_carta_mision_adelantada: Game or board should not be None! Eror: " + str(e))
@@ -1244,6 +1247,7 @@ def carta_plot_vigilanciaestrecha(bot, update):
 			bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))
 			game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
 			game.playerlist[uid].cartas_trama.remove(nombre_carta)
+			bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
 			elegir_carta_mision(bot, game)
 		else:
 			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
@@ -1283,6 +1287,7 @@ def carta_plot_liderfuerte(bot, update):
 			game.board.state.lider_elegido = game.playerlist[uid]
 			game.playerlist[uid].cartas_trama.remove('Lider Fuerte 1-Uso')
 			game.board.state.enesperadeaccion = {}
+			bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
 			start_round(bot, game)
 		else:
 			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
