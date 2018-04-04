@@ -1,4 +1,5 @@
 from Constants.Cards import playerSets
+from Constants.Cards import modules
 import random
 from Boardgamebox.State import State
 
@@ -10,9 +11,9 @@ class Board(object):
         
         # Si hay cartas de trama las incluyo
         if "Trama" in game.modulos:
-            tempdeck = playerSets["modules"]["Trama"]["plot"][5]
+            tempdeck = modules["Trama"]["plot"][5]
             if self.num_players > 6:
-                tempdeck += playerSets["modules"]["Trama"]["plot"][7]            
+                tempdeck += modules["Trama"]["plot"][7]            
             self.cartastrama = random.sample(tempdeck, len(tempdeck))
             
         self.discards = []
