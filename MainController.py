@@ -118,7 +118,7 @@ def elegir_carta_de_trama_a_repartir(bot, game):
 	
 	if(game.is_debugging):
 		bot.send_message(ADMIN, game.board.print_board(game.player_sequence))
-		bot.send_message(ADMIN, 'Elige la primera carta a repartir!', reply_markup=equipoMarkup)
+		bot.send_message(ADMIN, 'Elige la primera carta a repartir!', reply_markup=cartasMarkup)
 	else:
 		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
 		bot.send_message(game.board.state.lider_actual.uid, 'Elige la primera carta a repartir!', reply_markup=cartasMarkup)
