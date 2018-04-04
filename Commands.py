@@ -142,6 +142,8 @@ def reload_game(bot, game, cid):
 	else:
 		if game.board.state.fase_actual == "conducir_la_mision":
 			MainController.voting_aftermath(bot, game, True)
+		elif game.board.state.fase_actual == "asignar_equipo":			
+			MainController.asignar_equipo(bot, game)
 		else:
 			MainController.start_round(bot, game)
 
