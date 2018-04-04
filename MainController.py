@@ -220,7 +220,7 @@ def menu_investigar_jugador(bot, game, uidinvestigador):
 	btns = []
 	# Le muestro a todos menos el investigador
 	for uid in game.playerlist:
-		if game.playerlist[uid] != uidinvestigador:
+		if uid != uidinvestigador:
 			name = game.playerlist[uid].name
 			btns.append([InlineKeyboardButton(name, callback_data=strcid + "_investigar_" + str(uid))])
 	jugadoresMarkup = InlineKeyboardMarkup(btns)
@@ -247,6 +247,7 @@ def investigar_jugador(bot, update):
 	chosen_uid = int(regex.group(2))
 	caller_uid = callback.from_user.id
 	try:
+		game = GamesController.games.get(cid, None)
 		mostrar_afiliacion(bot, game, caller_uid, chosen_uid)		
 	except AttributeError as e:
 		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
@@ -264,6 +265,7 @@ def revelarse_jugador(bot, update):
 	chosen_uid = int(regex.group(2))
 	caller_uid = callback.from_user.id
 	try:
+		game = GamesController.games.get(cid, None)
 		mostrar_afiliacion(bot, game, chosen_uid, caller_uid)
 	except AttributeError as e:
 		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
