@@ -592,6 +592,7 @@ def handle_team_voting(bot, update):
 		if "Trama" in game.modulos:
 			if game.board.state.miembroenelpuntodemira is not None:
 				if uid == game.board.state.miembroenelpuntodemira:
+					bot.send_message(game.cid, "El voto del jugador %s es: %s" % (callback.from_user.first_name, answer))
 					inicio_votacion_equipo(bot, game)
 					
 		#Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
@@ -1213,6 +1214,7 @@ def forzar_jugar_carta_mision_adelantada(bot, update):
 		player = game.playerlist[uid]	
 		game.board.state.miembroenelpuntodemira = chosen_uid
 		bot.edit_message_text("Has forzado a %s a jugar su carta boca arriba!" % (player.name), uid, callback.message.message_id)
+		bot.send_message(cid, "El Jugador %s ha sido forzado a jugar su carta de misión boca arriba" % (player.name))
 		enviar_votacion_equipo(bot, game, player)
 	except AttributeError as e:
 		log.error("forzar_jugar_carta_mision_adelantada: Game or board should not be None! Eror: " + str(e))
