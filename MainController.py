@@ -142,8 +142,9 @@ def elegir_jugador_para_dar_carta_de_trama(bot, update):
 		# Inicialmente se puede elegir a cualquiera para formar los equipos
 		# Menos los que esten en el equipo elegido
 		for uid in game.playerlist:
-			name = game.playerlist[uid].name
-			btns.append([InlineKeyboardButton(name, callback_data=strcid + "_darcartatrama_" + str(uid))])
+			if uid != game.board.state.lider_actual.uid
+				name = game.playerlist[uid].name
+				btns.append([InlineKeyboardButton(name, callback_data=strcid + "_darcartatrama_" + str(uid))])
 		jugadoresMarkup = InlineKeyboardMarkup(btns)
 		if game.is_debugging:
 			bot.send_message(ADMIN, 'Elige al jugador que le quieres dar la carta %s!' % (game.board.state.carta_actual), reply_markup=jugadoresMarkup)
@@ -152,11 +153,11 @@ def elegir_jugador_para_dar_carta_de_trama(bot, update):
 	except Exception as e:
 		log.error(str(e))
 		
-def dar_carta_trama(bot, game):
+def dar_carta_trama(bot, update):
 	log.info('dar_carta_trama called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
-	regex = re.search("(-[0-9]*)_equipo_([0-9]*)", callback.data)
+	regex = re.search("(-[0-9]*)_darcartatrama_([0-9]*)", callback.data)
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
 
@@ -240,7 +241,7 @@ def investigar_jugador(bot, update):
 	log.info('asignar_miembro called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
-	regex = re.search("(-[0-9]*)_equipo_([0-9]*)", callback.data)
+	regex = re.search("(-[0-9]*)_investigar_([0-9]*)", callback.data)
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
 	caller_uid = callback.from_user.id
@@ -257,7 +258,7 @@ def revelarse_jugador(bot, update):
 	log.info('asignar_miembro called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
-	regex = re.search("(-[0-9]*)_equipo_([0-9]*)", callback.data)
+	regex = re.search("(-[0-9]*)_revelarse_([0-9]*)", callback.data)
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
 	caller_uid = callback.from_user.id
@@ -289,7 +290,10 @@ def get_jugadores_adjacentes(game, uidjugador):
 	
 def mostrar_afiliacion(bot, game, uidinvestigador, uidinvestigado):
 	investigado = game.playerlist[uidinvestigado]
-	bot.send_message(uidinvestigador ,"Has investigado a %s y su afiliación es %s" % (investigado.name, investigado.afiliacion))
+	if game.is_debugging: 
+		bot.send_message(ADMIN ,"Has investigado a %s y su afiliación es %s" % (investigado.name, investigado.afiliacion))
+	else:
+		bot.send_message(uidinvestigador ,"Has investigado a %s y su afiliación es %s" % (investigado.name, investigado.afiliacion))
 		
 def asignar_equipo(bot, game):
 	if game.board.state.equipo_contador == 0:
