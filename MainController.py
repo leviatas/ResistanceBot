@@ -142,7 +142,7 @@ def elegir_jugador_para_dar_carta_de_trama(bot, update):
 		# Inicialmente se puede elegir a cualquiera para formar los equipos
 		# Menos los que esten en el equipo elegido
 		for uid in game.playerlist:
-			if uid != game.board.state.lider_actual.uid
+			if uid != game.board.state.lider_actual.uid:
 				name = game.playerlist[uid].name
 				btns.append([InlineKeyboardButton(name, callback_data=strcid + "_darcartatrama_" + str(uid))])
 		jugadoresMarkup = InlineKeyboardMarkup(btns)
