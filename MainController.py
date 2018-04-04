@@ -1174,8 +1174,7 @@ def carta_plot_enelpuntodemira(bot, update):
 	except Exception as e:
 		log.error(str(e))
 		
-def elegir_miembro_carta_plot_enelpuntodemira(bot, game, uid):	
-	callback = update.callback_query
+def elegir_miembro_carta_plot_enelpuntodemira(bot, game, uid):
 	log.info('elegir_miembro_carta_plot_enelpuntodemira called: %s' % callback.data)	
 	try:		
 		btns = []	
