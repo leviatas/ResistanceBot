@@ -172,18 +172,11 @@ def dar_carta_trama(bot, game):
 		#Lo agrego al equipo
 				
 		# Si es de 1 uso, se la dejo al jugador en sus cartas disponibles
-		if "1-Uso" in carta:
+		if "1-Uso" in carta or "Inmediata" in carta:
 			miembro_elegido.cartas_trama.append(carta)		
 		elif "Permanente" in carta:
 			# Actualmente solo hay 1 carta permanente
 			miembro_elegido.creador_de_opinion = True
-		elif "Inmediata" in carta:
-			if carta == "Comunicación Intervenida Inmediata":
-				return
-			if carta == "Compartir Opinión Inmediata":
-				return
-			if carta == "Establecer Confianza Inmediata":
-				return		
 		
 		# Remuevo la carta entregada
 		game.board.state.cartas_trama_obtenidas.remove(carta)
@@ -191,7 +184,7 @@ def dar_carta_trama(bot, game):
 		
 		# Si la lista es vacia...
 		if not game.board.state.cartas_trama_obtenidas:
-			asignar_equipo(bot, game)
+			executar_cartas_obtenidas(bot, game)
 		else:
 			elegir_carta_de_trama_a_repartir(bot, game)
 		
@@ -201,6 +194,9 @@ def dar_carta_trama(bot, game):
 		log.error("Unknown error: " + repr(e))
 		log.exception(e)
 	
+def executar_cartas_obtenidas(bot, game):
+	# Recorro la lista desde el lider actual
+	indice = 0
 def asignar_equipo(bot, game):
 	if game.board.state.equipo_contador == 0:
 		msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
