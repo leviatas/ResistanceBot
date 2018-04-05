@@ -69,7 +69,7 @@ class Board(object):
         cartasjugadores = "\n--- Cartas que tienen los Jugadores ---\n"
         for player in player_sequence:
             # Listo todas sus cartas            
-            if not player.cartas_trama:
+            if player.cartas_trama:
                 cartas = "%s: " % (player.name)
                 for carta in player.cartas_trama:
                     cartas += carta + ", "
