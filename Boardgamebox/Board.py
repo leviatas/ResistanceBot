@@ -20,7 +20,7 @@ class Board(object):
         self.previous = []
     def print_board(self, player_sequence):
         board = "--- Misiones ---\n"
-        '''
+        
         for i in range(5):
             # Pongo la cantidad de miembros por mision como primera fila
             # pongo un espacio extra luego de 4 porque esta el * de mision en casod e mas de 6 jugadores
@@ -28,14 +28,14 @@ class Board(object):
                 board += " " + str(i+1) + "    "
             else:        
                 board += " " + str(i+1) + "   "            
-        '''    
+            
         board += "\n"
-        
+        '''
         for i in range(5):
             # Pongo la cantidad de miembros por mision como primera fila
             board += " " + self.misiones[i] + "   " #X
         board += "\n"
-        
+        '''
         # Seguimiento de misiones
         
         for resultado in self.state.resultado_misiones :
