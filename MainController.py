@@ -82,7 +82,9 @@ def start_round(bot, game):
 	else:
 		game.board.state.lider_actual = game.board.state.lider_elegido
 		game.board.state.lider_elegido = None
-		
+	
+	bot.send_message(game.cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+	
 	# Si esta el modulo de Trama se reparten cartas de Trama 
 	if "Trama" in game.modulos:
 		# Solo el primer lider de cada ronda (el juego tiene solo 5) reparte cartas.
@@ -370,8 +372,7 @@ def voting_aftermath(bot, game, voting_success):
 			if preguntar_intencion_uso_carta(bot, game, "En El Punto De Mira 1-Uso", "enelpuntodemira"):
 				return
 		inicio_votacion_equipo(bot, game)						
-	else:		
-		bot.send_message(game.cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+	else:
 		start_next_round(bot, game)
 		
 def inicio_votacion_equipo(bot, game):
