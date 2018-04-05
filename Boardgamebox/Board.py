@@ -50,8 +50,11 @@ class Board(object):
                 board += u"\u25FB\uFE0F" + " " #empty
 
         board += "\n--- Orden de turno  ---\n"
-        for player in player_sequence:
-            board += player.name + " " + u"\u27A1\uFE0F" + " "
+        for index, player in enumerate(items):
+            if game.board.state.player_counter == index:
+                board += "*" + player.name + "*" + " " + u"\u27A1\uFE0F" + " "
+            else:
+                board += player.name + " " + u"\u27A1\uFE0F" + " "
         board = board[:-3]
         board += u"\U0001F501"
         
