@@ -225,7 +225,7 @@ def vote_creadores_opinion(bot, game):
 		if not game.playerlist[player.uid].esta_muerto and not game.is_debugging:
 			if game.playerlist[player.uid] is not game.board.state.lider_actual:
 				bot.send_message(player.uid, game.board.print_board(game.player_sequence))
-			bot.send_message(player.uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
+			bot.send_message(player.uid, game.board.state.mensaje_votacion + "\nCUIDADO TU VOTO SERA PUBLICO Y NO PODRAS CAMBIARLO!", reply_markup=voteMarkup)
 	
 def vote(bot, game):
 	log.info('Vote called')
@@ -238,11 +238,12 @@ def vote(bot, game):
 	
 	if game.is_debugging:
 		bot.send_message(ADMIN, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
-		
 	
 	for uid in game.playerlist:
-		if not game.playerlist[uid].esta_muerto and not game.is_debugging:
-			if game.playerlist[uid] is not game.board.state.lider_actual:
+		player = game.playerlist[uid]
+		# Me aseguro que los creadores de opinion no tengan para votar o cambiar su voto
+		if not player.esta_muerto and not player.creador_de_opinion and not game.is_debugging:
+			if player is not game.board.state.lider_actual:
 				bot.send_message(uid, game.board.print_board(game.player_sequence))
 			bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 			
@@ -258,6 +259,7 @@ def handle_voting(bot, update):
 		game = GamesController.games[cid]
 		
 		uid = callback.from_user.id
+		player = game.playerlist[uid]
 		
 		if game.board.state.fase_actual not in ["votacion_del_equipo_de_mision", "vote_creadores_opinion"]:
 			bot.edit_message_text("No es el momento de votar!", uid, callback.message.message_id)
@@ -269,7 +271,15 @@ def handle_voting(bot, update):
 		#if uid not in game.board.state.last_votes:
 		game.board.state.last_votes[uid] = answer
 		
-		
+		# Ahora vienen los casos particulares
+		# Si el usuario es un creador de opinion no le permito cambiar el voto y 
+		# verifico si todos los creadores de opinion ya votaron
+		if player.creador_de_opinion:
+			if len(game.board.state.last_votes) == len(game.get_creadores_de_opinion())
+				vote(bot, game)
+				return
+			else:
+				return
 		
 		#Allow player to change his vote
 		btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
