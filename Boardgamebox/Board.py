@@ -38,25 +38,25 @@ class Board(object):
         # Seguimiento de misiones
         for resultado in self.state.resultado_misiones :
             if resultado == "Exito":
-                board += "😀" + " " #dove
+                board += u"\u2714\uFE0F" + " " #dove
             else:
-                board += "😀" + "  " #X          
+                board += u"\u2716\uFE0F" + "  " #X          
         
         board += "\n--- Contador de elección ---\n"
         for i in range(5):
             if i < self.state.failed_votes:
-                board += "😀" + " " #X
+                board += u"\u2716\uFE0F" + " " #X
             else:
-                board += "😀" + " " #empty
+                board += u"\u25FB\uFE0F" + " " #empty
 
         board += "\n--- Orden de turno  ---\n"
         for index, player in enumerate(player_sequence):
             if self.state.player_counter == index:
-                board += "<b>" + player.name + "</b>" + " " + "😀" + " "
+                board += "**" + player.name + "**" + " " + u"\u27A1\uFE0F" + " "
             else:
-                board += player.name + " " + "😀" + " "
+                board += player.name + " " + u"\u27A1\uFE0F" + " "
         board = board[:-3]
-        board += "😀"
+        board += u"\U0001F501"
         
         '''
         if self.state.fascist_track >= 3:
