@@ -47,14 +47,14 @@ class Board(object):
             if i < self.state.failed_votes:
                 board += u"\u2716\uFE0F" + " " #X
             else:
-                board += u"\u25FB\uFE0F" + " " #empty
+                board += "✖" + " " #empty
 
         board += "\n--- Orden de turno  ---\n"
         for index, player in enumerate(player_sequence):
             if self.state.player_counter == index:
-                board += "**" + player.name + "**" + " " + u"\u27A1\uFE0F" + " "
+                board += "**" + player.name + "**" + " " + "✖" + " "
             else:
-                board += player.name + " " + u"\u27A1\uFE0F" + " "
+                board += player.name + " " + "✖" + " "
         board = board[:-3]
         board += u"\U0001F501"
         
