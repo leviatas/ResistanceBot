@@ -131,18 +131,22 @@ def command_help(bot, update):
 def reload_game(bot, game, cid):
 	GamesController.games[cid] = game
 	bot.send_message(cid, "Hay un juego comenzado en este chat. Si quieres terminarlo escribe /cancelgame!")				
-	bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)				
+				
 	# Ask the president to choose a chancellor
-
+	
+	
 	if game.board.state.fase_actual == "votacion_del_equipo_de_mision":
+		bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)	
 		if len(game.board.state.last_votes) == len(game.player_sequence):
 			MainController.count_votes(bot, game)
 		else:
 			bot.send_message(cid, "Hay una votación en progreso utiliza /calltovote para decirles a los otros jugadores. ")
 	else:
 		if game.board.state.fase_actual == "conducir_la_mision":
+			bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)	
 			MainController.voting_aftermath(bot, game, True)
 		elif game.board.state.fase_actual == "asignar_equipo":			
+			bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)	
 			MainController.asignar_equipo(bot, game)
 		else:
 			MainController.start_round(bot, game)
