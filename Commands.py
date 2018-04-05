@@ -512,11 +512,11 @@ def command_toggle_debugging(bot, update):
 		game.is_debugging = True if not game.is_debugging else False
 		bot.send_message(cid, "Debug Mode: ON" if game.is_debugging else "Debug Mode: OFF")
 		
-def command_prueba(bot, update):
+def command_prueba(bot, update, args):
 	uid = update.message.from_user.id
 	if uid == ADMIN:
 		callback = update.callback_query
-		log.info(callback.data)
+		log.info(' '.join(args))
 		'''
 		cid = update.message.chat_id
 		game = GamesController.games.get(cid, None)		
