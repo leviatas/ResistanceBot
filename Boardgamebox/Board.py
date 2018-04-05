@@ -60,7 +60,18 @@ class Board(object):
                 board += "*" + player.name + "*" + " " + u"\u27A1\uFE0F" + " "
             else:
                 board += player.name + " " + u"\u27A1\uFE0F" + " "
-        board = board[:-3]
+        board = board[:-1]
         board += u"\U0001F501"
-               
+        board += print_playerCards(self, player_sequence)
         return board
+    
+    def print_playerCards(self, player_sequence):
+        cartasjugadores = "\n--- Cartas que tienen los Jugadores ---\n"
+        for player in player_sequence:
+            # Listo todas sus cartas
+            cartas = ""
+            for carta in player.cartas_trama:
+                cartas += carta + ", "
+            cartas = cartas[:-2] + "\n"
+            cartasjugadores += cartas
+        return cartasjugadores
