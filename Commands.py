@@ -78,7 +78,7 @@ def command_board(bot, update):
 	if cid in GamesController.games.keys():
 		game = GamesController.games[cid]
 		if game.board:			
-			bot.send_message(cid, game.board.print_board(game.player_sequence))
+			bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
 		else:
 			bot.send_message(cid, "No hay juego comenzado en este chat.  Por favor comience el juego con /startgame")
 	else:
