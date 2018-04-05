@@ -45,13 +45,13 @@ class Board(object):
                 board += u"\u2716\uFE0F" + "  " #X          
         '''        
         board += "\n--- Contador de elección ---\n"
-        '''
+        
         for i in range(5):
             if i < self.state.failed_votes:
                 board += u"\u2716\uFE0F" + " " #X
             else:
                 board += u"\u25FB\uFE0F" + " " #empty
-        '''
+        
         '''
         board += "\n--- Orden de turno  ---\n"
         '''
