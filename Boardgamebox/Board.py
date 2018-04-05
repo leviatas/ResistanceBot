@@ -18,18 +18,17 @@ class Board(object):
             
         self.discards = []
         self.previous = []
-   
     def print_board(self, player_sequence):
         board = "--- Misiones ---\n"
+        '''
         for i in range(5):
             # Pongo la cantidad de miembros por mision como primera fila
             # pongo un espacio extra luego de 4 porque esta el * de mision en casod e mas de 6 jugadores
             if i == 3 and self.num_players > 6:
                 board += " " + str(i+1) + "    "
             else:        
-                board += " " + str(i+1) + "   "
-            
-            
+                board += " " + str(i+1) + "   "            
+        '''    
         board += "\n"
         for i in range(5):
             # Pongo la cantidad de miembros por mision como primera fila
@@ -47,14 +46,14 @@ class Board(object):
             if i < self.state.failed_votes:
                 board += u"\u2716\uFE0F" + " " #X
             else:
-                board += "✖" + " " #empty
+                board += u"\u25FB\uFE0F" + " " #empty
 
         board += "\n--- Orden de turno  ---\n"
         for index, player in enumerate(player_sequence):
             if self.state.player_counter == index:
-                board += "*" + player.name + "*" + " " + "✖" + " "
+                board += "**" + player.name + "**" + " " + u"\u27A1\uFE0F" + " "
             else:
-                board += player.name + " " + "✖" + " "
+                board += player.name + " " + u"\u27A1\uFE0F" + " "
         board = board[:-3]
         board += u"\U0001F501"
         
