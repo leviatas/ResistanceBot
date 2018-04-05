@@ -37,13 +37,13 @@ class Board(object):
         board += "\n"
         '''
         # Seguimiento de misiones
-        '''
+        
         for resultado in self.state.resultado_misiones :
             if resultado == "Exito":
                 board += u"\u2714\uFE0F" + " " #dove
             else:
                 board += u"\u2716\uFE0F" + "  " #X          
-        '''        
+             
         board += "\n--- Contador de elección ---\n"
         
         for i in range(5):
