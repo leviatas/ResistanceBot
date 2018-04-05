@@ -70,7 +70,7 @@ class Board(object):
         for player in player_sequence:
             # Listo todas sus cartas            
             if player.cartas_trama:
-                cartas = "%s: " % (player.name)
+                cartas = "*%s*: " % (player.name)
                 for carta in player.cartas_trama:
                     cartas += carta + ", "
                 cartas = cartas[:-2] + "\n"
