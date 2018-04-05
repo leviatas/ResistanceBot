@@ -51,7 +51,7 @@ class Board(object):
 
         board += "\n--- Orden de turno  ---\n"
         for index, player in enumerate(player_sequence):
-            if game.board.state.player_counter == index:
+            if self.state.player_counter == index:
                 board += "*" + player.name + "*" + " " + u"\u27A1\uFE0F" + " "
             else:
                 board += player.name + " " + u"\u27A1\uFE0F" + " "
