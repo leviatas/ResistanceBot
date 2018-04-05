@@ -62,7 +62,7 @@ class Board(object):
                 board += player.name + " " + u"\u27A1\uFE0F" + " "
         board = board[:-1]
         board += u"\U0001F501"
-        board += print_playerCards(self, player_sequence)
+        board += self.print_playerCards(self, player_sequence)
         return board
     
     def print_playerCards(self, player_sequence):
