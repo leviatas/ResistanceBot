@@ -52,24 +52,15 @@ class Board(object):
             else:
                 board += u"\u25FB\uFE0F" + " " #empty
         
-        '''
+        
         board += "\n--- Orden de turno  ---\n"
-        '''
-        '''for index, player in enumerate(player_sequence):
+        
+        for index, player in enumerate(player_sequence):
             if self.state.player_counter == index:
                 board += "" + player.name + "" + " " + u"\u27A1\uFE0F" + " "
             else:
                 board += player.name + " " + u"\u27A1\uFE0F" + " "
         board = board[:-3]
         board += u"\U0001F501"
-        '''
-        '''
-        if self.state.fascist_track >= 3:
-            board += "\n\n" + u"\u203C\uFE0F" + " Cuidado: Si Hitler es elegido como Canciller los fascistas ganan el juego! " + u"\u203C\uFE0F"
-        if len(self.state.not_hitlers) > 0:
-            board += "\n\nSabemos que los siguientes jugadores no son Hitler porque fueron elegidos Canciller despues de 3 politicas fascistas:\n"
-            for nh in self.state.not_hitlers:
-                board += nh.name + ", "
-            board = board[:-2]
-        '''
+               
         return board
