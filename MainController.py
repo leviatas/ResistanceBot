@@ -216,6 +216,8 @@ def vote_creadores_opinion(bot, game):
 	btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
 	voteMarkup = InlineKeyboardMarkup(btns)
 	
+	bot.send_message(game.cid, "Los creadores de opinión deben votar primero tienen que votar ellos primero y mostrar su voto.")
+	
 	if game.is_debugging:
 		bot.send_message(ADMIN, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 		
@@ -278,6 +280,8 @@ def handle_voting(bot, update):
 		# Si el usuario es un creador de opinion no le permito cambiar el voto y 
 		# verifico si todos los creadores de opinion ya votaron
 		if player.creador_de_opinion:
+			bot.send_message(game.cid, "El creador de opinion %s ha votado *%s*" % (player.name, answer), ParseMode.MARKDOWN)
+			game.history.append("El creador de opinion %s ha votado *%s*" % (player.name, answer))
 			if len(game.board.state.last_votes) == len(game.get_creadores_de_opinion()):
 				vote(bot, game)
 				return
@@ -666,7 +670,7 @@ def elegir_carta_de_trama_a_repartir(bot, game):
 		bot.send_message(ADMIN, 'Elige la primera carta a repartir!', reply_markup=cartasMarkup)
 	else:
 		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence))
-		bot.send_message(game.board.state.lider_actual.uid, 'Elige la primera carta a repartir!', reply_markup=cartasMarkup)
+		bot.send_message(game.board.state.lider_actual.uid, 'Elige una carta para repartir!', reply_markup=cartasMarkup)
 		
 def elegir_jugador_para_dar_carta_de_trama(bot, update):
 	callback = update.callback_query
