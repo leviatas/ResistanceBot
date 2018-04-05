@@ -30,10 +30,12 @@ class Board(object):
                 board += " " + str(i+1) + "   "            
         '''    
         board += "\n"
+        '''
         for i in range(5):
             # Pongo la cantidad de miembros por mision como primera fila
             board += " " + self.misiones[i] + "   " #X
         board += "\n"
+        '''
         # Seguimiento de misiones
         '''
         for resultado in self.state.resultado_misiones :
@@ -41,13 +43,15 @@ class Board(object):
                 board += u"\u2714\uFE0F" + " " #dove
             else:
                 board += u"\u2716\uFE0F" + "  " #X          
-        '''
+        '''        
         board += "\n--- Contador de elección ---\n"
+        '''
         for i in range(5):
             if i < self.state.failed_votes:
                 board += u"\u2716\uFE0F" + " " #X
             else:
                 board += u"\u25FB\uFE0F" + " " #empty
+        '''
         '''
         board += "\n--- Orden de turno  ---\n"
         '''
