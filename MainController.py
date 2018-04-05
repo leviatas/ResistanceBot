@@ -428,6 +428,7 @@ def handle_team_voting(bot, update):
 				if uid == game.board.state.miembroenelpuntodemira:
 					bot.send_message(game.cid, "El voto del jugador %s es: %s" % (callback.from_user.first_name, answer))
 					inicio_votacion_equipo(bot, game)
+					return
 					
 		#Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
 		#log.info(len(game.board.state.votos_mision))	
