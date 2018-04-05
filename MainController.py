@@ -261,6 +261,9 @@ def handle_voting(bot, update):
 		uid = callback.from_user.id
 		player = game.playerlist[uid]
 		
+		if game.board.state.fase_actual == "vote_creadores_opinion" and not player.creador_de_opinion:
+			bot.edit_message_text("No eres un creador de opinion, no debes votar todavia!", uid, callback.message.message_id)
+			return
 		if game.board.state.fase_actual not in ["votacion_del_equipo_de_mision", "vote_creadores_opinion"]:
 			bot.edit_message_text("No es el momento de votar!", uid, callback.message.message_id)
 			return
@@ -275,7 +278,7 @@ def handle_voting(bot, update):
 		# Si el usuario es un creador de opinion no le permito cambiar el voto y 
 		# verifico si todos los creadores de opinion ya votaron
 		if player.creador_de_opinion:
-			if len(game.board.state.last_votes) == len(game.get_creadores_de_opinion())
+			if len(game.board.state.last_votes) == len(game.get_creadores_de_opinion()):
 				vote(bot, game)
 				return
 			else:
