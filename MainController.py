@@ -1486,7 +1486,12 @@ def robar_carta_plot(bot, update):
 		game = GamesController.games[cid]		
 		uid = callback.from_user.id
 		player_objetivo = game.playerlist[player_objetivo_uid]
-		bot.send_message(cid, "El jugador ha robado la carta %s al jugador %s" % (carta, player_objetivo.name))
+		player_ladron = game.playerlist[uid]
+		player_objetivo.cartas_trama.remove(carta)
+				
+		player_ladron.cartas_trama.add(carta)
+		bot.send_message(cid, "El jugador %s ha robado la carta %s al jugador %s" % (player_ladron.name, carta, player_objetivo.name))
+		
 			
 	except Exception as e:
 		log.error(str(e))
