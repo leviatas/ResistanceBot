@@ -763,8 +763,8 @@ def verificar_cartas_a_entregar(bot, game):
 
 	# Si la lista es vacia...
 	if not game.board.state.cartas_trama_obtenidas:
-		if preguntar_intencion_uso_carta(bot, game, "Asumir Responsabilidad 1-Uso", "asumirresponsabilidad"):			
-			return
+		preguntar_intencion_uso_carta(bot, game, "Asumir Responsabilidad 1-Uso", "asumirresponsabilidad"):			
+		
 		asignar_equipo(bot, game)
 	else:
 		elegir_carta_de_trama_a_repartir(bot, game)
@@ -1454,10 +1454,8 @@ def carta_plot_asumirresponsabilidad(bot, update):
 		if answer == "Si":
 			# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
 			log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
-			bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))	
-			game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
-			game.playerlist[uid].cartas_trama.remove('En El Punto De Mira 1-Uso')
-			bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
+			
+			bot.edit_message_text("Ahora te mostrare las opciones para usar la carta %s!" % (nombre_carta), uid, callback.message.message_id)
 			elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid)
 		else:
 			# En este caso no se pregunta a otros jugadores ya que hay solo 1 carta de estas,
@@ -1487,11 +1485,18 @@ def robar_carta_plot(bot, update):
 		uid = callback.from_user.id
 		player_objetivo = game.playerlist[player_objetivo_uid]
 		player_ladron = game.playerlist[uid]
-		player_objetivo.cartas_trama.remove(carta)
-				
-		player_ladron.cartas_trama.add(carta)
-		bot.send_message(cid, "El jugador %s ha robado la carta %s al jugador %s" % (player_ladron.name, carta, player_objetivo.name))
-		
+			
+		if carta in player_objetivo.cartas_trama:
+			player_objetivo.cartas_trama.remove(carta)
+			bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (player_ladron.name, carta))
+			game.history.append("Jugador %s decidio usar la carta %s\n" % (player_ladron.name, carta))
+			player_objetivo.cartas_trama.remove('En El Punto Del Mira 1-Uso')
+			player_ladron.cartas_trama.add(carta)
+			bot.send_message(cid, "El jugador %s ha robado la carta %s al jugador %s" % (player_ladron.name, carta, player_objetivo.name))
+		else:
+			bot.send_message(player_ladron.uid, "El jugador %s ya no tiene la carta %s" % (player_objetivo.name, carta))
+			preguntar_intencion_uso_carta(bot, game, "Asumir Responsabilidad 1-Uso", "asumirresponsabilidad")
+			
 			
 	except Exception as e:
 		log.error(str(e))
