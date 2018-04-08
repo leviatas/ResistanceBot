@@ -1435,7 +1435,7 @@ def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 def carta_plot_asumirresponsabilidad(bot, update):	
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
-	regex = re.search("(-[0-9]*)_liderfuerte_(Si|No)", callback.data)
+	regex = re.search("(-[0-9]*)_asumirresponsabilidad_(Si|No)", callback.data)
 	cid = int(regex.group(1))
 	strcid = regex.group(1)
 	
