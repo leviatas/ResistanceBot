@@ -1189,6 +1189,10 @@ def carta_plot_sinconfianza(bot, update):
 			bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))			
 			# Quito la intencion del usuario
 			game.board.state.enesperadeaccion.pop(uid, None)
+			for jugador in game.board.state.enesperadeaccion:
+				log.info("Jugadores que falta decidirse %d" % jugador)
+				
+			
 			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
 			# Empty dict bool as false, o sea que si esta vacia continuo.
 			if not game.board.state.enesperadeaccion:
