@@ -1415,8 +1415,9 @@ def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 		btns = []	
 		# Doy opcion de elegir cualquier miembro el cual debera poner su carta de mision adelantada
 		for player in player_sequence:
-		    # Agrego a la persona y al lado la carta de plot que se puede robar         
-		    if player.cartas_trama:
+			
+			
+			if player.cartas_trama:
 				for carta in player.cartas_trama:
 					btns.append([InlineKeyboardButton("%s (%s)" % (player.name, carta), callback_data=strcid + "_elegircartaplot_" + str(player.uid) + "_carta_" + carta )])
 		equipoMarkup = InlineKeyboardMarkup(btns)	
