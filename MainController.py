@@ -1424,7 +1424,7 @@ def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 			
 			if player.cartas_trama:
 				for carta in player.cartas_trama:
-					btns.append([InlineKeyboardButton("%s (%s)" % (player.name, carta), callback_data=strcid + "_elegircartaplot_" + str(player.uid) + "_carta_" + carta )])
+					btns.append([InlineKeyboardButton("%s %s" % (player.name, carta), callback_data=strcid + "_elegircartaplot_" + str(player.uid) + "_carta_" + carta )])
 		equipoMarkup = InlineKeyboardMarkup(btns)	
 
 		if(game.is_debugging):
