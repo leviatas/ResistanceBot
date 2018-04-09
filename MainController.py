@@ -445,7 +445,7 @@ def handle_team_voting(bot, update):
 			if "Trampero" in game.modulos:
 				game.board.state.fase_actual = "carta_mision_trampero"
 				bot.send_message(game.cid, "El lider de la misión entonces decide aislar a un miembro para ver sus inteciones")
-				elegir_carta_mision(bot, game)
+				elegir_carta_mision(bot, game, game.board.state.lider_actual.uid)
 			else:
 				# Antes de contar los votos, si hay cartas de trama,
 				# preguntamos si algun jugador con la carta vigilancia estrecha quiere ver una carta de mision.
@@ -620,7 +620,7 @@ def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
 
 # Modulo Trampero
 # Modulo Trama
-def elegir_carta_mision(bot, game):
+def elegir_carta_mision(bot, game, uid):
 	turno_actual = len(game.board.state.resultado_misiones)
 	log.info('elegir_carta_mision called')
 	strcid = str(game.cid)	
@@ -636,8 +636,11 @@ def elegir_carta_mision(bot, game):
 		bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
 		bot.send_message(ADMIN, 'Por favor elegi al miembro de la mision al que quieres ver su carta de misión!', reply_markup=equipoMarkup)
 	else:
-		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
-		bot.send_message(game.board.state.lider_actual.uid, 'Por favor elegi al miembro de la mision al que quieres ver su carta de misión!', reply_markup=equipoMarkup)
+		
+		bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(uid, 'Por favor elegi al miembro de la mision al que quieres ver su carta de misión!', reply_markup=equipoMarkup)
+		
+		
 
 def repartir_cartas_trama(bot, game):
 	log.info('repartir_cartas_trama called')
@@ -1077,7 +1080,7 @@ def carta_plot_vigilanciaestrecha(bot, update):
 			game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
 			game.playerlist[uid].cartas_trama.remove(nombre_carta)
 			bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
-			elegir_carta_mision(bot, game)
+			elegir_carta_mision(bot, game, uid)
 		else:
 			bot.edit_message_text("Gracias por responder!", uid, callback.message.message_id)
 			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
