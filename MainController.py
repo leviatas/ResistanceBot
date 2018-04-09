@@ -1184,8 +1184,8 @@ def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 					txtBoton = "%s %s" % (player.name, carta)
 					strCarta = carta.replace(" ", "_")
 					datos = strcid + "_elegircartaplot_" + str(player.uid) + "_carta_" + strCarta					
-					log.info("Se crea boton con datos: %s %s" % (txtBoton, strCarta))					
-					btns.append([InlineKeyboardButton(txtBoton, callback_data=strCarta)])
+					log.info("Se crea boton con datos: %s %s" % (txtBoton, datos))					
+					btns.append([InlineKeyboardButton(txtBoton, callback_data=datos)])
 		equipoMarkup = InlineKeyboardMarkup(btns)	
 
 		if(game.is_debugging):
