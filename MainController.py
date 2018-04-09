@@ -608,13 +608,16 @@ def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
 	btns = [[InlineKeyboardButton("Si", callback_data=strcid + ("_%s_" % (accion_carta)) + "Si"), 
 		 InlineKeyboardButton("No", callback_data=strcid + ("_%s_" % (accion_carta)) + "No")]]
 	desicion = InlineKeyboardMarkup(btns)
+	jugadores = ""
 	for uid in game.playerlist:
 		if nombre_carta in game.playerlist[uid].cartas_trama:
 			game.board.state.enesperadeaccion[uid] = nombre_carta
 			bot.send_message(uid, "¿Queres usar la carta: %s?" % (nombre_carta), reply_markup=desicion)
+			jugadores += game.playerlist[uid].name + " ,"
 			result = True
 	if result:
-		bot.send_message(game.cid, "Los jugadores con la carta %s deben decidir si la usan recuerden que si muchos quieren usarla hay prioridad al más cercano al lider actual" % (nombre_carta))		
+		jugadores = jugadores[:-2]
+		bot.send_message(game.cid, "Los jugadores %s con la carta %s deben decidir si la usan recuerden que si muchos quieren usarla hay prioridad al más cercano al lider actual" % (jugadores, nombre_carta))		
 	
 	return result
 
@@ -738,6 +741,7 @@ def dar_carta_trama(bot, update):
 		elif "Permanente" in carta:
 			# Actualmente solo hay 1 carta permanente
 			miembro_elegido.creador_de_opinion = True
+			miembro_elegido.cartas_trama.append(carta)
 		elif "Inmediata" in carta:
 			if carta == "Comunicación Intervenida Inmediata":
 				# El jugador que recibe la carte debe investigar un jugador adyacente				
@@ -1130,6 +1134,7 @@ def carta_plot_liderfuerte(bot, update):
 			game.board.state.enesperadeaccion.pop(uid, None)
 			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
 			if not game.board.state.enesperadeaccion:
+				increment_player_counter(game)
 				start_round(bot, game)
 			
 	except Exception as e:
