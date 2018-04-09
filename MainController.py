@@ -1424,7 +1424,7 @@ def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 			
 			if player.cartas_trama:
 				for carta in player.cartas_trama:
-					btns.append([InlineKeyboardButton("%s %s" % (player.name, carta), callback_data=strcid + "_elegircartaplot_" + str(player.uid) + "_carta_" + carta.replace(' ', '_')])
+					btns.append([InlineKeyboardButton("%s %s" % (player.name, carta), callback_data=strcid + "_elegircartaplot_" + str(player.uid) + "_carta_" + carta.replace(" ", "_"))])
 		equipoMarkup = InlineKeyboardMarkup(btns)	
 
 		if(game.is_debugging):
@@ -1483,7 +1483,7 @@ def robar_carta_plot(bot, update):
 	cid = int(regex.group(1))
 	strcid = regex.group(1)	
 	player_objetivo_uid = int(regex.group(2))
-	carta = regex.group(3).replace('_', ' ')
+	carta = regex.group(3).replace("_", " )
 	
 	try:
 		game = GamesController.games[cid]		
