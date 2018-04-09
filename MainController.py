@@ -1200,8 +1200,8 @@ def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 		
 def robar_carta_plot(bot, update):	
 	callback = update.callback_query
-	log.info('handle_voting called: %s' % callback.data)
-	regex = re.search("(-[0-9]*)_elegircartaplot_([0-9]*)_(.*)", callback.data)
+	log.info('robar_carta_plot called: %s' % callback.data)
+	regex = re.search("(-[0-9]*)_elegircartaplot_([0-9]*)_carta_(.*)", callback.data)
 	cid = int(regex.group(1))
 	strcid = regex.group(1)	
 	player_objetivo_uid = int(regex.group(2))
@@ -1553,7 +1553,7 @@ def main():
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_vigilanciaestrecha_(Si|No)", callback=carta_plot_vigilanciaestrecha))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_liderfuerte_(Si|No)", callback=carta_plot_liderfuerte))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_asumirresponsabilidad_(Si|No)", callback=carta_plot_asumirresponsabilidad))
-	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_elegircartaplot_([0-9]*)_(.*)", callback=robar_carta_plot))
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_elegircartaplot_([0-9]*)_carta_(.*)", callback=robar_carta_plot))
 	
 	# log all errors
 	dp.add_error_handler(error)
