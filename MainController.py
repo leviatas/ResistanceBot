@@ -1202,7 +1202,7 @@ def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 def robar_carta_plot(bot, update):	
 	callback = update.callback_query
 	log.info('robar_carta_plot called: %s' % callback.data)
-	regex = re.search("(-[0-9]*)_elegircartaplot_([0-9]*)_carta_(.*)", callback.data)
+	regex = re.search("(-[0-9]*)_elegircartaplot_([0-9]*)_(.*)", callback.data)
 	cid = int(regex.group(1))
 	strcid = regex.group(1)	
 	player_objetivo_uid = int(regex.group(2))
