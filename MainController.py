@@ -1483,7 +1483,7 @@ def robar_carta_plot(bot, update):
 	cid = int(regex.group(1))
 	strcid = regex.group(1)	
 	player_objetivo_uid = int(regex.group(2))
-	carta = regex.group(3).replace("_", " )
+	carta = regex.group(3).replace("_", " ")
 	
 	try:
 		game = GamesController.games[cid]		
