@@ -1170,49 +1170,7 @@ def carta_plot_asumirresponsabilidad(bot, update):
 				inicio_votacion_equipo(bot, game)
 			
 	except Exception as e:
-		log.error(str(e))
-		
-def carta_plot_asumirresponsabilidad(bot, update):	
-	callback = update.callback_query
-	log.info('handle_voting called: %s' % callback.data)
-	regex = re.search("(-[0-9]*)_liderfuerte_(Si|No)", callback.data)
-	cid = int(regex.group(1))
-	strcid = regex.group(1)
-	
-	answer = regex.group(2)
-	try:
-		game = GamesController.games[cid]		
-		uid = callback.from_user.id
-		
-		nombre_carta = 'Asumir Responsabilidad 1-Uso'
-		fase = "plot_" + nombre_carta
-		
-		if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
-			bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
-			return
-				
-		if answer == "Si":
-			# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
-			log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
-			bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))	
-			game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
-			game.playerlist[uid].cartas_trama.remove('En El Punto De Mira 1-Uso')
-			bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
-			elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid)
-		else:
-			# En este caso no se pregunta a otros jugadores ya que hay solo 1 carta de estas,
-			# aunque se podria poner como base que siempre se pregunte...
-			bot.edit_message_text("Gracias por responder!", uid, callback.message.message_id)
-			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
-			bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))
-			# Quito la intencion del usuario
-			game.board.state.enesperadeaccion.pop(uid, None)
-			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
-			if not game.board.state.enesperadeaccion:
-				inicio_votacion_equipo(bot, game)
-			
-	except Exception as e:
-		log.error(str(e))
+		log.error(str(e))		
 
 def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 	log.info('elegir_miembro_carta_plot_enelpuntodemira called')	
