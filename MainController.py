@@ -1423,9 +1423,10 @@ def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 			if player.cartas_trama:
 				for carta in player.cartas_trama:
 					txtBoton = "%s %s" % (player.name, carta)
-					datos = strcid + "_elegircartaplot_" + str(player.uid) + "_carta_" + carta.replace(" ", "_")
-					log.info("Se crea boton con datos: (%s) (%s)" % (txtBoton, datos))					
-					btns.append([InlineKeyboardButton(txtBoton, callback_data=datos)])
+					strCarta = carta.replace(" ", "_")
+					datos = strcid + "_elegircartaplot_" + str(player.uid) + "_carta_" + strCarta					
+					log.info("Se crea boton con datos: %s %s" % (txtBoton, strCarta))					
+					btns.append([InlineKeyboardButton(txtBoton, callback_data=strCarta)])
 		equipoMarkup = InlineKeyboardMarkup(btns)	
 
 		if(game.is_debugging):
