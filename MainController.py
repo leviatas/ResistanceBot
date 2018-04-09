@@ -1221,6 +1221,7 @@ def robar_carta_plot(bot, update):
 			player_ladron.cartas_trama.remove('Asumir Responsabilidad 1-Uso')
 			player_ladron.cartas_trama.append(carta)
 			bot.send_message(cid, "El jugador %s ha robado la carta %s al jugador %s" % (player_ladron.name, carta, player_objetivo.name))
+			bot.edit_message_text("Le has robado la carta %s a %s!" % (carta, player_objetivo.name), uid, callback.message.message_id)
 		else:
 			bot.send_message(player_ladron.uid, "El jugador %s ya no tiene la carta %s" % (player_objetivo.name, carta))
 			preguntar_intencion_uso_carta(bot, game, "Asumir Responsabilidad 1-Uso", "asumirresponsabilidad")
