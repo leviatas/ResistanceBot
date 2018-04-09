@@ -855,8 +855,8 @@ def get_jugadores_adjacentes(game, uidjugador):
 	log.info('El indice del jugador a la izquierda es %d' % (indexJugadorALaIzquierda))
 	
 	listaJugadoresDisponibles = []
-	listaJugadoresDisponibles.append(game.playerlist[indexJugadorALaIzquierda])
-	listaJugadoresDisponibles.append(game.playerlist[indexJugadorALaDerecha])
+	listaJugadoresDisponibles.append(game.player_sequence[indexJugadorALaIzquierda])
+	listaJugadoresDisponibles.append(game.player_sequence[indexJugadorALaDerecha])
 	
 	return listaJugadoresDisponibles
 	
