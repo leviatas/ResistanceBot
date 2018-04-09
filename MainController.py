@@ -1179,7 +1179,7 @@ def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 		btns = []	
 		# Doy opcion de elegir cualquier miembro el cual debera poner su carta de mision adelantada
 		for player in game.player_sequence:
-			if player.cartas_trama and player != uid:
+			if player.cartas_trama and player.uid != uid:
 				for carta in player.cartas_trama:
 					txtBoton = "%s %s" % (player.name, carta)
 					strCarta = carta.replace(" ", "_")
