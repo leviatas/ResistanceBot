@@ -763,9 +763,9 @@ def verificar_cartas_a_entregar(bot, game):
 
 	# Si la lista es vacia...
 	if not game.board.state.cartas_trama_obtenidas:
-		#if preguntar_intencion_uso_carta(bot, game, "Asumir Responsabilidad 1-Uso", "asumirresponsabilidad"):
-		#	return
-		preguntar_intencion_uso_carta(bot, game, "Asumir Responsabilidad 1-Uso", "asumirresponsabilidad")
+		if preguntar_intencion_uso_carta(bot, game, "Asumir Responsabilidad 1-Uso", "asumirresponsabilidad"):
+			return
+		#preguntar_intencion_uso_carta(bot, game, "Asumir Responsabilidad 1-Uso", "asumirresponsabilidad")
 		asignar_equipo(bot, game)
 	else:
 		elegir_carta_de_trama_a_repartir(bot, game)
