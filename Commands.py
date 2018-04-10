@@ -539,7 +539,10 @@ def command_prueba(bot, update, args):
 		
 		#game.board.state.failed_votes -= 1
 		
-		bot.send_message(ADMIN, game.board.state.fase_actual)
+		for uid in game.board.state.last_votes:
+			bot.send_message(ADMIN, "%s voto" % uid)
+		
+		bot.send_message(ADMIN, "Fase actual: %s" % game.board.state.fase_actual)
 		
 		'''
 		callback = update.callback_query
