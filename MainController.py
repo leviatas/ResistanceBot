@@ -85,6 +85,10 @@ def start_round(bot, game):
 	
 	bot.send_message(game.cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
 	bot.send_message(game.cid, "El próximo Lider es [%s](tg://user?id=%d).", ParseMode.MARKDOWN)
+	
+	turno_actual = len(game.board.state.resultado_misiones)
+	game.history.append("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes + 1))
+	
 	# Si esta el modulo de Trama se reparten cartas de Trama 
 	if "Trama" in game.modulos:
 		# Solo el primer lider de cada ronda (el juego tiene solo 5) reparte cartas.
@@ -331,7 +335,7 @@ def count_votes(bot, game):
 		bot.send_message(game.cid, voting_text, ParseMode.MARKDOWN)
 		# Hasta que no se sepa se puede hablar luego de los votos.
 		#bot.send_message(game.cid, "\nNo se puede hablar ahora.")
-		game.history.append(("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes + 1) ) + voting_text)
+		game.history.append(voting_text)
 		log.info(game.history[game.board.state.currentround])
 		
 		# Si se juega con plot cards se tiene que preguntar si algun jugador tiene la carta de Sin Confianza
@@ -349,7 +353,7 @@ def count_votes(bot, game):
 		voting_text += "\nA la resistencia no le gusto el equipo de %s compuesto por:\n%s" % (
 			game.board.state.lider_actual.name, game.get_equipo_actual(False))		
 		bot.send_message(game.cid, voting_text)
-		game.history.append(("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes) ) + voting_text)		
+		game.history.append(voting_text)		
 		votacion_fallida(bot, game)
 		
 def votacion_fallida(bot, game):
