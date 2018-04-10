@@ -1540,6 +1540,7 @@ def main():
 	dp.add_handler(CommandHandler("reload", Commands.command_reloadgame))
 	dp.add_handler(CommandHandler("debug", Commands.command_toggle_debugging))
 	dp.add_handler(CommandHandler("prueba", Commands.command_prueba, pass_args = True))
+	dp.add_handler(CommandHandler("cartas", Commands.command_cartas))
 	
 	#Testing commands
 	dp.add_handler(CommandHandler("ja", Commands.command_ja))
