@@ -55,14 +55,8 @@ commands = [  # command description used in the "help" command
 ]
 
 symbols = [
-    u"\u25FB\uFE0F" + ' Lugar vacio sin poder especial',
-    u"\u2716\uFE0F" + ' Campo cubierto con una carta',  # X
-    u"\U0001F52E" + ' Poder Presidencial: Investigar Políticas',  # crystal
-    u"\U0001F50E" + ' Poder Presidencial: Investigar Afiliación Política',  # inspection glass
-    u"\U0001F5E1" + ' Poder Presidencial: Ejecución',  # knife
-    u"\U0001F454" + ' Poder Presidencial: Llamar a Elección Especial',  # tie
-    u"\U0001F54A" + ' Liberales ganan',  # dove
-    u"\u2620" + ' Fascistas ganan'  # skull
+	u"\u2714\uFE0F" + ' Mision exitosa',
+	u"\u2716\uFE0F" + ' Mision fallida',
 ]
 
 cards = ["*Creador De Opinión Permanente* - El jugador a quién el Líder pase esta carta, debe seleccionar y revelar su token de Voto antes de que cualquier jugador seleccione su Voto. El efecto de esta carta permanece hasta el fin de la partida. Si dos 'Creadores de opinión' están en juego, los 2 jugadores mostrarán sus votos simultámente.",
@@ -103,7 +97,7 @@ def command_board(bot, update):
 
 def command_start(bot, update):
     cid = update.message.chat_id
-    bot.send_message(cid,"Bot de La Resistencia ")
+    bot.send_message(cid,"Bot del juego de mesa La Resistencia.")
     command_help(bot, update)
 
 
