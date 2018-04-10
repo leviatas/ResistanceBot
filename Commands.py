@@ -537,7 +537,9 @@ def command_prueba(bot, update, args):
 		cid = update.message.chat_id
 		game = GamesController.games.get(cid, None)
 		
-		game.board.state.failed_votes -= 1
+		#game.board.state.failed_votes -= 1
+		
+		bot.send_message(ADMIN, game.board.state.fase_actual)
 		
 		'''
 		callback = update.callback_query
