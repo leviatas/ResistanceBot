@@ -87,7 +87,7 @@ def start_round(bot, game):
 	bot.send_message(game.cid, "El próximo Lider es [%s](tg://user?id=%d)." % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid), ParseMode.MARKDOWN)
 	
 	turno_actual = len(game.board.state.resultado_misiones)
-	game.history.append("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes + 1))
+	game.history.append("Ronda %d.%d" % (turno_actual, game.board.state.failed_votes + 1))
 	
 	# Si esta el modulo de Trama se reparten cartas de Trama 
 	if "Trama" in game.modulos:
