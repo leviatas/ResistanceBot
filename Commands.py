@@ -336,6 +336,7 @@ def command_calltovote(bot, update):
 				if elapsed > datetime.timedelta(minutes=1):
 					# Only remember to vote to players that are still in the game
 					history_text = ""
+					bot.send_message(ADMIN, game.board.state.fase_actual is "votacion_del_equipo_de_mision") 
 					if game.board.state.fase_actual is "votacion_del_equipo_de_mision":
 						for player in game.player_sequence:
 							# If the player is not in last_votes send him reminder
