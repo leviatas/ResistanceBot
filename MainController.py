@@ -84,7 +84,7 @@ def start_round(bot, game):
 		game.board.state.lider_elegido = None
 	
 	bot.send_message(game.cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
-	bot.send_message(game.cid, "El próximo Lider es [%s](tg://user?id=%d).", ParseMode.MARKDOWN)
+	bot.send_message(game.cid, "El próximo Lider es [%s](tg://user?id=%d)." % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid), ParseMode.MARKDOWN)
 	
 	turno_actual = len(game.board.state.resultado_misiones)
 	game.history.append("Ronda %d.%d\n\n" % (turno_actual, game.board.state.failed_votes + 1))
@@ -104,7 +104,7 @@ def asignar_equipo(bot, game):
 	log.info(game.board.state.equipo_contador)
 	if game.board.state.equipo_contador == 0:
 		game.board.state.fase_actual = "asignar_equipo"
-		msgtext =  "%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
+		msgtext =  "%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name)
 		bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
 		Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)	
 	turno_actual = len(game.board.state.resultado_misiones)
@@ -620,7 +620,7 @@ def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
 			jugadores += "[%s](tg://user?id=%d)" % (game.playerlist[uid].name, game.playerlist[uid].uid) + " ,"
 			result = True
 	if result:
-		jugadores = jugadores[:-2]
+		#jugadores = jugadores[:-2]
 		bot.send_message(game.cid, "Los jugadores %s con la carta %s deben decidir si la usan recuerden que si muchos quieren usarla hay prioridad al más cercano al lider actual" % (jugadores, nombre_carta), ParseMode.MARKDOWN)		
 	
 	return result
