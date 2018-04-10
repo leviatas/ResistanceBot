@@ -84,7 +84,7 @@ def start_round(bot, game):
 		game.board.state.lider_elegido = None
 	
 	bot.send_message(game.cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
-	
+	bot.send_message(game.cid, "El próximo Lider es [%s](tg://user?id=%d).", ParseMode.MARKDOWN)
 	# Si esta el modulo de Trama se reparten cartas de Trama 
 	if "Trama" in game.modulos:
 		# Solo el primer lider de cada ronda (el juego tiene solo 5) reparte cartas.
@@ -100,7 +100,7 @@ def asignar_equipo(bot, game):
 	log.info(game.board.state.equipo_contador)
 	if game.board.state.equipo_contador == 0:
 		game.board.state.fase_actual = "asignar_equipo"
-		msgtext =  "El próximo Lider es [%s](tg://user?id=%d).\n%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
+		msgtext =  "%s, por favor elige a los miembros que irán a la mision en nuestro chat privado!" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.board.state.lider_actual.name)
 		bot.send_message(game.cid, msgtext, ParseMode.MARKDOWN)
 		Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)	
 	turno_actual = len(game.board.state.resultado_misiones)
