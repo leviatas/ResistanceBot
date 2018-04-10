@@ -523,8 +523,15 @@ def command_toggle_debugging(bot, update):
 def command_prueba(bot, update, args):
 	uid = update.message.from_user.id
 	if uid == ADMIN:
+		cid = update.message.chat_id
+		game = GamesController.games.get(cid, None)
+		
+		game.board.state.player_counter -= 1
+		
+		'''
 		callback = update.callback_query
 		log.info(' '.join(args))
+		'''
 		'''
 		cid = update.message.chat_id
 		game = GamesController.games.get(cid, None)		
