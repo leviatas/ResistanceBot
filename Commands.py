@@ -65,15 +65,15 @@ symbols = [
     u"\u2620" + ' Fascistas ganan'  # skull
 ]
 
-cards = ["Creador De Opinión Permanente - El jugador a quién el Líder pase esta carta, debe seleccionar y revelar su token de Voto antes de que cualquier jugador seleccione su Voto. El efecto de esta carta permanece hasta el fin de la partida. Si dos 'Creadores de opinión' están en juego, los 2 jugadores mostrarán sus votos simultámente.",
-	 "Lider Fuerte 1-Uso - El jugador a quién el Líder pase esta carta, puede convertirse en Líder. El uso de esta carta debe ser anunciado antes de que el Líder realice alguna acción (robar las cartas de Complot o distribuir las cartas de Equipo). Cuando se juegue un 'Líder Fuerte', otro 'Líder Fuerte' no puede ser jugado hasta realizar una Votación.",
-	 "Vigilancia Estrecha 1-Uso - El jugador a quién el Líder pase esta carta, puede usarla para examinar una carta de Misión jugada. Usar esta carta no requiere que un jugador anuncie su uso antes de que las cartas de Misión se jueguen, y no afecta a la carta de Misión jugada. Multiples cartas de Misión pueden ser comprobadas en una sóla ronda, pero no más de un jugador puede comprobar la misma carta en una ronda.",
-	 "Asumir Responsabilidad 1-Uso - El jugador a quién el Líder pase esta carta, debe coger una carta de Complot de otro jugador.",
-	 "En El Punto De Mira 1-Uso - El jugador a quién el Líder pase esta carta, puede usarla para forzar a un jugador a jugar su carta de Misión boca arriba. El jugador que juegue esta carta debe anunciar su uso y el jugador objetivo antes de que cualquier jugador en el equipo de Misión seleccione su carta de Misión.",
-	 "Sin confianza 1-Uso - El jugador a quién el Líder pase esta carta, debe usar esta carta para rechazar un equipo de Misión aprobado (Votación aprobada). Usar esta carta cuenta como un Votación fallida.",
-	 "Comunicación Intervenida Inmediata - El jugador a quién el Líder pase esta carta, debe mirar la carta de Personaje de un jugador adyacente.",
-	 "Compartir Opinión Inmediata - El jugador a quién el Líder pase esta carta, debe pasar su carta de Personaje a otro jugador (incluido el Líder) para examinarla.",
-	 "Establecer Confianza Inmediata - El lider debe pasar su carta de Personaje al jugador que reciba esta carta."
+cards = ["*Creador De Opinión Permanente* - El jugador a quién el Líder pase esta carta, debe seleccionar y revelar su token de Voto antes de que cualquier jugador seleccione su Voto. El efecto de esta carta permanece hasta el fin de la partida. Si dos 'Creadores de opinión' están en juego, los 2 jugadores mostrarán sus votos simultámente.",
+	 "*Lider Fuerte 1-Uso* - El jugador a quién el Líder pase esta carta, puede convertirse en Líder. El uso de esta carta debe ser anunciado antes de que el Líder realice alguna acción (robar las cartas de Complot o distribuir las cartas de Equipo). Cuando se juegue un 'Líder Fuerte', otro 'Líder Fuerte' no puede ser jugado hasta realizar una Votación.",
+	 "*Vigilancia Estrecha 1-Uso* - El jugador a quién el Líder pase esta carta, puede usarla para examinar una carta de Misión jugada. Usar esta carta no requiere que un jugador anuncie su uso antes de que las cartas de Misión se jueguen, y no afecta a la carta de Misión jugada. Multiples cartas de Misión pueden ser comprobadas en una sóla ronda, pero no más de un jugador puede comprobar la misma carta en una ronda.",
+	 "*Asumir Responsabilidad 1-Uso* - El jugador a quién el Líder pase esta carta, debe coger una carta de Complot de otro jugador.",
+	 "*En El Punto De Mira 1-Uso* - El jugador a quién el Líder pase esta carta, puede usarla para forzar a un jugador a jugar su carta de Misión boca arriba. El jugador que juegue esta carta debe anunciar su uso y el jugador objetivo antes de que cualquier jugador en el equipo de Misión seleccione su carta de Misión.",
+	 "*Sin confianza 1-Uso* - El jugador a quién el Líder pase esta carta, debe usar esta carta para rechazar un equipo de Misión aprobado (Votación aprobada). Usar esta carta cuenta como un Votación fallida.",
+	 "*Comunicación Intervenida Inmediata* - El jugador a quién el Líder pase esta carta, debe mirar la carta de Personaje de un jugador adyacente.",
+	 "*Compartir Opinión Inmediata* - El jugador a quién el Líder pase esta carta, debe pasar su carta de Personaje a otro jugador (incluido el Líder) para examinarla.",
+	 "*Establecer Confianza Inmediata* - El lider debe pasar su carta de Personaje al jugador que reciba esta carta."
 ]
 
 def command_symbols(bot, update):
@@ -85,10 +85,10 @@ def command_symbols(bot, update):
 
 def command_cartas(bot, update):
 	cid = update.message.chat_id
-	symbol_text = "Las siguientes cartas pueden aparecer al lider: \n"
+	card_text = "Las siguientes cartas pueden aparecer al lider: \n"
 	for i in cards:
-		symbol_text += i + "\n"
-	bot.send_message(cid, symbol_text)
+		card_text += i + "\n"
+	bot.send_message(cid, card_text, ParseMode.MARKDOWN)
 
 def command_board(bot, update):
 	cid = update.message.chat_id
