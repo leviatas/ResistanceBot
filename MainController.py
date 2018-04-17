@@ -888,7 +888,7 @@ def ver_carta_mision(bot, update):
 	regex = re.search("(-[0-9]*)_verificarcarta_([0-9]*)", callback.data)
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
-
+	uid = callback.from_user.id
 	try:
 		game = GamesController.games.get(cid, None)		
 		turno_actual = len(game.board.state.resultado_misiones)		
@@ -897,7 +897,7 @@ def ver_carta_mision(bot, update):
 		#log.info(chosen_uid in game.playerlist)        
 		log.info(chosen_uid)
 		
-		miembro_investigador = game.playerlist[callback.from_user.id]
+		miembro_investigador = game.playerlist[uid]
 		miembro_elegido = game.playerlist[chosen_uid]
 		
 		log.info("El miembro %s (%d) eligio la carta de %s (%d)" % (
@@ -908,7 +908,7 @@ def ver_carta_mision(bot, update):
 		voto_mision = game.board.state.votos_mision[chosen_uid]
 		
 		bot.edit_message_text("La carta de %s es: %s!" % (miembro_elegido.name, voto_mision),
-				callback.from_user.id, callback.message.message_id)
+				uid, callback.message.message_id)
 		
 		bot.send_message(game.cid,
 			"El miembro %s investigo la carta de %s!" % (
@@ -917,7 +917,12 @@ def ver_carta_mision(bot, update):
 		if game.board.state.fase_actual == "carta_mision_trampero":
 			# En Trampero se remueve el voto de mision que se ve.
 			del game.board.state.votos_mision[chosen_uid]
-		count_mission_votes(bot, game)
+			count_mission_votes(bot, game)
+		else:			
+			# Si es el de trama
+			game.board.state.enesperadeaccion.pop(uid, None)
+			if not game.board.state.enesperadeaccion:
+				count_mission_votes(bot, game)
 			
 	except AttributeError as e:
 		log.error("ver_carta_mision: Game or board should not be None! Eror: " + str(e))
