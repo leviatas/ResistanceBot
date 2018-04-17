@@ -621,7 +621,7 @@ def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
 			result = True
 	if result:
 		#jugadores = jugadores[:-2]
-		bot.send_message(game.cid, "Los jugadores %s con la carta %s, deben decidir si la usan recuerden que si muchos quieren usarla hay prioridad al más cercano al lider actual" % (jugadores, nombre_carta), ParseMode.MARKDOWN)		
+		bot.send_message(game.cid, "Los jugadores %scon la carta %s, deben decidir si la usan recuerden que si muchos quieren usarla hay prioridad al más cercano al lider actual" % (jugadores, nombre_carta), ParseMode.MARKDOWN)		
 	
 	return result
 
@@ -736,6 +736,9 @@ def dar_carta_trama(bot, update):
 			"El lider %s le dio a %s la carta %s!" % (
 			game.board.state.lider_actual.name, miembro_elegido.name, carta))
 		
+		game.history.append("El lider %s le dio a %s la carta %s!" % (
+			game.board.state.lider_actual.name, miembro_elegido.name, carta))
+				
 		#Agrego uno al contador de Miembros, minimo hay 2 por misión.
 		#Lo agrego al equipo
 				
