@@ -617,11 +617,11 @@ def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
 		if nombre_carta in game.playerlist[uid].cartas_trama:
 			game.board.state.enesperadeaccion[uid] = nombre_carta
 			bot.send_message(uid, "¿Queres usar la carta: %s?" % (nombre_carta), reply_markup=desicion)
-			jugadores += "[%s](tg://user?id=%d)" % (game.playerlist[uid].name, game.playerlist[uid].uid) + " ,"
+			jugadores += "[%s](tg://user?id=%d)" % (game.playerlist[uid].name, game.playerlist[uid].uid) + ", "
 			result = True
 	if result:
 		#jugadores = jugadores[:-2]
-		bot.send_message(game.cid, "Los jugadores %s con la carta %s deben decidir si la usan recuerden que si muchos quieren usarla hay prioridad al más cercano al lider actual" % (jugadores, nombre_carta), ParseMode.MARKDOWN)		
+		bot.send_message(game.cid, "Los jugadores %s con la carta %s, deben decidir si la usan recuerden que si muchos quieren usarla hay prioridad al más cercano al lider actual" % (jugadores, nombre_carta), ParseMode.MARKDOWN)		
 	
 	return result
 
