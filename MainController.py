@@ -254,7 +254,7 @@ def vote(bot, game):
 			if player is not game.board.state.lider_actual:
 				bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
 			# Solo envio votacion a los que no hayan votado
-			if player.uid not in game.board.state.last_votes
+			if player.uid not in game.board.state.last_votes:
 				bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 			
 def handle_voting(bot, update):
