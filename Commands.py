@@ -151,6 +151,7 @@ def reload_game(bot, game, cid):
 		if len(game.board.state.last_votes) == len(game.player_sequence):
 			MainController.count_votes(bot, game)
 		else:
+			vote(bot, game)
 			bot.send_message(cid, "Hay una votación en progreso utiliza /calltovote para decirles a los otros jugadores. ")
 	else:
 		if game.board.state.fase_actual == "conducir_la_mision":
