@@ -133,6 +133,6 @@ class Game(object):
 	def get_coordinador(self):
 		coordinador = []
 		for uid in self.playerlist:
-			if self.playerlist[uid].rol == "Coordinador"): 
+			if self.playerlist[uid].rol == "Coordinador": 
 				coordinador.append(self.playerlist[uid])
 		return coordinador
