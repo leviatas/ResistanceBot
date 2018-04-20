@@ -1399,19 +1399,31 @@ def set_roles(bot, game, lista_a_modificar):
 		if "roles" in modules[modulo]:
 			modulo_actual = modules[modulo]["roles"]		
 			if not modulo_actual == None:
-				for afiliacion, rol in modules[modulo]["roles"].items():	
-					# Obtiene el indice y modifica el elemento en la lista 
-					indice = next((i for i, v in enumerate(lista_a_modificar) if v in afiliacion), -1)
-					if indice == -1:
-						bot.send_message(ADMIN, "Se quiso agregar un afiliacion (%s) y rol (%s), cuando no hay afiliaciones disponibles" % (afiliacion, rol))	
-					else:
-						#bot.send_message(ADMIN, indice)
-						lista_a_modificar[indice] = rol
+				if modulo == "Cazador":
+					# El modulo cazador tiene muchos roles y afiliaciones asi que lo hago aparte.
+					# En el futuro se deberia ver por player num en cada modulo asi se hace generico
+					player_number = str(len(game.playerlist))
+					for rol, afiliacion in modules[modulo]["roles"][player_number].items():
+						indice = next((i for i, v in enumerate(lista_a_modificar) if v in afiliacion), -1)
+						if indice == -1:
+							bot.send_message(ADMIN, "Se quiso agregar un afiliacion (%s) y rol (%s), cuando no hay afiliaciones disponibles" % (afiliacion, rol))	
+						else:
+							#bot.send_message(ADMIN, indice)
+							lista_a_modificar[indice] = rol
+				else:					
+					for afiliacion, rol in modules[modulo]["roles"].items():	
+						# Obtiene el indice y modifica el elemento en la lista 
+						indice = next((i for i, v in enumerate(lista_a_modificar) if v in afiliacion), -1)
+						if indice == -1:
+							bot.send_message(ADMIN, "Se quiso agregar un afiliacion (%s) y rol (%s), cuando no hay afiliaciones disponibles" % (afiliacion, rol))	
+						else:
+							#bot.send_message(ADMIN, indice)
+							lista_a_modificar[indice] = rol
 
-					#bot.send_message(ADMIN, indice)
-					'''for n, i in enumerate(a):
-					if i == 1:
-					a[n] = 10'''
+						#bot.send_message(ADMIN, indice)
+						'''for n, i in enumerate(a):
+						if i == 1:
+						a[n] = 10'''
 			
 def print_player_info(player_number):
     if player_number == 5:
