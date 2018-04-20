@@ -129,3 +129,10 @@ class Game(object):
 			if self.playerlist[uid].rol in ("Jefe Resistencia", "Jefe Resistencia 2"): 
 				jefes.append(self.playerlist[uid])
 		return jefes
+	
+	def get_coordinador(self):
+		coordinador = []
+		for uid in self.playerlist:
+			if self.playerlist[uid].rol == "Coordinador"): 
+				coordinador.append(self.playerlist[uid])
+		return coordinador
