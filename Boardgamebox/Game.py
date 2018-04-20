@@ -122,3 +122,10 @@ class Game(object):
 			if self.playerlist[uid].creador_de_opinion:
 				creador_de_opinion.append(self.playerlist[uid])
 		return creador_de_opinion
+	
+	def get_jefes_resistencia(self):
+		jefes = []
+		for uid in self.playerlist:
+			if self.playerlist[uid].rol in ("Jefe Resistencia", "Jefe Resistencia 2"): 
+				jefes.append(self.playerlist[uid])
+		return jefes
