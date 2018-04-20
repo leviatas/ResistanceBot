@@ -147,7 +147,7 @@ def reload_game(bot, game, cid):
 	
 	
 	if game.board.state.fase_actual == "votacion_del_equipo_de_mision":
-		bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)	
+		bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)		
 		if len(game.board.state.last_votes) == len(game.player_sequence):
 			MainController.count_votes(bot, game)
 		else:
@@ -160,6 +160,9 @@ def reload_game(bot, game, cid):
 		elif game.board.state.fase_actual == "asignar_equipo":			
 			bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)	
 			MainController.asignar_equipo(bot, game)
+		elif game.board.state.fase_actual = "vote_creadores_opinion":
+			bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+			vote_creadores_opinion(bot, game)
 		else:
 			MainController.start_round(bot, game)
 
