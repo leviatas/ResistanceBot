@@ -176,10 +176,46 @@ modules = {
     },
     "Cazador": {
         "roles": {
-            "EspiaC": "Cazador",
-            "ResistenciaC": "Cazador",
-            "EspiaJ": "Jefe",
-            "ResistenciaJ": "Jefe"
+            "5" : {
+                "Cazador Resistencia": "Resistencia",                
+                "Jefe Resistencia": "Resistencia",
+                "Cazador Espia": "Espia",
+                "Jefe Espia": "Espia"
+            },
+            "6" : {
+                "Cazador Resistencia": "Resistencia",
+                "Jefe Resistencia": "Resistencia",
+                "Cazador Espia": "Espia",                
+                "Jefe Espia": "Espia"
+            },
+            "7" : {
+                "Cazador Resistencia": "Resistencia",
+                "Jefe Resistencia": "Resistencia",
+                "Cazador Espia": "Espia",                
+                "Jefe Espia": "Espia"
+            },
+            "8" : {
+                "Cazador Resistencia": "Resistencia",                
+                "Jefe Resistencia": "Resistencia",
+                "Jefe Resistencia 2": "Resistencia",
+                "Jefe Espia": "Espia",
+                "Cazador Espia": "Espia"
+            },
+            "9" : {
+                "Cazador Resistencia": "Resistencia",                
+                "Jefe Resistencia": "Resistencia",
+                "Jefe Resistencia 2": "Resistencia",
+                "Jefe Espia": "Espia",
+                "Cazador Espia": "Espia"
+            },
+            "10" : {
+                "Cazador Resistencia": "Resistencia",                
+                "Jefe Resistencia": "Resistencia",
+                "Jefe Resistencia 2": "Resistencia",
+                "Cazador Espia": "Espia",
+                "Jefe Espia": "Espia",
+                "Jefe Espia 2": "Espia"
+            }            
         },
         "rules": [
             "Cazador"
