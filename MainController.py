@@ -1445,21 +1445,21 @@ def inform_badguys(bot, game, player_number):
 	for uid in game.playerlist:
 		afiliacion = game.playerlist[uid].afiliacion
 		rol = game.playerlist[uid].rol
-		
-		
-		if afiliacion == "Espia" and not (rol ==  "Espia Ciego"):			
-			if player_number > 4:
-				badguys = game.get_badguys()
-				fstring = ""
-				for f in badguys:
-					if f.uid != uid:
-						fstring += f.name + ", "
-				fstring = fstring[:-2]
-				if not game.is_debugging:
-					bot.send_message(uid, "Tus compañeros espías son: %s" % fstring)
-				else:
-					bot.send_message(ADMIN, "Usuario con rol %s: Los espías son: %s" % (rol, fstring))
-					
+			
+		if afiliacion == "Espia" and not (rol in ("Espia Ciego", "Agente Oculto")):			
+			badguys = game.get_badguys()
+			fstring = ""
+			for f in badguys:				
+				if f.uid != uid:
+					fstring += f.name
+					if f.rol in ("Jefe Espia", "Jefe Espia 2"):
+						fstring += " (%s)" % f.rol
+					fstring += ", "
+			fstring = fstring[:-2]
+			if not game.is_debugging:
+				bot.send_message(uid, "Tus compañeros espías son: %s" % fstring)
+			else:
+				bot.send_message(ADMIN, "Usuario con rol %s: Los espías son: %s" % (rol, fstring))			
 		elif afiliacion == "Resistencia":
 			if rol == "Comandante":
 				badguys = game.get_badguys2()
@@ -1481,7 +1481,26 @@ def inform_badguys(bot, game, player_number):
 					bot.send_message(uid, "El/los comandante/s es/son: %s" % fstring)
 				else:
 					bot.send_message(ADMIN, "Guardaespaldas: Los comandantes son: %s" % fstring)	
-			pass
+			
+			if rol in ("Jefe Resistencia", "Jefe Resistencia 2") and player_number > 7:
+				jefes_resistencia = game.get_jefes_resistencia()
+				fstring = ""
+				for f in jefes_resistencia:
+					if f.uid != uid:
+						fstring += f.name + ", "
+				fstring = fstring[:-2]
+				if not game.is_debugging:
+					bot.send_message(uid, "El otro jefe de la resistencia es: %s" % fstring)
+				else:
+					bot.send_message(ADMIN, "Jefe resistencia: El otro jefe es: %s" % fstring)
+					
+				coordinador = game.get_coordinador()
+				if not coordinador:
+					if not game.is_debugging:
+						bot.send_message(uid, "El coordinador es: %s" % coordinador[0].name)
+					else:
+						bot.send_message(ADMIN, "Jefe resistencia: El coordinador es: %s" % coordinador[0].name)
+						
 		else:
 			log.error("inform_badguys: no se que hacer con la afiliacion: %s" % afiliacion)
 
