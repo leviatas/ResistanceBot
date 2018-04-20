@@ -221,6 +221,26 @@ modules = {
             "Cazador"
         ]
     },
+    "Cazador Agente Falso": {
+        "roles": {
+            "Resistencia": "Agente Falso"
+        }
+    },
+    "Cazador Coordinador": {
+        "roles": {
+            "Resistencia": "Coordinador"
+        }
+    },
+    "Cazador Agente Oculto": {
+        "roles": {
+            "Espia": "Agente Oculto"
+        }
+    },
+    "Cazador Pretendiente": {
+        "roles": {
+            "Resistencia": "Pretendiente"
+        }
+    },
     "Trama": {
         "plot": {
             "5" : [                
