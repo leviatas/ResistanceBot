@@ -538,9 +538,7 @@ def command_toggle_debugging(bot, update):
 def command_prueba(bot, update, args):
 	uid = update.message.from_user.id
 	if uid == ADMIN:
-		cid = update.message.chat_id
-		
-		bot.send_photo(cid, photo='https://www.dropbox.com/s/sy4473ohowipxke/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg?dl=0')
+		cid = update.message.chat_id		
 		bot.send_photo(cid, photo='https://photos-6.dropbox.com/t/2/AABEHwAmRP25l81INd2nS1K0HpB38ivK3exgArn5_A3KlA/12/784479/jpeg/32x32/3/1524506400/0/2/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg/EJSYYRjFwsHJASAHKAc/l1AMjbD37vMKkZWTVPUiY9vTP4NbvKkrT9_7hQfCp1U?dl=0&size=800x600&size_mode=3')
 		
 		'''game = GamesController.games.get(cid, None)
