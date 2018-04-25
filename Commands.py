@@ -539,10 +539,10 @@ def command_prueba(bot, update, args):
 	uid = update.message.from_user.id
 	if uid == ADMIN:
 		cid = update.message.chat_id
-		sdate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+		sdate = datetime.now().strftime("%Y-%m-%d")
 		log.info("Paso la conversion " + sdate)    
-		#bot.send_photo(cid, photo='https://www.dropbox.com/s/sy4473ohowipxke/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg?raw=1&cache=%d' % (datetime.now()))
-		bot.send_photo(cid, photo='https://www.dropbox.com/s/sy4473ohowipxke/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg?raw=1')
+		bot.send_photo(cid, photo='https://www.dropbox.com/s/sy4473ohowipxke/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg?raw=1&cache=%d' % (datetime.now()))
+		#bot.send_photo(cid, photo='https://www.dropbox.com/s/sy4473ohowipxke/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg?raw=1')
 		'''game = GamesController.games.get(cid, None)
 		
 		#game.board.state.failed_votes -= 1
