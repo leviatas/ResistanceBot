@@ -541,7 +541,8 @@ def command_prueba(bot, update, args):
 		cid = update.message.chat_id
 		sdate = datetime.now().strftime("%Y-%m-%d")
 		log.info("Paso la conversion " + sdate)    
-		bot.send_photo(cid, photo='https://www.dropbox.com/s/sy4473ohowipxke/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg?raw=1&cache=%d' % (datetime.now()))
+		bot.send_photo(cid, photo='https://www.dropbox.com/s/sy4473ohowipxke/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg?raw=1&cache=%s' % (args[0]))
+		#bot.send_photo(cid, photo='https://www.dropbox.com/s/sy4473ohowipxke/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg?raw=1&cache=%d' % (datetime.now()))
 		#bot.send_photo(cid, photo='https://www.dropbox.com/s/sy4473ohowipxke/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg?raw=1')
 		'''game = GamesController.games.get(cid, None)
 		
