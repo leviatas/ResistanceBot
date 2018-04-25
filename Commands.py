@@ -539,7 +539,7 @@ def command_prueba(bot, update, args):
 	uid = update.message.from_user.id
 	if uid == ADMIN:
 		cid = update.message.chat_id
-		sdate = datetime.now().strftime("%Y-%m-%d")
+		sdate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 		log.info("Paso la conversion " + sdate)
 		surl = "https://www.dropbox.com/s/sy4473ohowipxke/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg?raw=1&cache=" + sdate
 		log.info("URL: " + surl)
