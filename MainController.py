@@ -247,6 +247,7 @@ def elegir_jugador_general(bot, update):
 	chosen_uid = int(regex.group(2))
 	game = GamesController.games.get(cid, None)
 	miembro_elegido = game.playerlist[chosen_uid]
+	strcid = str(game.cid)
 	
 	# Luego hago accion dependiendo de la fase en la que este. 
 	try:
@@ -277,6 +278,25 @@ def elegir_jugador_general(bot, update):
 				game.board.state.resultado_misiones.append("Exito")
 				# Se verifica nuevamente si hay fin de partida
 				verify_fin_de_partida(bot, game)
+		if game.board.state.fase_actual == "investigacion_cazador":
+			btns = []
+			# El jugador debe elegir entre dos ya que tenemos que simular la decision del jefe espia.			
+			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2"):
+				# Si es jefe tiene que decidir
+				if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2"):
+					# Jefe espia siempre puede mostrar lealtad del jefe y jefe espia
+					btns.append([InlineKeyboardButton("Mostrar Jefe Espia", callback_data=strcid + "_mostrarinvestigador_Jefe_Espia")])
+					btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])					
+				else:
+					btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])					
+					# Si ha 7+ jugadores el jefe de la resistencia puede mostrar la carta de Jefe Resistencia
+					if len(game.playerlist) > 6:
+						btns.append([InlineKeyboardButton("Mostrar Jefe Resistencia", callback_data=strcid + "_mostrarinvestigador_Jefe_Resistencia")])						
+			else:
+				# Si no es lider le pongo solo de opcion que diga "No un jefe"
+				btns.append([InlineKeyboardButton("Mostrar No un Jefe", callback_data=strcid + "_mostrarinvestigador_No_un_jefe")])			
+			revelarMarkup = InlineKeyboardMarkup(btns)
+			bot.send_message(miembro_elegido.uid, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
 			
 	except AttributeError as e:
 		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
@@ -619,6 +639,8 @@ def verify_fin_de_partida(bot, game):
 			game.board.state.fase_actual = "acusacion_espias_cazador"			
 			cazador_espia = game.get_cazador_espia()
 			restriccion_jugador_a_elegir = [cazador_espia]
+			texto_eleccion = "%s, ¿A quien deseas cazar?" % (cazador_espia.name)
+			texto_menu = "¿A que jugador quieres cazar?"
 			elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, cazador_espia.uid)
 		else:
 			finalizo_el_partido = True
@@ -634,6 +656,8 @@ def verify_fin_de_partida(bot, game):
 			game.board.state.fase_actual = "acusacion_resistencia_cazador"			
 			cazador_resistencia = game.get_cazador_resistencia()
 			restriccion_jugador_a_elegir = [cazador_resistencia]
+			texto_eleccion = "%s, ¿A quien deseas cazar?" % (cazador_resistencia.name)
+			texto_menu = "¿A que jugador quieres cazar?"
 			elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, cazador_resistencia.uid)
 		else:
 			finalizo_el_partido = True
@@ -679,6 +703,8 @@ def respuesta_desencadenante_temprano(bot, update):
 			game.board.state.fase_actual = "acusacion_temprana_espias_cazador"			
 			cazador_espia = game.get_cazador_espia()
 			restriccion_jugador_a_elegir = [cazador_espia]
+			texto_eleccion = "%s, por favor elige a quien cazar!" % (cazador_espia.name)
+			texto_menu = "¿A que jugador quieres cazar?"
 			elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, cazador_espia.uid)
 		else:
 			#Si no hay acusacion temprana se pasa a la fase de investigacion
@@ -689,10 +715,27 @@ def respuesta_desencadenante_temprano(bot, update):
 
 def investigacion_cazador(bot, game):
 	# Veo si el ultimo objeto fue un fracaso o un exito.
+	game.board.state.fase_actual = "investigacion_cazador"
 	if game.board.state.resultado_misiones[-1] == "Exito":
-		algo = "algo"
-	else:
-		algo = "otra cosa"
+		# En caso de exito el investigador es el lider
+		game.board.state.investigador = game.board.state.lider_actual		
+	restriccion_jugador_a_elegir = [game.board.state.investigador]
+	texto_eleccion = "%s, por favor elige a quien investigar esta ronda!" % (game.board.state.investigador.name)		
+	texto_menu = "¿A que jugador quieres investigar?"
+	elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, game.board.state.investigador.uid)
+
+def respuesta_investigador(bot, update):
+	callback = update.callback_query
+	log.info('respuesta_investigador called: %s' % callback.data)
+	regex = re.search("(-[0-9]*)_mostrarinvestigador_(.*)", callback.data)
+	cid = int(regex.group(1))
+	strcid = regex.group(1)	
+	answer = regex.group(2).replace("_", " ")
+	game = GamesController.games[cid]		
+	uid = callback.from_user.id	
+	bot.send_message(game.board.state.investigador.uid, "El usuario te mostro demostro: %s" % (answer))
+	# Luego de la investigacion se comienza la proxima ronda 
+	start_next_round(bot, game)
 	
 def start_next_round(bot, game):
 	log.info('start_next_round called')
@@ -1778,6 +1821,7 @@ def main():
 	
 	# Comandos de Cazador exclusivamente
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_desencadenantefindepartidatemprana_(Si|No)", callback=respuesta_desencadenante_temprano))
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_mostrarinvestigador_(.*)", callback=respuesta_investigador))
 	
 	# Callbacks de Botones Generales
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_elegirjugador_(.*)", callback=elegir_jugador_general))
