@@ -136,3 +136,13 @@ class Game(object):
 			if self.playerlist[uid].rol == "Coordinador": 
 				coordinador.append(self.playerlist[uid])
 		return coordinador
+	
+	def get_cazador_resistencia(self):
+		for uid in self.playerlist:
+			if self.playerlist[uid].rol == "Cazador Resistencia":
+				return self.playerlist[uid]
+			
+	def get_cazador_espia(self):
+		for uid in self.playerlist:
+			if self.playerlist[uid].rol == "Cazador Espia":
+				return self.playerlist[uid]
