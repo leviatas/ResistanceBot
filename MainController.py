@@ -178,19 +178,10 @@ def asignar_miembro(bot, update):
 		#Lo agrego al equipo
 		game.board.state.equipo.append(miembro_asignado)
 		game.board.state.equipo_contador += 1
-		
-		
+				
 		# Si se suman la cantidad apropiada de miembros para la mision se vota.
 		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
-			miembros_elegidos = game.get_equipo_actual(False)
-			
-			mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %d:\n" % (len(game.board.state.resultado_misiones) + 1)
-			mensaje_votacion += miembros_elegidos
-			miembros_elegidos = game.get_equipo_actual(True)		
-			game.board.state.mensaje_votacion = mensaje_votacion			
-			mensaje_miembros_mision_elegidos = "El líder ha elegido a los siguientes miembros para ir a la misión:\n%s\nVoten en privado si les gusta dicho equipo." % (miembros_elegidos)			
-			bot.send_message(game.cid, mensaje_miembros_mision_elegidos, ParseMode.MARKDOWN )			
-			iniciar_votacion(bot, game)
+			pre_inicio_votacion(bot, game)
 		else:
 			#Si no se eligieron todos se le pide que siga eligiendo hasta llegar al cupo. Se pone tiempo para que no se sobrepise
 			asignar_equipo(bot, game)
@@ -201,7 +192,106 @@ def asignar_miembro(bot, update):
 		log.error("Unknown error: " + repr(e))
 		log.exception(e)
 
+def pre_inicio_votacion(bot, game):
+	# Si esta el modulo de Cazador se le pide al Lider que elija a un investigador
+	if "Cazador" in game.modulos:
+		# Se elige investigador, no puede ser miembro del equipo ni el lider.
+		# Copio por valor, no referencia
+		restriccion_jugador_a_elegir = game.board.state.equipo[:]		
+		restriccion_jugador_a_elegir.append(game.board.state.lider_actual)
+		texto_eleccion = "%s, por favor elige al investigador de esta ronda!" % (game.board.state.lider_actual.name)
+		game.board.state.fase_actual = "eleccion_de_investigador_cazador"
+		texto_menu = "¿A que jugador quieres elegir para ser el investigador?"
+		elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, game.board.state.lider_actual.uid)		
+	else:
+		# Si es un juego normal...
+		iniciar_votacion(bot, game)
+
+# Metodo general para mostrar un menupara elegir a un jugador
+# La idea es que se pone en el estado del juego para que es esta eleccion, a futuro cambiare todos los lugares
+# que se elige a una persona con este.
+def elegir_jugador_general_menu(bot, game, texto_publico, texto_menu, restriccion_jugador_a_elegir, id_jugador_eleccion):
+	bot.send_message(game.cid, texto_publico, ParseMode.MARKDOWN)
+	#Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)	
+	log.info('elegir_jugador_general_menu called: %s' % game.board.state.fase_actual)
+	
+	strcid = str(game.cid)	
+	btns = []
+	
+	# Inicialmente se puede elegir a cualquiera para formar los equipos
+	# Menos los que esten en el equipo elegido
+	for uid in game.playerlist:
+		if game.playerlist[uid] not in restriccion_jugador_a_elegir:
+			name = game.playerlist[uid].name
+			btns.append([InlineKeyboardButton(name, callback_data=strcid + "_elegirjugador_" + str(uid))])
+	
+	elegirjugador = InlineKeyboardMarkup(btns)
+		
+	if(game.is_debugging):
+		bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(ADMIN, 'Por favor nomina a un miembro para la misión!', reply_markup=elegirjugador)
+	else:
+		bot.send_message(id_jugador_eleccion, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(id_jugador_eleccion, 'Por favor nomina a un miembro para la misión!', reply_markup=elegirjugador)
+
+	
+	
+# Metodo general para recibir el update de eleccion de jugador por diferentes motivos
+def elegir_jugador_general(bot, update):
+	# Antes que cualquier cosa obtengo los datos del callback
+	log.info('asignar_miembro called')
+	log.info(update.callback_query.data)
+	callback = update.callback_query
+	regex = re.search("(-[0-9]*)_equipo_([0-9]*)", callback.data)
+	cid = int(regex.group(1))
+	chosen_uid = int(regex.group(2))
+	game = GamesController.games.get(cid, None)
+	miembro_elegido = game.playerlist[chosen_uid]
+	
+	# Luego hago accion dependiendo de la fase en la que este. 
+	try:
+		# (Cazador) Si esta eligiendo investigador para el modulo cazador.
+		# Lo asigno como posible investigador y continuo con la votación.		
+		if game.board.state.fase_actual == "eleccion_de_investigador_cazador":			
+			game.board.state.investigador_nominado = miembro_elegido
+			iniciar_votacion(bot, game)
+		# El cazador de la resistencia tiene que descubrir al jefe espia
+		if game.board.state.fase_actual == "acusacion_resistencia_cazador":
+			# Si es alguno de los dos espias...
+			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2"):
+				end_game(bot, game, 2)
+			else:
+				# Elimino el ultimo resultado y agrego uno de Fracaso
+				game.board.state.resultado_misiones.pop()
+				game.board.state.resultado_misiones.append("Fracaso")
+				# Se verifica nuevamente si hay fin de partida
+				verify_fin_de_partida(bot, game)
+		
+		if game.board.state.fase_actual == "acusacion_espias_cazador":
+			# Si es alguno de los dos espias...
+			if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2"):
+				end_game(bot, game, -3)
+			else:
+				# Elimino el ultimo resultado y agrego uno de Fracaso
+				game.board.state.resultado_misiones.pop()
+				game.board.state.resultado_misiones.append("Exito")
+				# Se verifica nuevamente si hay fin de partida
+				verify_fin_de_partida(bot, game)
+			
+	except AttributeError as e:
+		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
+	except Exception as e:
+		log.error("Unknown error: " + repr(e))
+		log.exception(e)
+		
 def iniciar_votacion(bot, game):
+	miembros_elegidos = game.get_equipo_actual(False)			
+	mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %d:\n" % (len(game.board.state.resultado_misiones) + 1)
+	mensaje_votacion += miembros_elegidos
+	miembros_elegidos = game.get_equipo_actual(True)		
+	game.board.state.mensaje_votacion = mensaje_votacion			
+	mensaje_miembros_mision_elegidos = "El líder ha elegido a los siguientes miembros para ir a la misión:\n%s\nVoten en privado si les gusta dicho equipo." % (miembros_elegidos)			
+	bot.send_message(game.cid, mensaje_miembros_mision_elegidos, ParseMode.MARKDOWN )	
 	if "Trama" in game.modulos:
 		creadores_de_opinion = game.get_creadores_de_opinion()
 		# Si no hay creadores de opinion...
@@ -257,8 +347,7 @@ def vote(bot, game):
 			if player.uid not in game.board.state.last_votes:
 				bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 			
-def handle_voting(bot, update):
-	
+def handle_voting(bot, update):	
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_(.*)", callback.data)
@@ -329,10 +418,6 @@ def count_votes(bot, game):
 				
 		voting_text += "\nFelicitaciones al equipo de [%s](tg://user?id=%d) compuesto por:\n%s" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, game.get_equipo_actual(True))
 		
-		#game.board.state.chancellor = game.board.state.nominated_chancellor
-		#game.board.state.president = game.board.state.nominated_president
-		#game.board.state.nominated_president = None
-		#game.board.state.nominated_chancellor = None
 		voting_success = True
 		bot.send_message(game.cid, voting_text, ParseMode.MARKDOWN)
 		# Hasta que no se sepa se puede hablar luego de los votos.
@@ -346,9 +431,7 @@ def count_votes(bot, game):
 			# Si ya se pregunto, o el usuario ya dijo que no la usaria...
 			# Averiguo si algun jugador tiene carta para jugar primero antes de interrumpir.			
 			if preguntar_intencion_uso_carta(bot, game, "Sin confianza 1-Uso", "sinconfianza"):			
-				return		
-		# Se resetea los votos fallidos
-		game.board.state.failed_votes = 0
+				return			
 		voting_aftermath(bot, game, voting_success)
 	else:
 		log.info("Voting failed")
@@ -371,6 +454,11 @@ def voting_aftermath(bot, game, voting_success):
 	log.info('voting_aftermath called')
 	game.board.state.last_votes = {}
 	if voting_success:
+		# Se resetea los votos fallidos
+		game.board.state.failed_votes = 0
+		# (Cazador) el investigador nominado se convierte en investigador real.
+		game.board.state.investigador = game.board.state.investigador_nominado
+		game.board.state.investigador_nominado = None		
 		# Antes que reciban las cartas se puede jugar una carta que obliga a jugar boca arriba su carta de mision.	
 		if "Trama" in game.modulos:
 			# Veo si algun jugador tiene intencion de usar carta de trama
@@ -404,13 +492,20 @@ def enviar_votacion_equipo(bot, game, player):
 	btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
 	voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
 	
+	btns_espia_jefe = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso Jefe", callback_data=strcid + "_Fracaso")]]
+	voteMarkupEspiaJefe = InlineKeyboardMarkup(btns_espia_jefe)
+	
 	if game.is_debugging:
 		bot.send_message(ADMIN, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
 	else:		
 		if player.afiliacion == "Resistencia":
 			bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
 		else:
-			bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
+			# (Cazador) si es alguno de los espias jefes y son mas de 7+ jugadores. Los jefes tienen Fracaso Jefe.
+			if player.rol in ("Jefe Espia", "Jefe Espia 2") and len(game.playerlist) > 6:
+				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspiaJefe)
+			else:
+				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
 		
 def handle_team_voting(bot, update):
 	callback = update.callback_query
@@ -513,23 +608,92 @@ def count_mission_votes(bot, game):
 	log.info(sum( x == 'Fracaso' for x in game.board.state.resultado_misiones ))
 	log.info(sum( x == 'Exito' for x in game.board.state.resultado_misiones ))
 	
+	verify_fin_de_partida(bot, game)	
+		
+def verify_fin_de_partida(bot, game):
 	finalizo_el_partido = False
-	
 	if sum(x == 'Fracaso' for x in game.board.state.resultado_misiones) == 3:
-		end_game(bot, game, -1)
-		finalizo_el_partido = True
+		if "Cazador" in game.modulos:
+			finalizo_el_partido = False
+			# Si se consiguen 3 exitos se debe preguntar al Cazador de la resistencia que identifique al jefe
+			game.board.state.fase_actual = "acusacion_espias_cazador"			
+			cazador_espia = game.get_cazador_espia()
+			restriccion_jugador_a_elegir = [cazador_espia]
+			elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, cazador_espia.uid)
+		else:
+			finalizo_el_partido = True
+			end_game(bot, game, -1)		
 	if sum(x == 'Exito' for x in game.board.state.resultado_misiones) == 3:
 		# Si esta el modulo de asesino se deberia preguntar al asesino a quien mata y mostrar un mensaje de que puede matar
 		if "Asesino" in game.modulos:
-			final_asesino(bot, game)
 			finalizo_el_partido = False
+			final_asesino(bot, game)			
+		elif "Cazador" in game.modulos:
+			finalizo_el_partido = False
+			# Si se consiguen 3 exitos se debe preguntar al Cazador de la resistencia que identifique al jefe
+			game.board.state.fase_actual = "acusacion_resistencia_cazador"			
+			cazador_resistencia = game.get_cazador_resistencia()
+			restriccion_jugador_a_elegir = [cazador_resistencia]
+			elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, cazador_resistencia.uid)
 		else:
-			end_game(bot, game, 1)
 			finalizo_el_partido = True
+			end_game(bot, game, 1)			
+			
 	if not finalizo_el_partido:
-		bot.send_message(game.cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
-		start_next_round(bot, game)
+		# Antes de pasar al proximo turno le pregunto al cazador espia si va a finalizar la partida de forma temprana
+		if "Cazador" in game.modulos:
+			preguntar_desencadenante_temprano(bot, game)			
+		else:
+			bot.send_message(game.cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+			start_next_round(bot, game)
+
+def preguntar_desencadenante_temprano(bot, game):
+	game.board.state.fase_actual = "preguntar_desencadenante_temprano"
+	log.info('preguntar_desencadenante_temprano called')
+	cazador_espia = game.get_cazador_espia()
+	strcid = str(game.cid)
+	accion = "desencadenantefindepartidatemprana"
+	if any(x for x in game.board.state.equipo if x.rol in ("Jefe Espia", "Jefe Espia 2")):
+		btns = [[InlineKeyboardButton("Si", callback_data=strcid + ("_%s_" % (accion)) + "Si"), 
+			 InlineKeyboardButton("No", callback_data=strcid + ("_%s_" % (accion)) + "No")]]
+	else:
+		btns = [[InlineKeyboardButton("No se dan las condiciones", callback_data=strcid + ("_%s_" % (accion)) + "No")]]		
+	desicion = InlineKeyboardMarkup(btns)
+	bot.send_message(uid, "¿Queres el fin de partido temprano?", reply_markup=desicion)
+	
+def respuesta_desencadenante_temprano(bot, update):	
+	callback = update.callback_query
+	log.info('respuesta_desencadenante_temprano called: %s' % callback.data)
+	regex = re.search("(-[0-9]*)_desencadenantefindepartidatemprana_(Si|No)", callback.data)
+	cid = int(regex.group(1))
+	strcid = regex.group(1)	
+	answer = regex.group(2)
+	game = GamesController.games[cid]		
+	uid = callback.from_user.id
 		
+	try:
+		if not game.board.state.fase_actual == 'preguntar_desencadenante_temprano':
+			bot.edit_message_text("No puedes usar esta accion en este momento!", uid, callback.message.message_id)
+			return				
+		if answer == "Si":
+			game.board.state.fase_actual = "acusacion_temprana_espias_cazador"			
+			cazador_espia = game.get_cazador_espia()
+			restriccion_jugador_a_elegir = [cazador_espia]
+			elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, cazador_espia.uid)
+		else:
+			#Si no hay acusacion temprana se pasa a la fase de investigacion
+			investigacion_cazador(bot, game)
+			
+	except Exception as e:
+		log.error(str(e))
+
+def investigacion_cazador(bot, game):
+	# Veo si el ultimo objeto fue un fracaso o un exito.
+	if game.board.state.resultado_misiones[-1] == "Exito":
+		algo = "algo"
+	else:
+		algo = "otra cosa"
+	
 def start_next_round(bot, game):
 	log.info('start_next_round called')
 	# start next round if there is no winner (or /cancel)
@@ -974,8 +1138,7 @@ def carta_plot_sinconfianza(bot, update):
 			
 			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
 			# Empty dict bool as false, o sea que si esta vacia continuo.
-			if not game.board.state.enesperadeaccion:
-				game.board.state.failed_votes = 0
+			if not game.board.state.enesperadeaccion:				
 				voting_aftermath(bot, game, True)			
 				
 	except Exception as e:
@@ -1278,6 +1441,8 @@ def end_game(bot, game, game_endcode):
 		else:
 			bot.send_message(game.cid, "Juego cancelado!")
 	else:
+		if game_endcode == -3:
+			bot.send_message(game.cid, "Juego finalizado! Los espías ganaron saboteando 3 misiones y descubriendo a un jefe de la resistencia !\n\n%s" % game.print_roles())
 		if game_endcode == -2:
 			bot.send_message(game.cid, "Juego finalizado! Los espías ganaron matando al Comandante!\n\n%s" % game.print_roles())
 		if game_endcode == -1:
@@ -1285,7 +1450,7 @@ def end_game(bot, game, game_endcode):
 		if game_endcode == 1:
 			bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó pasando 3 misiones con exito!\n\n%s" % game.print_roles())
 		if game_endcode == 2:
-			bot.send_message(game.cid, "Juego finalizado! Pendiente!\n\n%s" % game.print_roles())
+			bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó pasando 3 misiones y descubriendo a un jefe de los espias!\n\n%s" % game.print_roles())
 		
 	#showHiddenhistory(game.cid)
 	del GamesController.games[game.cid]
@@ -1610,6 +1775,12 @@ def main():
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_liderfuerte_(Si|No)", callback=carta_plot_liderfuerte))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_asumirresponsabilidad_(Si|No)", callback=carta_plot_asumirresponsabilidad))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_elegircartaplot_([0-9]*)_(.*)", callback=robar_carta_plot))
+	
+	# Comandos de Cazador exclusivamente
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_desencadenantefindepartidatemprana_(Si|No)", callback=respuesta_desencadenante_temprano))
+	
+	# Callbacks de Botones Generales
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_elegirjugador_(.*)", callback=elegir_jugador_general))
 	
 	# log all errors
 	dp.add_error_handler(error)
