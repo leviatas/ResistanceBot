@@ -22,6 +22,7 @@ class State(object):
         #self.chosen_president = None Lider elegido por evento o jugador
         self.lider_elegido = None
         
+        self.investigador_nominado = None
         # Fase Actual
         self.fase_actual = None
         
