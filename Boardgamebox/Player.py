@@ -10,3 +10,5 @@ class Player(object):
         self.was_the_insquisitor = False
         self.creador_de_opinion = False
         self.cartas_trama = []
+        self.es_el_investigador = False
+        self.fue_el_investigador = False
