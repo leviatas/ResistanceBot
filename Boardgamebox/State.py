@@ -23,6 +23,8 @@ class State(object):
         self.lider_elegido = None
         
         self.investigador_nominado = None
+        self.investigador = None
+        
         # Fase Actual
         self.fase_actual = None
         
