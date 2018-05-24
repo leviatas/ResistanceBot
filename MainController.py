@@ -608,7 +608,8 @@ def count_mission_votes(bot, game):
 	voting_success = False
 	#Aca se podra hacer llamados para ver las cartas de mision y descartarla antes. Pero primero quiero lo basico
 	
-	cantidad_fracasos = sum("Fracaso" in x for x in game.board.state.votos_mision.values())
+	cantidad_fracasos = sum(x == "Fracaso" for x in game.board.state.votos_mision.values())
+	cantidad_fracasos_jefe = sum(x == "Fracaso Jefe" for x in game.board.state.votos_mision.values())
 	cantidad_exitos = sum(x == "Exito" for x in game.board.state.votos_mision.values())
 	
 	log.info("Misiones Fracasadas y exitosas") 
@@ -616,10 +617,12 @@ def count_mission_votes(bot, game):
 	log.info(sum( x == 'Exito' for x in game.board.state.resultado_misiones ))
 		
 	bot.send_message(game.cid, "Exitos: %d\nFracasos: %d\n" % (cantidad_exitos, cantidad_fracasos))
+	if "Cazador" in game.modulos:
+		bot.send_message(game.cid, "Fracasos Jefe: %d\" % (cantidad_fracasos_jefe))
 	
 	#Simplemente verifico si hay algun fracaso en la mision
-	log.info('Fracaso' in game.board.state.votos_mision.values())
-	
+	#log.info('Fracaso' in game.board.state.votos_mision.values())
+	cantidad_fracasos += cantidad_fracasos_jefe
 	
 	fracaso = False
 	
@@ -709,9 +712,9 @@ def preguntar_desencadenante_temprano(bot, game):
 	desicion = InlineKeyboardMarkup(btns)
 	cazador_espia = game.get_cazador_espia()
 	if game.is_debugging:
-		bot.send_message(ADMIN, "¿Queres el fin de partido temprano?", reply_markup=desicion)
+		bot.send_message(ADMIN, "¿Queres trigerear el fin de partido temprano?", reply_markup=desicion)
 	else:
-		bot.send_message(cazador_espia.uid, "¿Queres el fin de partido temprano?", reply_markup=desicion)
+		bot.send_message(cazador_espia.uid, "¿Queres trigerear el fin de partido temprano?", reply_markup=desicion)
 	
 def respuesta_desencadenante_temprano(bot, update):	
 	callback = update.callback_query
