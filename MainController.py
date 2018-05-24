@@ -275,7 +275,7 @@ def elegir_jugador_general(bot, update):
 				verify_fin_de_partida(bot, game)
 		
 		if game.board.state.fase_actual == "acusacion_espias_cazador":
-			bot.edit_message_text("TE lanzas contra %s convencido de que es tu objetivo!" % miembro_asignado.name,
+			bot.edit_message_text("TE lanzas contra %s convencido de que es tu objetivo!" % miembro_elegido.name,
 				callback.from_user.id, callback.message.message_id)
 			# Si es alguno de los dos espias...
 			if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2"):
@@ -288,7 +288,7 @@ def elegir_jugador_general(bot, update):
 				# Se verifica nuevamente si hay fin de partida
 				verify_fin_de_partida(bot, game)
 		if game.board.state.fase_actual == "investigacion_cazador":
-			bot.edit_message_text("Has investigado a %s espera a que elija su respuesta!" % miembro_asignado.name,
+			bot.edit_message_text("Has investigado a %s espera a que elija su respuesta!" % miembro_elegido.name,
 				callback.from_user.id, callback.message.message_id)
 			btns = []
 			# El jugador debe elegir entre dos ya que tenemos que simular la decision del jefe espia.			
