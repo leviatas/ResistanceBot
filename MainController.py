@@ -229,10 +229,10 @@ def elegir_jugador_general_menu(bot, game, texto_publico, texto_menu, restriccio
 		
 	if(game.is_debugging):
 		bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
-		bot.send_message(ADMIN, 'Por favor nomina a un miembro para la misión!', reply_markup=elegirjugador)
+		bot.send_message(ADMIN, texto_menu, reply_markup=elegirjugador)
 	else:
 		bot.send_message(id_jugador_eleccion, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
-		bot.send_message(id_jugador_eleccion, 'Por favor nomina a un miembro para la misión!', reply_markup=elegirjugador)
+		bot.send_message(id_jugador_eleccion, texto_menu, reply_markup=elegirjugador)
 
 	
 	
