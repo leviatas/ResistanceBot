@@ -1726,7 +1726,7 @@ def inform_badguys(bot, game, player_number):
 					bot.send_message(ADMIN, "Jefe resistencia: El otro jefe es: %s" % fstring)
 					
 				coordinador = game.get_coordinador()
-				if not coordinador:
+				if coordinador:
 					if not game.is_debugging:
 						bot.send_message(uid, "El coordinador es: %s" % coordinador[0].name)
 					else:
