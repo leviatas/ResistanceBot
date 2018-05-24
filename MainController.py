@@ -684,7 +684,8 @@ def preguntar_desencadenante_temprano(bot, game):
 	else:
 		btns = [[InlineKeyboardButton("No se dan las condiciones", callback_data=strcid + ("_%s_" % (accion)) + "No")]]		
 	desicion = InlineKeyboardMarkup(btns)
-	bot.send_message(game.get_cazador_espia().uid, "¿Queres el fin de partido temprano?", reply_markup=desicion)
+	cazador_espia = game.get_cazador_espia()
+	bot.send_message(cazador_espia.uid, "¿Queres el fin de partido temprano?", reply_markup=desicion)
 	
 def respuesta_desencadenante_temprano(bot, update):	
 	callback = update.callback_query
