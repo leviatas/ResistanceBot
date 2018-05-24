@@ -297,7 +297,10 @@ def elegir_jugador_general(bot, update):
 				# Si no es lider le pongo solo de opcion que diga "No un jefe"
 				btns.append([InlineKeyboardButton("Mostrar No un Jefe", callback_data=strcid + "_mostrarinvestigador_No_un_jefe")])			
 			revelarMarkup = InlineKeyboardMarkup(btns)
-			bot.send_message(miembro_elegido.uid, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
+			if game.is_debugging:
+				bot.send_message(ADMIN, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
+			else:
+				bot.send_message(miembro_elegido.uid, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
 			
 	except AttributeError as e:
 		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
