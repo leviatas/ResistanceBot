@@ -530,7 +530,11 @@ def enviar_votacion_equipo(bot, game, player):
 	voteMarkupEspiaJefe = InlineKeyboardMarkup(btns_espia_jefe)
 	
 	if game.is_debugging:
-		bot.send_message(ADMIN, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
+		btns_todos = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), 
+				    InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso"), 
+				    InlineKeyboardButton("Fracaso Jefe", callback_data=strcid + "_Fracaso Jefe")]]
+		voteMarkupTodos = InlineKeyboardMarkup(btns_todos)
+		bot.send_message(ADMIN, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupTodos)
 	else:		
 		if player.afiliacion == "Resistencia":
 			bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupResistencia)
