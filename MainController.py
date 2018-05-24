@@ -618,7 +618,7 @@ def count_mission_votes(bot, game):
 		
 	bot.send_message(game.cid, "Exitos: %d\nFracasos: %d\n" % (cantidad_exitos, cantidad_fracasos))
 	if "Cazador" in game.modulos:
-		bot.send_message(game.cid, "Fracasos Jefe: %d\" % (cantidad_fracasos_jefe))
+		bot.send_message(game.cid, "Fracasos Jefe: %d" % cantidad_fracasos_jefe)
 	
 	#Simplemente verifico si hay algun fracaso en la mision
 	#log.info('Fracaso' in game.board.state.votos_mision.values())
