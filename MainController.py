@@ -242,7 +242,7 @@ def elegir_jugador_general(bot, update):
 	log.info('asignar_miembro called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
-	regex = re.search("(-[0-9]*)_equipo_([0-9]*)", callback.data)
+	regex = re.search("(-[0-9]*)_elegirjugador_([0-9]*)", callback.data)
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
 	game = GamesController.games.get(cid, None)
