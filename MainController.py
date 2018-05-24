@@ -254,14 +254,14 @@ def elegir_jugador_general(bot, update):
 		# (Cazador) Si esta eligiendo investigador para el modulo cazador.
 		# Lo asigno como posible investigador y continuo con la votación.		
 		if game.board.state.fase_actual == "eleccion_de_investigador_cazador":			
-			bot.edit_message_text("Elegiste a %s para ser investigador en caso que falle la mision!" % miembro_asignado.name,
+			bot.edit_message_text("Elegiste a %s para ser investigador en caso que falle la mision!" % miembro_elegido.name,
 				callback.from_user.id, callback.message.message_id)
 			game.board.state.investigador_nominado = miembro_elegido
 			bot.send_message(game.cid, "El investigador elegido ha sido %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
 			iniciar_votacion(bot, game)
 		# El cazador de la resistencia tiene que descubrir al jefe espia
 		if game.board.state.fase_actual == "acusacion_resistencia_cazador":
-			bot.edit_message_text("TE lanzas contra %s convencido de que es tu objetivo!" % miembro_asignado.name,
+			bot.edit_message_text("TE lanzas contra %s convencido de que es tu objetivo!" % miembro_elegido.name,
 				callback.from_user.id, callback.message.message_id)
 			# Si es alguno de los dos espias...
 			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2"):
