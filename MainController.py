@@ -59,7 +59,7 @@ cur.execute(query)
 ##
 
 # Util para mandar mensajes
-def send_message(game, bot, receiver, message, parseMode, replyMarkup):
+def send_message(game, bot, receiver, message, replyMarkup, parseMode):
 	if(game.is_debugging):
 		if replyMarkup:
 			bot.send_message(ADMIN, message, replyMarkup=parseMode)
@@ -146,8 +146,8 @@ def asignar_equipo(bot, game):
 	if "Trampero" in game.modulos:
 		game.board.state.equipo_cantidad_mision += 1
 	
-	send_message(game, bot, game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN, False)
-	send_message(game, bot, game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', replyMarkup=equipoMarkup, True)
+	send_message(game, bot, game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence), False, ParseMode.MARKDOWN)
+	send_message(game, bot, game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', True, replyMarkup=equipoMarkup)
 	
 def asignar_miembro(bot, update):
 	
