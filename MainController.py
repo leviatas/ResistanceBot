@@ -193,6 +193,7 @@ def asignar_miembro(bot, update):
 		log.exception(e)
 
 def pre_inicio_votacion(bot, game):
+	log.info('pre_inicio_votacion called')
 	# Si esta el modulo de Cazador se le pide al Lider que elija a un investigador
 	if "Cazador" in game.modulos:
 		# Se elige investigador, no puede ser miembro del equipo ni el lider.
