@@ -541,7 +541,8 @@ def handle_team_voting(bot, update):
 		log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
 
 		#if uid not in game.board.state.last_votes:
-		game.board.state.votos_mision[uid] = answer
+		if !game.is_debugging:
+			game.board.state.votos_mision[uid] = answer
 		
 		# Si hay alguien en el punto de mira...
 		# y es el jugador que recien voto...
