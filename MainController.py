@@ -255,6 +255,7 @@ def elegir_jugador_general(bot, update):
 		# Lo asigno como posible investigador y continuo con la votación.		
 		if game.board.state.fase_actual == "eleccion_de_investigador_cazador":			
 			game.board.state.investigador_nominado = miembro_elegido
+			bot.send_message(game.cid, "El investigador elegido ha sido %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
 			iniciar_votacion(bot, game)
 		# El cazador de la resistencia tiene que descubrir al jefe espia
 		if game.board.state.fase_actual == "acusacion_resistencia_cazador":
