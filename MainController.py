@@ -526,7 +526,7 @@ def enviar_votacion_equipo(bot, game, player):
 	btns_espias = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso", callback_data=strcid + "_Fracaso")]]
 	voteMarkupEspias = InlineKeyboardMarkup(btns_espias)
 	
-	btns_espia_jefe = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso Jefe", callback_data=strcid + "_Fracaso")]]
+	btns_espia_jefe = [[InlineKeyboardButton("Exito", callback_data=strcid + "_Exito"), InlineKeyboardButton("Fracaso Jefe", callback_data=strcid + "_Fracaso Jefe")]]
 	voteMarkupEspiaJefe = InlineKeyboardMarkup(btns_espia_jefe)
 	
 	if game.is_debugging:
@@ -603,7 +603,7 @@ def count_mission_votes(bot, game):
 	voting_success = False
 	#Aca se podra hacer llamados para ver las cartas de mision y descartarla antes. Pero primero quiero lo basico
 	
-	cantidad_fracasos = sum(x == "Fracaso" for x in game.board.state.votos_mision.values())
+	cantidad_fracasos = sum("Fracaso" in x for x in game.board.state.votos_mision.values())
 	cantidad_exitos = sum(x == "Exito" for x in game.board.state.votos_mision.values())
 	
 	log.info("Misiones Fracasadas y exitosas") 
@@ -1822,7 +1822,7 @@ def main():
 
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_equipo_(.*)", callback=asignar_miembro))	
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(Si|No)", callback=handle_voting))
-	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(Exito|Fracaso)", callback=handle_team_voting))
+	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_(Exito|Fracaso|Fracaso Jefe)", callback=handle_team_voting))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_modulo_(.*)", callback=incluir_modulo))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_asesinato_(.*)", callback=asesinar_miembro))
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_verificarcarta_(.*)", callback=ver_carta_mision))
