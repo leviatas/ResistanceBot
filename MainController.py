@@ -147,7 +147,7 @@ def asignar_equipo(bot, game):
 		game.board.state.equipo_cantidad_mision += 1
 	
 	send_message(game, bot, game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN, False)
-	send_message(game, bot, game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', equipoMarkup, True)
+	send_message(game, bot, game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', replyMarkup=equipoMarkup, True)
 	
 def asignar_miembro(bot, update):
 	
