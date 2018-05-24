@@ -59,11 +59,17 @@ cur.execute(query)
 ##
 
 # Util para mandar mensajes
-def send_message(game, bot, receiver, message, parseMode):
+def send_message(game, bot, receiver, message, parseMode, replyMarkup):
 	if(game.is_debugging):
-		bot.send_message(ADMIN, message, parseMode)
+		if replyMarkup:
+			bot.send_message(ADMIN, message, replyMarkup=parseMode)
+		else:
+			bot.send_message(ADMIN, message, parseMode)
 	else:
-		bot.send_message(receiver, message, parseMode)
+		if replyMarkup:
+			bot.send_message(receiver, message, replyMarkup=parseMode)
+		else:
+			bot.send_message(receiver, message, parseMode)
 
 def start_round(bot, game):
 	# Comienzo de nuevo turno se resetea el equipo elegido
@@ -140,8 +146,8 @@ def asignar_equipo(bot, game):
 	if "Trampero" in game.modulos:
 		game.board.state.equipo_cantidad_mision += 1
 	
-	send_message(game, bot, game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
-	send_message(game, bot, game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', equipoMarkup)
+	send_message(game, bot, game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN, False)
+	send_message(game, bot, game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', equipoMarkup, True)
 	
 def asignar_miembro(bot, update):
 	
@@ -227,8 +233,8 @@ def elegir_jugador_general_menu(bot, game, texto_publico, texto_menu, restriccio
 	
 	elegirjugador = InlineKeyboardMarkup(btns)
 	
-	send_message(game, bot, id_jugador_eleccion, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
-	send_message(game, bot, id_jugador_eleccion, 'Por favor nomina a un miembro para la misión!', reply_markup=elegirjugador)
+	send_message(game, bot, id_jugador_eleccion, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN, False)
+	send_message(game, bot, id_jugador_eleccion, 'Por favor nomina a un miembro para la misión!', elegirjugador, True)
 
 	
 	
