@@ -58,6 +58,13 @@ cur.execute(query)
 #
 ##
 
+# Util para mandar mensajes
+def send_message(bot, receiver, message, parseMode):
+	if(game.is_debugging):
+		bot.send_message(ADMIN, message, parseMode)
+	else:
+		bot.send_message(receiver, message, parseMode)
+
 def start_round(bot, game):
 	# Comienzo de nuevo turno se resetea el equipo elegido
 	game.board.state.fase_actual = "comienzo_de_ronda"
@@ -99,7 +106,6 @@ def start_round(bot, game):
 	# --> nominate_chosen_chancellor --> vote --> handle_voting --> count_votes --> voting_aftermath --> draw_policies
 	# --> choose_policy --> pass_two_policies --> choose_policy --> enact_policy --> start_round
 
-
 def asignar_equipo(bot, game):
 	log.info(game.board.state.equipo_contador)
 	if game.board.state.equipo_contador == 0:
@@ -136,13 +142,6 @@ def asignar_equipo(bot, game):
 	
 	send_message(bot, game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
 	send_message(bot, game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
-
-def send_message(bot, receiver, message, parseMode):
-	if(game.is_debugging):
-		bot.send_message(ADMIN, message, parseMode)
-	else:
-		bot.send_message(receiver, message, parseMode)
-
 	
 def asignar_miembro(bot, update):
 	
