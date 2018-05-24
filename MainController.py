@@ -254,15 +254,20 @@ def elegir_jugador_general(bot, update):
 		# (Cazador) Si esta eligiendo investigador para el modulo cazador.
 		# Lo asigno como posible investigador y continuo con la votación.		
 		if game.board.state.fase_actual == "eleccion_de_investigador_cazador":			
+			bot.edit_message_text("Elegiste a %s para ser investigador en caso que falle la mision!" % miembro_asignado.name,
+				callback.from_user.id, callback.message.message_id)
 			game.board.state.investigador_nominado = miembro_elegido
 			bot.send_message(game.cid, "El investigador elegido ha sido %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
 			iniciar_votacion(bot, game)
 		# El cazador de la resistencia tiene que descubrir al jefe espia
 		if game.board.state.fase_actual == "acusacion_resistencia_cazador":
+			bot.edit_message_text("TE lanzas contra %s convencido de que es tu objetivo!" % miembro_asignado.name,
+				callback.from_user.id, callback.message.message_id)
 			# Si es alguno de los dos espias...
 			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2"):
 				end_game(bot, game, 2)
 			else:
+				bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
 				# Elimino el ultimo resultado y agrego uno de Fracaso
 				game.board.state.resultado_misiones.pop()
 				game.board.state.resultado_misiones.append("Fracaso")
@@ -270,16 +275,21 @@ def elegir_jugador_general(bot, update):
 				verify_fin_de_partida(bot, game)
 		
 		if game.board.state.fase_actual == "acusacion_espias_cazador":
+			bot.edit_message_text("TE lanzas contra %s convencido de que es tu objetivo!" % miembro_asignado.name,
+				callback.from_user.id, callback.message.message_id)
 			# Si es alguno de los dos espias...
 			if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2"):
 				end_game(bot, game, -3)
 			else:
+				bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
 				# Elimino el ultimo resultado y agrego uno de Fracaso
 				game.board.state.resultado_misiones.pop()
 				game.board.state.resultado_misiones.append("Exito")
 				# Se verifica nuevamente si hay fin de partida
 				verify_fin_de_partida(bot, game)
 		if game.board.state.fase_actual == "investigacion_cazador":
+			bot.edit_message_text("Has investigado a %s espera a que elija su respuesta!" % miembro_asignado.name,
+				callback.from_user.id, callback.message.message_id)
 			btns = []
 			# El jugador debe elegir entre dos ya que tenemos que simular la decision del jefe espia.			
 			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2"):
@@ -640,13 +650,15 @@ def verify_fin_de_partida(bot, game):
 	if sum(x == 'Fracaso' for x in game.board.state.resultado_misiones) == 3:
 		if "Cazador" in game.modulos:
 			finalizo_el_partido = False
-			# Si se consiguen 3 exitos se debe preguntar al Cazador de la resistencia que identifique al jefe
+			bot.send_message(game.cid, "Con 3 exitos los espias ahora deben encontrar a un jefe de la resistencia y darle caza!")
+			# Si se consiguen 3 fallos se debe preguntar al Cazador de los espias que identifique al jefe
 			game.board.state.fase_actual = "acusacion_espias_cazador"			
 			cazador_espia = game.get_cazador_espia()
 			restriccion_jugador_a_elegir = [cazador_espia]
-			texto_eleccion = "%s, ¿A quien deseas cazar?" % (cazador_espia.name)
+			texto_eleccion = "Cazador de los espias, %s, ¿A quien deseas cazar?" % (cazador_espia.name)
 			texto_menu = "¿A que jugador quieres cazar?"
 			elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, cazador_espia.uid)
+			return
 		else:
 			finalizo_el_partido = True
 			end_game(bot, game, -1)		
@@ -657,13 +669,15 @@ def verify_fin_de_partida(bot, game):
 			final_asesino(bot, game)			
 		elif "Cazador" in game.modulos:
 			finalizo_el_partido = False
+			bot.send_message(game.cid, "Con 3 exitos la resistencia ahora deben encontrar a un jefe de los espias y darle caza!")
 			# Si se consiguen 3 exitos se debe preguntar al Cazador de la resistencia que identifique al jefe
 			game.board.state.fase_actual = "acusacion_resistencia_cazador"			
 			cazador_resistencia = game.get_cazador_resistencia()
 			restriccion_jugador_a_elegir = [cazador_resistencia]
-			texto_eleccion = "%s, ¿A quien deseas cazar?" % (cazador_resistencia.name)
+			texto_eleccion = "Cazador de la resistencia, %s, ¿A quien deseas cazar?" % (cazador_resistencia.name)
 			texto_menu = "¿A que jugador quieres cazar?"
 			elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, cazador_resistencia.uid)
+			return
 		else:
 			finalizo_el_partido = True
 			end_game(bot, game, 1)			
