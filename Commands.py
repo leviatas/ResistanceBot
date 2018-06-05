@@ -142,10 +142,12 @@ def command_help(bot, update):
 def reload_game(bot, game, cid):
 	GamesController.games[cid] = game
 	bot.send_message(cid, "Hay un juego comenzado en este chat. Si quieres terminarlo escribe /cancelgame!")				
-				
-	# Ask the president to choose a chancellor
 	
+	# Si el juego no ha comenzado todavia...
+	if not game.board:
+		return	
 	
+	# Ask the president to choose a chancellor	
 	if game.board.state.fase_actual == "votacion_del_equipo_de_mision":
 		bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)		
 		if len(game.board.state.last_votes) == len(game.player_sequence):
@@ -242,6 +244,7 @@ def command_join(bot, update, args):
 			for uid in game.playerlist:
 				jugadoresActuales += "%s\n" % game.playerlist[uid].name
 			bot.send_message(game.cid, jugadoresActuales)
+			save_game(cid, "Game in join state", game)
 		except Exception:
 			bot.send_message(game.cid,
 				fname + ", No te puedo enviar un mensaje privado. Por favor, ve a @LaResistenciaByLevibot y has pincha \"Start\".\nLuego necesitas escribir /join de nuevo.")
@@ -335,7 +338,7 @@ def command_calltovote(bot, update):
 			else:
 				#If there is a time, compare it and send history of votes.
 				start = game.dateinitvote
-				stop = datetime.datetime.now()          
+				stop = datetime.now()          
 				elapsed = stop - start
 				if elapsed > datetime.timedelta(minutes=1):
 					# Only remember to vote to players that are still in the game
@@ -565,3 +568,12 @@ def command_prueba(bot, update, args):
 		game = GamesController.games.get(cid, None)		
 		MainController.final_asesino(bot, game)
 		'''
+
+def command_jugadores(bot, update):	
+	uid = update.message.from_user.id
+	cid = update.message.chat_id
+	game = GamesController.games.get(cid, None)
+	jugadoresActuales = "Los jugadores que se han unido al momento son:\n"
+	for uid in game.playerlist:
+		jugadoresActuales += "[%s](tg://user?id=%d)\n" % (game.playerlist[uid].name, uid)
+	bot.send_message(game.cid, jugadoresActuales, ParseMode.MARKDOWN)
