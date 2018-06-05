@@ -201,7 +201,7 @@ def pre_inicio_votacion(bot, game):
 	log.info('pre_inicio_votacion called')
 	# Si esta el modulo de Cazador se le pide al Lider que elija a un investigador
 	# Solamente si la mision es la 4 o menos. La mision 5 no tiene investigador.
-	if "Cazador" in game.modulos && len(game.board.state.resultado_misiones) < 4:
+	if "Cazador" in game.modulos and len(game.board.state.resultado_misiones) < 4:
 		# Se elige investigador, no puede ser miembro del equipo ni el lider.
 		# Se omite este paso si es la 5ta mision
 		# Copio por valor, no referencia
