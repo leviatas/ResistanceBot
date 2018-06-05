@@ -1855,6 +1855,9 @@ def main():
 	# Callbacks de Botones Generales
 	dp.add_handler(CallbackQueryHandler(pattern="(-[0-9]*)_elegirjugador_(.*)", callback=elegir_jugador_general))
 	
+	# Metodos util
+	dp.add_handler(CommandHandler("jugadores", Commands.command_jugadores))
+	
 	# log all errors
 	dp.add_error_handler(error)
 
