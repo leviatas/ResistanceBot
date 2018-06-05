@@ -308,7 +308,7 @@ def command_votes(bot, update):
 				start = game.dateinitvote
 				stop = datetime.now()
 				elapsed = stop - start
-				if elapsed > datetime.timedelta(minutes=5):
+				if elapsed > timedelta(minutes=5):
 					history_text = "Historial de votacion para el Presidente %s y Canciller %s:\n\n" % (game.board.state.nominated_president.name, game.board.state.nominated_chancellor.name)
 					for player in game.player_sequence:
 						# If the player is in the last_votes (He voted), mark him as he registered a vote
@@ -340,7 +340,7 @@ def command_calltovote(bot, update):
 				start = game.dateinitvote
 				stop = datetime.now()          
 				elapsed = stop - start
-				if elapsed > datetime.timedelta(minutes=1):
+				if elapsed > timedelta(minutes=1):
 					# Only remember to vote to players that are still in the game
 					history_text = ""
 					if game.board.state.fase_actual == "votacion_del_equipo_de_mision":
