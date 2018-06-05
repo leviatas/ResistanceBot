@@ -306,7 +306,7 @@ def command_votes(bot, update):
 			else:
 				#If there is a time, compare it and send history of votes.
 				start = game.dateinitvote
-				stop = datetime.datetime.now()
+				stop = datetime.now()
 				elapsed = stop - start
 				if elapsed > datetime.timedelta(minutes=5):
 					history_text = "Historial de votacion para el Presidente %s y Canciller %s:\n\n" % (game.board.state.nominated_president.name, game.board.state.nominated_chancellor.name)
