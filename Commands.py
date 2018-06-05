@@ -20,6 +20,7 @@ from Boardgamebox.State import State
 from Constants.Config import ADMIN
 from collections import namedtuple
 from datetime import datetime
+from datetime import timedelta
 # Enable logging
 
 log.basicConfig(
