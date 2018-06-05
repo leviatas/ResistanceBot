@@ -22,8 +22,11 @@ class State(object):
         #self.chosen_president = None Lider elegido por evento o jugador
         self.lider_elegido = None
         
+        # Modulo Cazador
         self.investigador_nominado = None
         self.investigador = None
+        self.trigger_fin_temprano = False
+        self.se_ha_realizado_fin_temprano = False
         
         # Fase Actual
         self.fase_actual = None
