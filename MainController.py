@@ -65,6 +65,11 @@ def start_round(bot, game):
 	game.board.state.equipo_contador = 0
 	game.board.state.votos_mision = {}
 	
+	# Modulo Cazador Reseteo el investigador
+	game.board.state.investigador = None
+	game.board.state.investigador_nominado = None
+	game.board.state.trigger_fin_temprano = False
+	
 	# Variables de Trama	
 	if "Trama" in game.modulos:
 		game.board.state.miembroenelpuntodemira = None
@@ -195,8 +200,10 @@ def asignar_miembro(bot, update):
 def pre_inicio_votacion(bot, game):
 	log.info('pre_inicio_votacion called')
 	# Si esta el modulo de Cazador se le pide al Lider que elija a un investigador
-	if "Cazador" in game.modulos:
+	# Solamente si la mision es la 4 o menos. La mision 5 no tiene investigador.
+	if "Cazador" in game.modulos && len(game.board.state.resultado_misiones) < 4:
 		# Se elige investigador, no puede ser miembro del equipo ni el lider.
+		# Se omite este paso si es la 5ta mision
 		# Copio por valor, no referencia
 		restriccion_jugador_a_elegir = game.board.state.equipo[:]		
 		restriccion_jugador_a_elegir.append(game.board.state.lider_actual)
@@ -240,8 +247,8 @@ def elegir_jugador_general_menu(bot, game, texto_publico, texto_menu, restriccio
 # Metodo general para recibir el update de eleccion de jugador por diferentes motivos
 def elegir_jugador_general(bot, update):
 	# Antes que cualquier cosa obtengo los datos del callback
-	log.info('asignar_miembro called')
-	log.info(update.callback_query.data)
+	log.info('elegir_jugador_general')
+	log.info(update.callback_query.data)	
 	callback = update.callback_query
 	regex = re.search("(-[0-9]*)_elegirjugador_([0-9]*)", callback.data)
 	cid = int(regex.group(1))
@@ -249,7 +256,7 @@ def elegir_jugador_general(bot, update):
 	game = GamesController.games.get(cid, None)
 	miembro_elegido = game.playerlist[chosen_uid]
 	strcid = str(game.cid)
-	
+	log.info(game.board.state.fase_actual)
 	# Luego hago accion dependiendo de la fase en la que este. 
 	try:
 		# (Cazador) Si esta eligiendo investigador para el modulo cazador.
@@ -262,7 +269,7 @@ def elegir_jugador_general(bot, update):
 			iniciar_votacion(bot, game)
 		# El cazador de la resistencia tiene que descubrir al jefe espia
 		if game.board.state.fase_actual == "acusacion_resistencia_cazador":
-			bot.edit_message_text("TE lanzas contra %s convencido de que es tu objetivo!" % miembro_elegido.name,
+			bot.edit_message_text("Te lanzas contra %s convencido de que es tu objetivo!" % miembro_elegido.name,
 				callback.from_user.id, callback.message.message_id)
 			# Si es alguno de los dos espias...
 			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2"):
@@ -275,13 +282,15 @@ def elegir_jugador_general(bot, update):
 				# Se verifica nuevamente si hay fin de partida
 				verify_fin_de_partida(bot, game)
 		
-		if game.board.state.fase_actual == "acusacion_espias_cazador":
-			bot.edit_message_text("TE lanzas contra %s convencido de que es tu objetivo!" % miembro_elegido.name,
+		if game.board.state.fase_actual in ("acusacion_espias_cazador", "acusacion_temprana_espias_cazador"):
+			bot.edit_message_text("Te lanzas contra %s convencido de que es tu objetivo!" % miembro_elegido.name,
 				callback.from_user.id, callback.message.message_id)
-			# Si es alguno de los dos espias...
+			# Si es alguno de los dos es jefe resistencia...
 			if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2"):
 				end_game(bot, game, -3)
 			else:
+				if game.board.state.fase_actual == "acusacion_temprana_espias_cazador":
+					game.board.state.se_ha_realizado_fin_temprano = True				
 				bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
 				# Elimino el ultimo resultado y agrego uno de Fracaso
 				game.board.state.resultado_misiones.pop()
@@ -561,6 +570,9 @@ def handle_team_voting(bot, update):
 
 		#if uid not in game.board.state.last_votes:
 		if not game.is_debugging:
+			#Modulo Cazador, si el jefe espia pone un fracaso se habilita la acusaion fin de partida temprana
+			if game.playerlist[uid].rol in ("Jefe Espia", "Jefe Espia 2") and answer in ("Fracaso", "Fracaso Jefe"):
+				game.board.state.trigger_fin_temprano = True				
 			game.board.state.votos_mision[uid] = answer
 		
 		# Si hay alguien en el punto de mira...
@@ -693,7 +705,14 @@ def verify_fin_de_partida(bot, game):
 	if not finalizo_el_partido:
 		# Antes de pasar al proximo turno le pregunto al cazador espia si va a finalizar la partida de forma temprana
 		if "Cazador" in game.modulos:
-			preguntar_desencadenante_temprano(bot, game)			
+			# Solamente si un Jefe espia ha pasado un fracaso se pregunta el desencadenante temprano.
+			# Por lo que verifico si la mision tuvo fracasos o fracasos jefe y si no fue usado ya
+			hubo_fracasos = any(x for x in game.board.state.votos_mision.values() if x in ("Fracaso Jefe", "Fracaso"))
+			if hubo_fracasos and not game.board.state.se_ha_realizado_fin_temprano:
+				preguntar_desencadenante_temprano(bot, game)
+			else:
+				investigacion_cazador(bot, game)
+				
 		else:
 			bot.send_message(game.cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
 			start_next_round(bot, game)
@@ -704,7 +723,7 @@ def preguntar_desencadenante_temprano(bot, game):
 	cazador_espia = game.get_cazador_espia()
 	strcid = str(game.cid)
 	accion = "desencadenantefindepartidatemprana"
-	if any(x for x in game.board.state.equipo if x.rol in ("Jefe Espia", "Jefe Espia 2")):
+	if game.board.state.trigger_fin_temprano:
 		btns = [[InlineKeyboardButton("Si", callback_data=strcid + ("_%s_" % (accion)) + "Si"), 
 			 InlineKeyboardButton("No", callback_data=strcid + ("_%s_" % (accion)) + "No")]]
 	else:
