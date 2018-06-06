@@ -302,7 +302,7 @@ def elegir_jugador_general(bot, update):
 			
 			# Decidi que es no hay motivo estrategico para el jefe espia mostrar
 			# que es jefe espia si no hay agente oculto y son 5-6 jugadores		
-			if ("Cazador Agente Oculto" not in game.modulos) and len(game.playerlist) < 7:
+			if not ("Cazador Agente Oculto" in game.modulos) and len(game.playerlist) < 7:
 				if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2"):					
 					bot.send_message(game.board.state.investigador.uid, "El usuario %s te mostro: Jefe" % (miembro_elegido.name), ParseMode.MARKDOWN)
 				else:
