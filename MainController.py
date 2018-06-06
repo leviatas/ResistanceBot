@@ -300,6 +300,7 @@ def elegir_jugador_general(bot, update):
 		if game.board.state.fase_actual == "investigacion_cazador":
 			bot.edit_message_text("Has investigado a %s espera a que elija su respuesta!" % miembro_elegido.name,
 				callback.from_user.id, callback.message.message_id)
+			bot.send_message(game.cid, "El investigador ha elegido investigar a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
 			btns = []
 			# El jugador debe elegir entre dos ya que tenemos que simular la decision del jefe espia.			
 			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2"):
@@ -770,7 +771,7 @@ def investigacion_cazador(bot, game):
 		# En caso de exito el investigador es el lider
 		game.board.state.investigador = game.board.state.lider_actual		
 	restriccion_jugador_a_elegir = [game.board.state.investigador]
-	texto_eleccion = "%s, por favor elige a quien investigar esta ronda!" % (game.board.state.investigador.name)		
+	texto_eleccion = "[%s](tg://user?id=%d), por favor elige a quien investigar esta ronda!" % (game.board.state.investigador.name, game.board.state.investigador.uid)		
 	texto_menu = "¿A que jugador quieres investigar?"
 	elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, game.board.state.investigador.uid)
 
@@ -784,6 +785,7 @@ def respuesta_investigador(bot, update):
 	game = GamesController.games[cid]		
 	uid = callback.from_user.id	
 	bot.send_message(game.board.state.investigador.uid, "El usuario te mostro demostro: %s" % (answer))
+	bot.send_message(game.cid, "El investigado ha mostrado si es jefe/no jefe a su investigador, investigador puedes hablar (o mentir) sobre lo que has investigado")
 	# Luego de la investigacion se comienza la proxima ronda 
 	start_next_round(bot, game)
 	
