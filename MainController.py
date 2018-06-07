@@ -298,15 +298,15 @@ def elegir_jugador_general(bot, update):
 				# Se verifica nuevamente si hay fin de partida
 				verify_fin_de_partida(bot, game)
 		if game.board.state.fase_actual == "investigacion_cazador":			
-			bot.send_message(game.cid, "El investigador ha elegido investigar a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
-			
+			bot.send_message(game.cid, "El investigador %s ha elegido investigar a %s" % (game.board.state.investigador.name, miembro_elegido.name), ParseMode.MARKDOWN)
+			game.history.append("El investigador %s ha elegido investigar a %s" % (game.board.state.investigador.name, miembro_elegido.name))
 			# Decidi que es no hay motivo estrategico para el jefe espia mostrar
 			# que es jefe espia si no hay agente oculto y son 5-6 jugadores		
 			if ("Cazador Agente Oculto" not in game.modulos) and len(game.playerlist) < 7:
 				if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2"):					
-					bot.send_message(game.board.state.investigador.uid, "El usuario %s te mostro: Jefe" % (miembro_elegido.name), ParseMode.MARKDOWN)
+					bot.send_message(game.board.state.investigador.uid, "El jugador es: **Jefe**" % (miembro_elegido.name), ParseMode.MARKDOWN)
 				else:
-					bot.send_message(game.board.state.investigador.uid, "El usuario %s te mostro: No un jefe" % (miembro_elegido.name), ParseMode.MARKDOWN)
+					bot.send_message(game.board.state.investigador.uid, "El jugador es: **No jefe**" % (miembro_elegido.name), ParseMode.MARKDOWN)
 				start_next_round(bot, game)
 			else:
 				bot.edit_message_text("Has investigado a %s espera a que elija su respuesta!" % miembro_elegido.name,
@@ -326,7 +326,7 @@ def elegir_jugador_general(bot, update):
 							btns.append([InlineKeyboardButton("Mostrar Jefe Resistencia", callback_data=strcid + "_mostrarinvestigador_Jefe_Resistencia")])						
 				else:
 					# Si no es lider le pongo solo de opcion que diga "No un jefe"
-					btns.append([InlineKeyboardButton("Mostrar No un Jefe", callback_data=strcid + "_mostrarinvestigador_No_un_jefe")])			
+					btns.append([InlineKeyboardButton("Mostrar No Jefe", callback_data=strcid + "_mostrarinvestigador_No_jefe")])			
 				revelarMarkup = InlineKeyboardMarkup(btns)
 				if game.is_debugging:
 					bot.send_message(ADMIN, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
@@ -640,7 +640,7 @@ def count_mission_votes(bot, game):
 	log.info(sum( x == 'Exito' for x in game.board.state.resultado_misiones ))
 		
 	bot.send_message(game.cid, "Exitos: %d\nFracasos: %d\n" % (cantidad_exitos, cantidad_fracasos))
-	if "Cazador" in game.modulos:
+	if "Cazador" in game.modulos and len(game.playerlist) > 6:
 		bot.send_message(game.cid, "Fracasos Jefe: %d" % cantidad_fracasos_jefe)
 	
 	#Simplemente verifico si hay algun fracaso en la mision
@@ -794,8 +794,9 @@ def respuesta_investigador(bot, update):
 	answer = regex.group(2).replace("_", " ")
 	game = GamesController.games[cid]		
 	uid = callback.from_user.id	
-	bot.send_message(game.board.state.investigador.uid, "El usuario te mostro demostro: %s" % (answer))
-	bot.send_message(game.cid, "El investigado ha mostrado si es jefe/no jefe a su investigador, investigador puedes hablar (o mentir) sobre lo que has investigado")
+	bot.send_message(game.board.state.investigador.uid, "El jugador es: **%s**" % (answer), ParseMode.MARKDOWN)
+	
+	bot.send_message(game.cid, "El investigado ha mostrado su carta al investigador, investigador puedes hablar (o mentir) sobre lo que has investigado")
 	# Luego de la investigacion se comienza la proxima ronda 
 	start_next_round(bot, game)
 	
