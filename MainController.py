@@ -165,7 +165,7 @@ def asignar_miembro(bot, update):
 		log.info(chosen_uid)
 		
 		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
-			bot.edit_message_text("Ya has elegido a todos los miembros del equipo!, 
+			bot.edit_message_text("Ya has elegido a todos los miembros del equipo!", 
 					      callback.from_user.id, callback.message.message_id)
 			return
 		
