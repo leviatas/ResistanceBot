@@ -395,11 +395,11 @@ def vote(bot, game):
 	for uid in game.playerlist:
 		player = game.playerlist[uid]
 		# Me aseguro que los creadores de opinion no tengan para votar o cambiar su voto
-		if not player.esta_muerto and not player.creador_de_opinion and not game.is_debugging:
-			if player is not game.board.state.lider_actual:
-				bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		if not player.esta_muerto and not player.creador_de_opinion and not game.is_debugging:			
 			# Solo envio votacion a los que no hayan votado
 			if player.uid not in game.board.state.last_votes:
+				if player is not game.board.state.lider_actual:
+					bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
 				bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 			
 def handle_voting(bot, update):	
