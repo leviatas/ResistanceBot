@@ -720,7 +720,15 @@ def verify_fin_de_partida(bot, game):
 			# Por lo que verifico si la mision tuvo fracasos o fracasos jefe y si no fue usado ya
 			hubo_fracasos = any(x for x in game.board.state.votos_mision.values() if x in ("Fracaso Jefe", "Fracaso"))
 			if hubo_fracasos and not game.board.state.se_ha_realizado_fin_temprano:
-				preguntar_desencadenante_temprano(bot, game)
+				# En partidos de 7+ jugadores solo se preguntará si hay fracasos jefe en los votos.
+				if len(game.playerlist) > 6:
+					if any(x for x in game.board.state.votos_mision.values() if x == "Fracaso Jefe"):
+						preguntar_desencadenante_temprano(bot, game)
+					else:
+						investigacion_cazador(bot, game)
+				else:
+					# 5-6 jugadores se pregunta siempre que hay fallo ya que no hay fallos jefe.
+					preguntar_desencadenante_temprano(bot, game)
 			else:
 				investigacion_cazador(bot, game)
 				
