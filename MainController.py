@@ -162,11 +162,18 @@ def asignar_miembro(bot, update):
 	'''
 	try:
 		game = GamesController.games.get(cid, None)		
+		log.info(chosen_uid)
+		
+		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
+			bot.edit_message_text("Ya has elegido a todos los miembros del equipo!, 
+					      callback.from_user.id, callback.message.message_id)
+			return
+		
 		turno_actual = len(game.board.state.resultado_misiones)		
 		#log.info(game.playerlist)
 		#log.info(str(chosen_uid) in game.playerlist )
 		#log.info(chosen_uid in game.playerlist)        
-		log.info(chosen_uid)
+		
 		miembro_asignado = game.playerlist[chosen_uid]			
 		
 		log.info("El lider %s (%d) eligio a %s (%d)" % (
@@ -802,8 +809,10 @@ def respuesta_investigador(bot, update):
 	answer = regex.group(2).replace("_", " ")
 	game = GamesController.games[cid]		
 	uid = callback.from_user.id	
-	bot.send_message(game.board.state.investigador.uid, "El jugador es: **%s**" % (answer), ParseMode.MARKDOWN)
 	
+	bot.edit_message_text("Le has respondido al investigador lo siguiente: %s !" % answer, callback.from_user.id, callback.message.message_id)
+	
+	bot.send_message(game.board.state.investigador.uid, "El jugador es: **%s**" % (answer), ParseMode.MARKDOWN)
 	bot.send_message(game.cid, "El investigado ha mostrado su carta al investigador, investigador puedes hablar (o mentir) sobre lo que has investigado")
 	# Luego de la investigacion se comienza la proxima ronda 
 	start_next_round(bot, game)
