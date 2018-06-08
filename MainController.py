@@ -320,7 +320,7 @@ def elegir_jugador_general(bot, update):
 						# Si ha 7+ jugadores el jefe de la resistencia puede mostrar la carta de Jefe Resistencia
 						if len(game.playerlist) > 6:
 							btns.append([InlineKeyboardButton("Mostrar Jefe Resistencia", callback_data=strcid + "_mostrarinvestigador_Jefe_Resistencia")])														
-					if else:
+					else:
 						# Jefe espia siempre puede mostrar lealtad del jefe y jefe espia
 						btns.append([InlineKeyboardButton("Mostrar Jefe Espia", callback_data=strcid + "_mostrarinvestigador_Jefe_Espia")])
 						btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])										
