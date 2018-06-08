@@ -285,8 +285,8 @@ def elegir_jugador_general(bot, update):
 		if game.board.state.fase_actual in ("acusacion_espias_cazador", "acusacion_temprana_espias_cazador"):
 			bot.edit_message_text("Te lanzas contra %s convencido de que es tu objetivo!" % miembro_elegido.name,
 				callback.from_user.id, callback.message.message_id)
-			# Si es alguno de los dos es jefe resistencia...
-			if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2"):
+			# Si es alguno de los dos es jefe resistencia. O el coordinador si este esta habilitado.
+			if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2", "Coordinador"):
 				end_game(bot, game, -3)
 			else:
 				if game.board.state.fase_actual == "acusacion_temprana_espias_cazador":
@@ -313,17 +313,17 @@ def elegir_jugador_general(bot, update):
 					callback.from_user.id, callback.message.message_id)				
 				btns = []
 				# El jugador debe elegir entre dos ya que tenemos que simular la decision del jefe espia.			
-				if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2"):
+				if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2", "Agente Falso"):
 					# Si es jefe tiene que decidir
-					if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2"):
-						# Jefe espia siempre puede mostrar lealtad del jefe y jefe espia
-						btns.append([InlineKeyboardButton("Mostrar Jefe Espia", callback_data=strcid + "_mostrarinvestigador_Jefe_Espia")])
-						btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])					
-					else:
+					if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2", "Agente Falso"):
 						btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])					
 						# Si ha 7+ jugadores el jefe de la resistencia puede mostrar la carta de Jefe Resistencia
 						if len(game.playerlist) > 6:
-							btns.append([InlineKeyboardButton("Mostrar Jefe Resistencia", callback_data=strcid + "_mostrarinvestigador_Jefe_Resistencia")])						
+							btns.append([InlineKeyboardButton("Mostrar Jefe Resistencia", callback_data=strcid + "_mostrarinvestigador_Jefe_Resistencia")])														
+					if else:
+						# Jefe espia siempre puede mostrar lealtad del jefe y jefe espia
+						btns.append([InlineKeyboardButton("Mostrar Jefe Espia", callback_data=strcid + "_mostrarinvestigador_Jefe_Espia")])
+						btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])										
 				else:
 					# Si no es lider le pongo solo de opcion que diga "No un jefe"
 					btns.append([InlineKeyboardButton("Mostrar No Jefe", callback_data=strcid + "_mostrarinvestigador_No_jefe")])			
