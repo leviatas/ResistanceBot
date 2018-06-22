@@ -280,6 +280,7 @@ def elegir_jugador_general(bot, update):
 				callback.from_user.id, callback.message.message_id)
 			# Si es alguno de los dos espias...
 			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2"):
+				bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
 				end_game(bot, game, 2)
 			else:
 				bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
@@ -294,6 +295,7 @@ def elegir_jugador_general(bot, update):
 				callback.from_user.id, callback.message.message_id)
 			# Si es alguno de los dos es jefe resistencia. O el coordinador si este esta habilitado.
 			if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2", "Coordinador"):
+				bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
 				end_game(bot, game, -3)
 			else:
 				if game.board.state.fase_actual == "acusacion_temprana_espias_cazador":
