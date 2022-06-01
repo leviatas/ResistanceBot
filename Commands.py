@@ -104,7 +104,7 @@ def command_start(update: Update, context: CallbackContext):
 	bot = context.bot
 	cid = update.message.chat_id
 	bot.send_message(cid,"Bot del juego de mesa La Resistencia.")
-	command_help(bot, update)
+	command_help(update, context)
 
 
 def command_rules(update: Update, context: CallbackContext):
