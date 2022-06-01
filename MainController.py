@@ -1860,7 +1860,7 @@ def main():
 	'''
 
 	#PORT = int(os.environ.get('PORT', '5000'))
-	updater = Updater(os.environ.get('BOT_TOKEN_RESISTENCIA', None))
+	updater = Updater(os.environ.get('BOT_TOKEN_RESISTENCIA', use_context=True))
 	'''
 	updater.start_webhook(listen="0.0.0.0",
 	      port=PORT,
