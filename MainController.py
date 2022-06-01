@@ -10,8 +10,8 @@ import math
 from random import randrange
 from time import sleep
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
-from telegram.ext import (Updater, CommandHandler, CallbackQueryHandler)
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
+from telegram.ext import (Updater, CommandHandler, CallbackQueryHandler, CallbackContext)
 
 import Commands
 from Constants.Cards import playerSets
@@ -148,8 +148,8 @@ def asignar_equipo(bot, game):
 		bot.send_message(game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
 
 	
-def asignar_miembro(bot, update):
-	
+def asignar_miembro(update: Update, context: CallbackContext):
+	bot = context.bot
 	log.info('asignar_miembro called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
@@ -252,7 +252,8 @@ def elegir_jugador_general_menu(bot, game, texto_publico, texto_menu, restriccio
 	
 	
 # Metodo general para recibir el update de eleccion de jugador por diferentes motivos
-def elegir_jugador_general(bot, update):
+def elegir_jugador_general(update: Update, context: CallbackContext):
+	bot = context.bot
 	# Antes que cualquier cosa obtengo los datos del callback
 	log.info('elegir_jugador_general')
 	log.info(update.callback_query.data)	
@@ -411,7 +412,8 @@ def vote(bot, game):
 					bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
 				bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 			
-def handle_voting(bot, update):	
+def handle_voting(update: Update, context: CallbackContext):
+	bot = context.bot	
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_(.*)", callback.data)
@@ -575,7 +577,8 @@ def enviar_votacion_equipo(bot, game, player):
 			else:
 				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
 		
-def handle_team_voting(bot, update):
+def handle_team_voting(update: Update, context: CallbackContext):
+	bot = context.bot
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_(.*)", callback.data)
@@ -763,8 +766,9 @@ def preguntar_desencadenante_temprano(bot, game):
 	else:
 		bot.send_message(cazador_espia.uid, "¿Queres trigerear el fin de partido temprano?", reply_markup=desicion)
 	
-def respuesta_desencadenante_temprano(bot, update):	
+def respuesta_desencadenante_temprano(update: Update, context: CallbackContext):	
 	callback = update.callback_query
+	bot = context.bot
 	log.info('respuesta_desencadenante_temprano called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_desencadenantefindepartidatemprana_(Si|No)", callback.data)
 	cid = int(regex.group(1))
@@ -802,7 +806,8 @@ def investigacion_cazador(bot, game):
 	texto_menu = "¿A que jugador quieres investigar?"
 	elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, game.board.state.investigador.uid)
 
-def respuesta_investigador(bot, update):
+def respuesta_investigador(update: Update, context: CallbackContext):
+	bot = context.bot
 	callback = update.callback_query
 	log.info('respuesta_investigador called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_mostrarinvestigador_(.*)", callback.data)
@@ -857,7 +862,8 @@ def final_asesino(bot, game):
 	else:
 		bot.send_message(asesino.uid, '¿A quien vas a asesinar? Puedes hablar con tu compañero al respecto', reply_markup=miembros_resistencia_markup)		
 
-def asesinar_miembro(bot, update):	
+def asesinar_miembro(update: Update, context: CallbackContext):	
+	bot = context.bot
 	log.info('asesinar_miembro called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
@@ -975,7 +981,8 @@ def elegir_carta_de_trama_a_repartir(bot, game):
 		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
 		bot.send_message(game.board.state.lider_actual.uid, 'Elige una carta para repartir!', reply_markup=cartasMarkup)
 		
-def elegir_jugador_para_dar_carta_de_trama(bot, update):
+def elegir_jugador_para_dar_carta_de_trama(update: Update, context: CallbackContext):
+	bot = context.bot
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_elegircartatrama_(.*)", callback.data)
@@ -1006,7 +1013,8 @@ def elegir_jugador_para_dar_carta_de_trama(bot, update):
 	except Exception as e:
 		log.error(str(e))
 		
-def dar_carta_trama(bot, update):
+def dar_carta_trama(update: Update, context: CallbackContext):
+	bot = context.bot
 	log.info('dar_carta_trama called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
@@ -1099,7 +1107,8 @@ def menu_revelarse_a_jugador(bot, game, uidrevelado):
 	jugadoresMarkup = InlineKeyboardMarkup(btns)
 	bot.send_message(uidrevelado, 'Elige al jugador que le quieres mostrar tu afiliacion!', reply_markup=jugadoresMarkup)
 
-def investigar_jugador(bot, update):	
+def investigar_jugador(update: Update, context: CallbackContext):	
+	bot = context.bot
 	log.info('asignar_miembro called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
@@ -1120,7 +1129,8 @@ def investigar_jugador(bot, update):
 		log.error("Unknown error: " + repr(e))
 		log.exception(e)
 
-def revelarse_jugador(bot, update):	
+def revelarse_jugador(update: Update, context: CallbackContext):	
+	bot = context.bot
 	log.info('asignar_miembro called')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
@@ -1175,9 +1185,10 @@ def mostrar_afiliacion(bot, game, uidinvestigador, uidinvestigado):
 		bot.send_message(uidinvestigador ,"Has investigado a %s y su afiliación es %s" % (investigado.name, investigado.afiliacion))
 		bot.send_message(game.cid ,"El jugador %s ha investigado a %s" % (investigador.name, investigado.name))
 		
-def ver_carta_mision(bot, update):	
+def ver_carta_mision(update: Update, context: CallbackContext):	
 	log.info('ver_carta_mision called')
 	log.info(update.callback_query.data)
+	bot = context.bot
 	callback = update.callback_query
 	regex = re.search("(-[0-9]*)_verificarcarta_([0-9]*)", callback.data)
 	cid = int(regex.group(1))
@@ -1224,7 +1235,8 @@ def ver_carta_mision(bot, update):
 		log.error("Unknown error: " + repr(e))
 		log.exception(e)
 
-def carta_plot_sinconfianza(bot, update):	
+def carta_plot_sinconfianza(update: Update, context: CallbackContext):	
+	bot = context.bot
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_sinconfianza_(Si|No)", callback.data)
@@ -1269,7 +1281,8 @@ def carta_plot_sinconfianza(bot, update):
 	except Exception as e:
 		log.error(str(e))
 
-def carta_plot_enelpuntodemira(bot, update):	
+def carta_plot_enelpuntodemira(update: Update, context: CallbackContext):	
+	bot = context.bot
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_enelpuntodemira_(Si|No)", callback.data)
@@ -1332,9 +1345,10 @@ def elegir_miembro_carta_plot_enelpuntodemira(bot, game, uid):
 	except Exception as e:
 		log.error(str(e))
 
-def forzar_jugar_carta_mision_adelantada(bot, update):
+def forzar_jugar_carta_mision_adelantada(update: Update, context: CallbackContext):
 	log.info('forzar_jugar_carta_mision_adelantada called')
 	log.info(update.callback_query.data)
+	bot = context.bot
 	callback = update.callback_query
 	regex = re.search("(-[0-9]*)_forzarvotomision_([0-9]*)", callback.data)
 	cid = int(regex.group(1))
@@ -1359,13 +1373,13 @@ def forzar_jugar_carta_mision_adelantada(bot, update):
 		log.exception(e)
 	
 		
-def carta_plot_vigilanciaestrecha(bot, update):	
+def carta_plot_vigilanciaestrecha(update: Update, context: CallbackContext):	
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_vigilanciaestrecha_(Si|No)", callback.data)
 	cid = int(regex.group(1))
 	strcid = regex.group(1)
-	
+	bot = context.bot
 	answer = regex.group(2)
 	carta = "Vigilancia Estrecha"
 	try:
@@ -1400,7 +1414,8 @@ def carta_plot_vigilanciaestrecha(bot, update):
 	except Exception as e:
 		log.error(str(e))
 
-def carta_plot_liderfuerte(bot, update):	
+def carta_plot_liderfuerte(update: Update, context: CallbackContext):	
+	bot = context.bot
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_liderfuerte_(Si|No)", callback.data)
@@ -1442,7 +1457,8 @@ def carta_plot_liderfuerte(bot, update):
 	except Exception as e:
 		log.error(str(e))
 
-def carta_plot_asumirresponsabilidad(bot, update):	
+def carta_plot_asumirresponsabilidad(update: Update, context: CallbackContext):	
+	bot = context.bot
 	callback = update.callback_query
 	log.info('handle_voting called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_asumirresponsabilidad_(Si|No)", callback.data)
@@ -1509,7 +1525,8 @@ def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 	except Exception as e:
 		log.error(str(e))
 		
-def robar_carta_plot(bot, update):	
+def robar_carta_plot(update: Update, context: CallbackContext):	
+	bot = context.bot
 	callback = update.callback_query
 	log.info('robar_carta_plot called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_elegircartaplot_([0-9]*)_(.*)", callback.data)
@@ -1577,7 +1594,7 @@ def end_game(bot, game, game_endcode):
 		if game_endcode == 2:
 			bot.send_message(game.cid, "Juego finalizado! La Resistencia ganó pasando 3 misiones y descubriendo a un jefe de los espias!\n\n%s" % game.print_roles())
 		
-	#showHiddenhistory(game.cid)
+	#showHiddenhistory(game.cid, bot)
 	del GamesController.games[game.cid]
 	Commands.delete_game(game.cid)
 
@@ -1599,8 +1616,8 @@ def configurar_partida(bot, game):
 		log.error("Unknown error: " + repr(e))
 		log.exception(e)
 		
-def incluir_modulo(bot, update):
-	
+def incluir_modulo(update: Update, context: CallbackContext):
+	bot = context.bot
 	log.info('incluir_modulo')
 	log.info(update.callback_query.data)
 	callback = update.callback_query
@@ -1633,7 +1650,7 @@ def incluir_modulo(bot, update):
 		log.exception(e)
 
 		
-def showHiddenhistory(cid):
+def showHiddenhistory(cid, bot):
 	#game.pedrote = 3
 	try:
 		#Check if there is a current game		

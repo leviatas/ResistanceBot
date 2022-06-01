@@ -8,7 +8,8 @@ import psycopg2
 import urllib.parse
 
 	
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
+from telegram.ext import (CallbackContext)
 
 import MainController
 import GamesController
@@ -71,21 +72,24 @@ cards = ["*Creador De Opinión Permanente* - El jugador a quién el Líder pase 
 	 "*Establecer Confianza Inmediata* - El lider debe pasar su carta de Personaje al jugador que reciba esta carta."
 ]
 
-def command_symbols(bot, update):
-    cid = update.message.chat_id
-    symbol_text = "Los siguientes símbolos aparecen en el tablero: \n"
-    for i in symbols:
-        symbol_text += i + "\n"
-    bot.send_message(cid, symbol_text)
+def command_symbols(update: Update, context: CallbackContext):
+	bot = context.bot
+	cid = update.message.chat_id
+	symbol_text = "Los siguientes símbolos aparecen en el tablero: \n"
+	for i in symbols:
+		symbol_text += i + "\n"
+	bot.send_message(cid, symbol_text)
 
-def command_cartas(bot, update):
+def command_cartas(update: Update, context: CallbackContext):
+	bot = context.bot
 	cid = update.message.chat_id
 	card_text = "Las siguientes cartas pueden aparecer al lider: \n"
 	for i in cards:
 		card_text += i + "\n"
 	bot.send_message(cid, card_text, ParseMode.MARKDOWN)
 
-def command_board(bot, update):
+def command_board(update: Update, context: CallbackContext):
+	bot = context.bot
 	cid = update.message.chat_id
 	if cid in GamesController.games.keys():
 		game = GamesController.games[cid]
@@ -96,49 +100,54 @@ def command_board(bot, update):
 	else:
 		bot.send_message(cid, "No hay juego en este chat. Crea un nuevo juego con /newgame")
 
-def command_start(bot, update):
-    cid = update.message.chat_id
-    bot.send_message(cid,"Bot del juego de mesa La Resistencia.")
-    command_help(bot, update)
+def command_start(update: Update, context: CallbackContext):
+	bot = context.bot
+	cid = update.message.chat_id
+	bot.send_message(cid,"Bot del juego de mesa La Resistencia.")
+	command_help(bot, update)
 
 
-def command_rules(bot, update):
-    cid = update.message.chat_id
-    btn = [[InlineKeyboardButton("Rules", url="http://www.secrethitler.com/assets/Secret_Hitler_Rules.pdf")]]
-    rulesMarkup = InlineKeyboardMarkup(btn)
-    bot.send_message(cid, "Lee las reglas oficiales de Resistencia:", reply_markup=rulesMarkup)
+def command_rules(update: Update, context: CallbackContext):
+	bot = context.bot
+	cid = update.message.chat_id
+	btn = [[InlineKeyboardButton("Rules", url="http://www.secrethitler.com/assets/Secret_Hitler_Rules.pdf")]]
+	rulesMarkup = InlineKeyboardMarkup(btn)
+	bot.send_message(cid, "Lee las reglas oficiales de Resistencia:", reply_markup=rulesMarkup)
 
 
 # pings the bot
-def command_ping(bot, update):
-    cid = update.message.chat_id
-    bot.send_message(cid, 'pong - v0.3')
+def command_ping(update: Update, context: CallbackContext):
+	bot = context.bot
+	cid = update.message.chat_id
+	bot.send_message(cid, 'pong - v0.3')
 
 
 # prints statistics, only ADMIN
-def command_stats(bot, update):
-    cid = update.message.chat_id
-    if cid == ADMIN:
-        with open(STATS, 'r') as f:
-            stats = json.load(f)
-        stattext = "+++ Statistics +++\n" + \
-                    "Liberal Wins (policies): " + str(stats.get("libwin_policies")) + "\n" + \
-                    "Liberal Wins (killed Hitler): " + str(stats.get("libwin_kill")) + "\n" + \
-                    "Fascist Wins (policies): " + str(stats.get("fascwin_policies")) + "\n" + \
-                    "Fascist Wins (Hitler chancellor): " + str(stats.get("fascwin_hitler")) + "\n" + \
-                    "Games cancelled: " + str(stats.get("cancelled")) + "\n\n" + \
-                    "Total amount of groups: " + str(len(stats.get("groups"))) + "\n" + \
-                    "Games running right now: "
-        bot.send_message(cid, stattext)       
+def command_stats(update: Update, context: CallbackContext):
+	bot = context.bot
+	cid = update.message.chat_id
+	if cid == ADMIN:
+		with open(STATS, 'r') as f:
+			stats = json.load(f)
+		stattext = "+++ Statistics +++\n" + \
+					"Liberal Wins (policies): " + str(stats.get("libwin_policies")) + "\n" + \
+					"Liberal Wins (killed Hitler): " + str(stats.get("libwin_kill")) + "\n" + \
+					"Fascist Wins (policies): " + str(stats.get("fascwin_policies")) + "\n" + \
+					"Fascist Wins (Hitler chancellor): " + str(stats.get("fascwin_hitler")) + "\n" + \
+					"Games cancelled: " + str(stats.get("cancelled")) + "\n\n" + \
+					"Total amount of groups: " + str(len(stats.get("groups"))) + "\n" + \
+					"Games running right now: "
+		bot.send_message(cid, stattext)       
 
 
 # help page
-def command_help(bot, update):
-    cid = update.message.chat_id
-    help_text = "Los siguientes comandos están disponibles:\n"
-    for i in commands:
-        help_text += i + "\n"
-    bot.send_message(cid, help_text)
+def command_help(update: Update, context: CallbackContext):
+	bot = context.bot
+	cid = update.message.chat_id
+	help_text = "Los siguientes comandos están disponibles:\n"
+	for i in commands:
+		help_text += i + "\n"
+	bot.send_message(cid, help_text)
 
 def reload_game(bot, game, cid):
 	GamesController.games[cid] = game
@@ -169,7 +178,8 @@ def reload_game(bot, game, cid):
 		else:
 			MainController.start_round(bot, game)
 
-def command_newgame(bot, update):  
+def command_newgame(update: Update, context: CallbackContext):  
+	bot = context.bot
 	cid = update.message.chat_id
 		
 	try:
@@ -196,9 +206,11 @@ def command_newgame(bot, update):
 		bot.send_message(cid, str(e))
 
 
-def command_join(bot, update, args):
+def command_join(update: Update, context: CallbackContext):
 	# I use args for testing. // Remove after?
 	groupName = update.message.chat.title
+	bot = context.bot
+	args = context.args
 	cid = update.message.chat_id
 	groupType = update.message.chat.type
 	game = GamesController.games.get(cid, None)
@@ -251,9 +263,10 @@ def command_join(bot, update, args):
 				fname + ", No te puedo enviar un mensaje privado. Por favor, ve a @LaResistenciaByLevibot y has pincha \"Start\".\nLuego necesitas escribir /join de nuevo.")
 
 
-def command_startgame(bot, update):
+def command_startgame(update: Update, context: CallbackContext):
 	log.info('command_startgame called')
 	groupName = update.message.chat.title
+	bot = context.bot
 	cid = update.message.chat_id
 	game = GamesController.games.get(cid, None)
 	if not game:
@@ -278,8 +291,9 @@ def command_startgame(bot, update):
 		MainController.start_round(bot, game)
 		#save_game(cid, groupName, game)
 
-def command_cancelgame(bot, update):
+def command_cancelgame(update: Update, context: CallbackContext):
 	log.info('command_cancelgame called')
+	bot = context.bot
 	cid = update.message.chat_id	
 	#Always try to delete in DB
 	delete_game(cid)
@@ -293,9 +307,10 @@ def command_cancelgame(bot, update):
 	else:
 		bot.send_message(cid, "No hay juego en este chat. Crea un nuevo juego con /newgame")
 
-def command_votes(bot, update):
+def command_votes(update: Update, context: CallbackContext):
 	try:
 		#Send message of executing command   
+		bot = context.bot
 		cid = update.message.chat_id
 		#bot.send_message(cid, "Looking for history...")
 		#Check if there is a current game 
@@ -325,9 +340,10 @@ def command_votes(bot, update):
 	except Exception as e:
 		bot.send_message(cid, str(e))
 
-def command_calltovote(bot, update):
+def command_calltovote(update: Update, context: CallbackContext):
 	try:
 		#Send message of executing command   
+		bot = context.bot
 		cid = update.message.chat_id
 		#bot.send_message(cid, "Looking for history...")
 		#Check if there is a current game 
@@ -363,10 +379,11 @@ def command_calltovote(bot, update):
 	except Exception as e:
 		bot.send_message(cid, str(e))
         
-def command_showhistory(bot, update):
+def command_showhistory(update: Update, context: CallbackContext):
 	#game.pedrote = 3
 	try:
 		#Send message of executing command   
+		bot = context.bot
 		cid = update.message.chat_id
 		#Check if there is a current game 
 		if cid in GamesController.games.keys():
@@ -391,11 +408,13 @@ def command_showhistory(bot, update):
 		bot.send_message(cid, str(e))
 		log.error("Unknown error: " + str(e))  
 		
-def command_claim(bot, update, args):
+def command_claim(update: Update, context: CallbackContext):
 	#game.pedrote = 3
 	try:
 		#Send message of executing command   
+		bot = context.bot
 		cid = update.message.chat_id
+		args = context.args
 		#Check if there is a current game 
 		if cid in GamesController.games.keys():
 			uid = update.message.from_user.id
@@ -489,9 +508,10 @@ def delete_game(cid):
 	
 	
 #Testing commands
-def command_ja(bot, update):
+def command_ja(update: Update, context: CallbackContext):
 	uid = update.message.from_user.id
 	if uid == ADMIN:
+		bot = context.bot
 		cid = update.message.chat_id
 		game = GamesController.games.get(cid, None)
 		answer = "Si"
@@ -500,9 +520,10 @@ def command_ja(bot, update):
 		MainController.count_votes(bot, game)
 	
 
-def command_nein(bot, update):	
+def command_nein(update: Update, context: CallbackContext):	
 	uid = update.message.from_user.id
 	if uid == ADMIN:
+		bot = context.bot
 		cid = update.message.chat_id
 		game = GamesController.games.get(cid, None)
 		answer = "No"
@@ -510,7 +531,8 @@ def command_nein(bot, update):
 			game.board.state.last_votes[uid] = answer
 		MainController.count_votes(bot, game)
 		
-def command_reloadgame(bot, update):  
+def command_reloadgame(update: Update, context: CallbackContext):  
+	bot = context.bot
 	cid = update.message.chat_id
 		
 	try:
@@ -530,18 +552,20 @@ def command_reloadgame(bot, update):
 	except Exception as e:
 		bot.send_message(cid, str(e))
 		
-def command_toggle_debugging(bot, update):
+def command_toggle_debugging(update: Update, context: CallbackContext):
 	uid = update.message.from_user.id
 	if uid == ADMIN:
+		bot = context.bot
 		cid = update.message.chat_id
 		game = GamesController.games.get(cid, None)
 		# Informo que el modo de debugging ha cambiado
 		game.is_debugging = True if not game.is_debugging else False
 		bot.send_message(cid, "Debug Mode: ON" if game.is_debugging else "Debug Mode: OFF")
 		
-def command_prueba(bot, update, args):
+def command_prueba(update: Update, context: CallbackContext):
 	uid = update.message.from_user.id
 	if uid == ADMIN:
+		bot = context.bot
 		cid = update.message.chat_id
 		game = GamesController.games.get(cid, None)
 		game.board.state.resultado_misiones.append("Fracaso")
@@ -570,13 +594,15 @@ def command_prueba(bot, update, args):
 		log.info(' '.join(args))
 		'''
 		'''
+		bot = context.bot
 		cid = update.message.chat_id
 		game = GamesController.games.get(cid, None)		
 		MainController.final_asesino(bot, game)
 		'''
 
-def command_jugadores(bot, update):	
+def command_jugadores(update: Update, context: CallbackContext):	
 	uid = update.message.from_user.id
+	bot = context.bot
 	cid = update.message.chat_id
 	game = GamesController.games.get(cid, None)
 	jugadoresActuales = "Los jugadores que se han unido al momento son:\n"
