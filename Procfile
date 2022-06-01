@@ -1,1 +1,1 @@
-worker: python MainController.py
+bot: python MainController.py
