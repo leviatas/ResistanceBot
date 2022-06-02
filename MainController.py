@@ -15,7 +15,7 @@ from telegram.ext import (Updater, CommandHandler, CallbackQueryHandler, Callbac
 
 import Commands
 from Constants.Cards import playerSets
-from Constants.Config import TOKEN, STATS, ADMIN
+from Constants.Config import STATS, ADMIN
 from Constants.Cards import modules
 from Boardgamebox.Game import Game
 from Boardgamebox.Player import Player
@@ -1859,8 +1859,8 @@ def main():
 	cur.execute(query)
 	'''
 
-	
-	updater = Updater(os.environ.get('BOT_TOKEN_RESISTENCIA', None), use_context=True)
+	TOKEN = os.environ.get('BOT_TOKEN_RESISTENCIA', None)
+	updater = Updater(TOKEN, use_context=True)
 	
 	
 
@@ -1930,8 +1930,8 @@ def main():
 	PORT = int(os.environ.get('PORT', '8443'))
 	updater.start_webhook(listen="0.0.0.0",
 	      port=PORT,
-	      url_path=TOKEN)
-	updater.bot.set_webhook("https://resistenciabot.herokuapp.com/" + os.environ.get('BOT_TOKEN_RESISTENCIA', None))
+	      url_path=TOKEN,
+		  webhook_url="https://resistenciabot.herokuapp.com/" + TOKEN)
 	# Fin codigo con hooks
 
 
