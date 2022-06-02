@@ -485,14 +485,15 @@ def load_game(cid):
 			temp_player_list[int(uid)] = game.playerlist[uid]
 		game.playerlist = temp_player_list
 		temp_last_votes = {}	
-		for uid in game.board.state.last_votes:
-			temp_last_votes[int(uid)] = game.board.state.last_votes[uid]
-		game.board.state.last_votes = temp_last_votes
-		
-		temp_espera_accion = {}	
-		for uid in game.board.state.enesperadeaccion:
-			temp_espera_accion[int(uid)] = game.board.state.enesperadeaccion[uid]
-		game.board.state.enesperadeaccion = temp_espera_accion
+		if game.board is not None and game.board.state is not None:
+			for uid in game.board.state.last_votes:
+				temp_last_votes[int(uid)] = game.board.state.last_votes[uid]
+			game.board.state.last_votes = temp_last_votes
+			
+			temp_espera_accion = {}	
+			for uid in game.board.state.enesperadeaccion:
+				temp_espera_accion[int(uid)] = game.board.state.enesperadeaccion[uid]
+			game.board.state.enesperadeaccion = temp_espera_accion
 		#bot.send_message(cid, game.print_roles())
 		return game
 	else:
