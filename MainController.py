@@ -1859,14 +1859,10 @@ def main():
 	cur.execute(query)
 	'''
 
-	#PORT = int(os.environ.get('PORT', '5000'))
+	
 	updater = Updater(os.environ.get('BOT_TOKEN_RESISTENCIA', None), use_context=True)
-	'''
-	updater.start_webhook(listen="0.0.0.0",
-	      port=PORT,
-	      url_path=TOKEN)
-	updater.bot.set_webhook("https://secrethitlertest.herokuapp.com/" + TOKEN)
-	'''
+	
+	
 
 	# Get the dispatcher to register handlers
 	dp = updater.dispatcher
@@ -1929,8 +1925,19 @@ def main():
 	# log all errors
 	dp.add_error_handler(error)
 
+
+	# Codigo con hooks para Telegram
+	PORT = int(os.environ.get('PORT', '5000'))
+	updater.start_webhook(listen="0.0.0.0",
+	      port=PORT,
+	      url_path=TOKEN)
+	updater.bot.set_webhook("https://resistenciabot.herokuapp.com/" + os.environ.get('BOT_TOKEN_RESISTENCIA', None))
+	# Fin codigo con hooks
+
+
 	# Start the Bot
-	updater.start_polling()
+	# Comentar cuando no se use webhooks
+	# updater.start_polling()
 
 	# Run the bot until the you presses Ctrl-C or the process receives SIGINT,
 	# SIGTERM or SIGABRT. This should be used most of the time, since
