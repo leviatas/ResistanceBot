@@ -421,7 +421,7 @@ def handle_voting(update: Update, context: CallbackContext):
 	answer = regex.group(2)
 	strcid = regex.group(1)
 	try:
-		game = GamesController.games[cid]
+		game = Commands.get_game(cid)
 		
 		uid = callback.from_user.id
 		player = game.playerlist[uid]
@@ -586,7 +586,7 @@ def handle_team_voting(update: Update, context: CallbackContext):
 	answer = regex.group(2)
 	strcid = regex.group(1)
 	try:
-		game = GamesController.games[cid]
+		game = Commands.get_game(cid)
 		uid = callback.from_user.id
 		bot.edit_message_text("Gracias por tu voto!", uid, callback.message.message_id)
 		log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
@@ -774,7 +774,7 @@ def respuesta_desencadenante_temprano(update: Update, context: CallbackContext):
 	cid = int(regex.group(1))
 	strcid = regex.group(1)	
 	answer = regex.group(2)
-	game = GamesController.games[cid]		
+	game = Commands.get_game(cid)		
 	uid = callback.from_user.id
 		
 	try:
@@ -814,7 +814,7 @@ def respuesta_investigador(update: Update, context: CallbackContext):
 	cid = int(regex.group(1))
 	strcid = regex.group(1)	
 	answer = regex.group(2).replace("_", " ")
-	game = GamesController.games[cid]		
+	game = Commands.get_game(cid)		
 	uid = callback.from_user.id	
 	
 	bot.edit_message_text("Le has respondido al investigador lo siguiente: %s !" % answer, callback.from_user.id, callback.message.message_id)
@@ -990,7 +990,7 @@ def elegir_jugador_para_dar_carta_de_trama(update: Update, context: CallbackCont
 	answer = regex.group(2)
 	strcid = regex.group(1)
 	try:
-		game = GamesController.games[cid]
+		game = Commands.get_game(cid)
 		uid = callback.from_user.id
 				
 		if not game.board.state.fase_actual == "repartir_cartas_trama":
@@ -1245,7 +1245,7 @@ def carta_plot_sinconfianza(update: Update, context: CallbackContext):
 	
 	answer = regex.group(2)
 	try:
-		game = GamesController.games[cid]		
+		game = Commands.get_game(cid)		
 		uid = callback.from_user.id
 		nombre_carta = 'Sin confianza 1-Uso'
 		fase = "plot_" + nombre_carta
@@ -1291,7 +1291,7 @@ def carta_plot_enelpuntodemira(update: Update, context: CallbackContext):
 	
 	answer = regex.group(2)
 	try:
-		game = GamesController.games[cid]		
+		game = Commands.get_game(cid)		
 		uid = callback.from_user.id
 		
 		nombre_carta = 'En El Punto De Mira 1-Uso'
@@ -1359,7 +1359,7 @@ def forzar_jugar_carta_mision_adelantada(update: Update, context: CallbackContex
 	try:
 		# Se envia al jugar la opcion de votar normal.
 		# La diferencia es que esta se muestra el resultado y hace que el resto siga votando		
-		game = GamesController.games[cid]
+		game = Commands.get_game(cid)
 		uid = callback.from_user.id
 		player = game.playerlist[uid]	
 		game.board.state.miembroenelpuntodemira = chosen_uid
@@ -1383,7 +1383,7 @@ def carta_plot_vigilanciaestrecha(update: Update, context: CallbackContext):
 	answer = regex.group(2)
 	carta = "Vigilancia Estrecha"
 	try:
-		game = GamesController.games[cid]		
+		game = Commands.get_game(cid)		
 		uid = callback.from_user.id
 		
 		nombre_carta = 'Vigilancia Estrecha 1-Uso'
@@ -1424,7 +1424,7 @@ def carta_plot_liderfuerte(update: Update, context: CallbackContext):
 	
 	answer = regex.group(2)
 	try:
-		game = GamesController.games[cid]		
+		game = Commands.get_game(cid)		
 		uid = callback.from_user.id
 		
 		nombre_carta = 'Lider Fuerte 1-Uso'
@@ -1467,7 +1467,7 @@ def carta_plot_asumirresponsabilidad(update: Update, context: CallbackContext):
 	
 	answer = regex.group(2)
 	try:
-		game = GamesController.games[cid]		
+		game = Commands.get_game(cid)		
 		uid = callback.from_user.id
 		
 		nombre_carta = 'Asumir Responsabilidad 1-Uso'
@@ -1536,7 +1536,7 @@ def robar_carta_plot(update: Update, context: CallbackContext):
 	carta = regex.group(3).replace("_", " ")
 	
 	try:
-		game = GamesController.games[cid]		
+		game = Commands.get_game(cid)		
 		uid = callback.from_user.id
 		player_objetivo = game.playerlist[player_objetivo_uid]
 		player_ladron = game.playerlist[uid]

@@ -92,7 +92,7 @@ def command_board(update: Update, context: CallbackContext):
 	bot = context.bot
 	cid = update.message.chat_id
 	if cid in GamesController.games.keys():
-		game = GamesController.games[cid]
+		game = get_game(cid)
 		if game.board:			
 			bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
 		else:
@@ -464,6 +464,21 @@ def save_game(cid, groupName, game):
 		cur.execute(query, (cid, groupName, gamejson))
 		#log.info(cur.fetchone()[0])
 		conn.commit()
+
+def get_game(cid):
+	# Busco el juego actual
+	game = GamesController.games.get(cid, None)	
+	if game:
+		# Si esta lo devuelvo.
+		return game
+	else:
+		# Si no esta lo busco en BD y lo pongo en GamesController.games
+		game = load_game(cid)
+		if game:
+			GamesController.games[cid] = game
+			return game
+		else:
+			None
 
 def load_game(cid):
 	cur = conn.cursor()			
