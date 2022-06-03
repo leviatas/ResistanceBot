@@ -580,7 +580,7 @@ def enviar_votacion_equipo(bot, game, player):
 def handle_team_voting(update: Update, context: CallbackContext):
 	bot = context.bot
 	callback = update.callback_query
-	log.info('handle_voting called: %s' % callback.data)
+	log.info('handle_team_voting called: %s' % callback.data)
 	regex = re.search("(-[0-9]*)_(.*)", callback.data)
 	cid = int(regex.group(1))
 	answer = regex.group(2)
@@ -607,8 +607,8 @@ def handle_team_voting(update: Update, context: CallbackContext):
 					inicio_votacion_equipo(bot, game)
 					return
 					
-		#Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
-		#log.info(len(game.board.state.votos_mision))	
+		Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
+		#log.info(len(game.board.state.votos_mision))
 		#log.info(game.board.state.equipo_cantidad_mision)
 		
 		# Pretendo que todos votan juntos de una sola forma.
