@@ -354,26 +354,26 @@ def command_calltovote(update: Update, context: CallbackContext):
 				bot.send_message(cid, "La votación no ha comenzado todavia!")
 			else:
 				#If there is a time, compare it and send history of votes.
-				start = game.dateinitvote
-				stop = datetime.now()          
-				elapsed = stop - start
-				if elapsed > timedelta(minutes=1):
+				# start = game.dateinitvote
+				# stop = datetime.now()          
+				# elapsed = stop - start
+				# if elapsed > timedelta(minutes=1):
 					# Only remember to vote to players that are still in the game
-					history_text = ""
-					if game.board.state.fase_actual == "votacion_del_equipo_de_mision":
-						for player in game.player_sequence:
-							# If the player is not in last_votes send him reminder
-							if player.uid not in game.board.state.last_votes:
-								history_text += "Es hora de votar [%s](tg://user?id=%d)!\n" % (game.playerlist[player.uid].name, player.uid)
-					else:
-						for player in game.board.state.equipo:
-							# If the player is not in last_votes send him reminder
-							if player.uid not in game.board.state.votos_mision:
-								history_text += "Debe votar la misión [%s](tg://user?id=%d)!\n" % (game.playerlist[player.uid].name, player.uid)
-						
-					bot.send_message(cid, text=history_text, parse_mode=ParseMode.MARKDOWN)
+				history_text = ""
+				if game.board.state.fase_actual == "votacion_del_equipo_de_mision":
+					for player in game.player_sequence:
+						# If the player is not in last_votes send him reminder
+						if player.uid not in game.board.state.last_votes:
+							history_text += "Es hora de votar [%s](tg://user?id=%d)!\n" % (game.playerlist[player.uid].name, player.uid)
 				else:
-					bot.send_message(cid, "Cinco minutos deben pasar para pedir que se vote!") 
+					for player in game.board.state.equipo:
+						# If the player is not in last_votes send him reminder
+						if player.uid not in game.board.state.votos_mision:
+							history_text += "Debe votar la misión [%s](tg://user?id=%d)!\n" % (game.playerlist[player.uid].name, player.uid)
+					
+				bot.send_message(cid, text=history_text, parse_mode=ParseMode.MARKDOWN)
+				# else:
+				# 	bot.send_message(cid, "Cinco minutos deben pasar para pedir que se vote!") 
 		else:
 			bot.send_message(cid, "No hay juego en este chat. Crea un nuevo juego con /newgame")
 	except Exception as e:
