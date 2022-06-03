@@ -110,7 +110,7 @@ def command_start(update: Update, context: CallbackContext):
 def command_rules(update: Update, context: CallbackContext):
 	bot = context.bot
 	cid = update.message.chat_id
-	btn = [[InlineKeyboardButton("Rules", url="http://www.secrethitler.com/assets/Secret_Hitler_Rules.pdf")]]
+	btn = [[InlineKeyboardButton("Rules", url="https://en.wikipedia.org/wiki/The_Resistance_(game)")]]
 	rulesMarkup = InlineKeyboardMarkup(btn)
 	bot.send_message(cid, "Lee las reglas oficiales de Resistencia:", reply_markup=rulesMarkup)
 
