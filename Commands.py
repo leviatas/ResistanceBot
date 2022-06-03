@@ -91,8 +91,8 @@ def command_cartas(update: Update, context: CallbackContext):
 def command_board(update: Update, context: CallbackContext):
 	bot = context.bot
 	cid = update.message.chat_id
-	if cid in GamesController.games.keys():
-		game = get_game(cid)
+	game = get_game(cid)
+	if game:
 		if game.board:			
 			bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
 		else:
@@ -297,8 +297,8 @@ def command_cancelgame(update: Update, context: CallbackContext):
 	cid = update.message.chat_id	
 	#Always try to delete in DB
 	delete_game(cid)
-	if cid in GamesController.games.keys():
-		game = GamesController.games[cid]
+	game = get_game(cid)
+	if game:
 		status = bot.getChatMember(cid, update.message.from_user.id).status
 		if update.message.from_user.id == game.initiator or status in ("administrator", "creator"):
 			MainController.end_game(bot, game, 99)
@@ -314,8 +314,8 @@ def command_votes(update: Update, context: CallbackContext):
 		cid = update.message.chat_id
 		#bot.send_message(cid, "Looking for history...")
 		#Check if there is a current game 
-		if cid in GamesController.games.keys():
-			game = GamesController.games.get(cid, None)
+		game = get_game(cid)
+		if game:
 			if not game.dateinitvote:
 				# If date of init vote is null, then the voting didnt start          
 				bot.send_message(cid, "La votación no ha comenzado todavia!")
@@ -346,9 +346,9 @@ def command_calltovote(update: Update, context: CallbackContext):
 		bot = context.bot
 		cid = update.message.chat_id
 		#bot.send_message(cid, "Looking for history...")
-		#Check if there is a current game 
-		if cid in GamesController.games.keys():
-			game = GamesController.games.get(cid, None)
+		#Check if there is a current game
+		game = get_game(cid)
+		if game:
 			if not game.dateinitvote:
 				# If date of init vote is null, then the voting didnt start          
 				bot.send_message(cid, "La votación no ha comenzado todavia!")
@@ -385,9 +385,9 @@ def command_showhistory(update: Update, context: CallbackContext):
 		#Send message of executing command   
 		bot = context.bot
 		cid = update.message.chat_id
-		#Check if there is a current game 
-		if cid in GamesController.games.keys():
-			game = GamesController.games.get(cid, None)  
+		#Check if there is a current game
+		game = get_game(cid)
+		if game:		
 			#bot.send_message(cid, "Current round: " + str(game.board.state.currentround + 1))
 			uid = update.message.from_user.id
 			history_text = "Historial:\n\n" 
@@ -415,10 +415,10 @@ def command_claim(update: Update, context: CallbackContext):
 		bot = context.bot
 		cid = update.message.chat_id
 		args = context.args
-		#Check if there is a current game 
-		if cid in GamesController.games.keys():
-			uid = update.message.from_user.id
-			game = GamesController.games.get(cid, None)			
+		#Check if there is a current game
+		game = get_game(cid)
+		if game:
+			uid = update.message.from_user.id		
 			if uid in game.playerlist:				
 				if game.board.state.currentround != 0:
 					if len(args) > 0:
@@ -612,7 +612,7 @@ def command_prueba(update: Update, context: CallbackContext):
 		'''
 		bot = context.bot
 		cid = update.message.chat_id
-		game = GamesController.games.get(cid, None)		
+		game = Commands.get_game(cid)
 		MainController.final_asesino(bot, game)
 		'''
 

@@ -161,7 +161,7 @@ def asignar_miembro(update: Update, context: CallbackContext):
 		chosen_uid = ADMIN
 	'''
 	try:
-		game = GamesController.games.get(cid, None)		
+		game = Commands.get_game(cid)
 		log.info(chosen_uid)
 		
 		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
@@ -589,7 +589,7 @@ def handle_team_voting(update: Update, context: CallbackContext):
 		game = Commands.get_game(cid)
 		uid = callback.from_user.id
 		bot.edit_message_text("Gracias por tu voto!", uid, callback.message.message_id)
-		log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
+		log.info(f"Jugador {callback.from_user.first_name} ({uid}) voto {answer}")
 
 		#if uid not in game.board.state.last_votes:
 		if not game.is_debugging:
@@ -1195,7 +1195,7 @@ def ver_carta_mision(update: Update, context: CallbackContext):
 	chosen_uid = int(regex.group(2))
 	uid = callback.from_user.id
 	try:
-		game = GamesController.games.get(cid, None)		
+		game = Commands.get_game(cid)
 		turno_actual = len(game.board.state.resultado_misiones)		
 		#log.info(game.playerlist)
 		#log.info(str(chosen_uid) in game.playerlist )
@@ -1633,7 +1633,7 @@ def incluir_modulo(update: Update, context: CallbackContext):
 		chosen_uid = ADMIN
 	'''
 	try:
-		game = GamesController.games.get(cid, None)		
+		game = Commands.get_game(cid)
 		# Si se ha terminado de configurar los modulos...
 		uid = callback.from_user.id
 		
