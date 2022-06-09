@@ -407,7 +407,26 @@ def command_showhistory(update: Update, context: CallbackContext):
 	except Exception as e:
 		bot.send_message(cid, str(e))
 		log.error("Unknown error: " + str(e))  
-		
+
+def command_showmodulos(update: Update, context: CallbackContext):
+	#game.pedrote = 3
+	try:
+		#Send message of executing command   
+		bot = context.bot
+		cid = update.message.chat_id
+		#Check if there is a current game
+		game = get_game(cid)
+		if game:
+			modulos_incluidos = ""
+			for modulo in game.modulos:
+				modulos_incluidos += modulo + "\n"
+			bot.send_message(cid, f"Los modulos incluidos en este juego son:\n{modulos_incluidos}")	
+		else:
+			bot.send_message(cid, "No hay juego en este chat. Crea un nuevo juego con /newgame")
+	except Exception as e:
+		bot.send_message(cid, str(e))
+		log.error("Unknown error: " + str(e)) 
+
 def command_claim(update: Update, context: CallbackContext):
 	#game.pedrote = 3
 	try:
