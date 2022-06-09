@@ -117,27 +117,32 @@ modules = {
         "roles": {
             "Espia": "Asesino",
             "Resistencia": "Comandante"
-        }
+        },
+        "descripcion" : "Agrega al commandante (Sabe quienes son los espias) y el asesino (que puede intentar matar al comandante si gana la resistencia)."
     },
     "Asesino Comandante Falso": {
         "roles": {
             "Espia": "Comandante Falso"
-        }
+        },
+        "descripcion" : "Agrega un espía que se ve como comandante a Guardaespaldas."
     },
     "Asesino Guardaespaldas": {
         "roles": {
             "Resistencia": "Guardaespaldas"
-        }
+        },
+        "descripcion" : "Agrega un resistencia que sabe quien es el comandante, si hay comandante falso le muestra a ambos como comandantes."
     },
     "Asesino Encubierto": {
         "roles": {
             "Espia": "Encubierto"
-        }
+        },
+        "descripcion" : "Agrega un espía que no es conocido por el comandante."
     },
     "Asesino Espia Ciego": {
         "roles": {
             "Espia": "Espia Ciego"
-        }
+        },
+        "descripcion" : "Agrega un espía que no conoce a sus compañeros, pero ellos le conocen y es conocido por el comandante."
     },
     "Desertor": {
         "roles": {
@@ -154,16 +159,19 @@ modules = {
             "Cambia La Lealtad",
             "Cambia La Lealtad"
         ],
+        "descripcion" : "Pendiente"
     },
     "Trampero": {
         "rules": [
             "Trampero"
-        ]
+        ],
+        "descripcion" : "Pendiente"
     },
     "Inquisidor": {
         "rules": [
             "Inquisidor"
-        ]
+        ],
+        "descripcion" : "Pendiente"
     },
     "Inversor": {
         "roles": {
@@ -172,7 +180,8 @@ modules = {
         },
         "rules": [
             "Inversor"
-        ]
+        ],
+        "descripcion" : "Pendiente"
     },
     "Cazador": {
         "roles": {
@@ -219,27 +228,32 @@ modules = {
         },
         "rules": [
             "Cazador"
-        ]
+        ],
+        "descripcion" : "Pendiente"
     },
     "Cazador Agente Falso": {
         "roles": {
             "Resistencia": "Agente Falso"
-        }
+        },
+        "descripcion" : "Pendiente"
     },
     "Cazador Coordinador": {
         "roles": {
             "Resistencia": "Coordinador"
-        }
+        },
+        "descripcion" : "Pendiente"
     },
     "Cazador Agente Oculto": {
         "roles": {
             "Espia": "Agente Oculto"
-        }
+        },
+        "descripcion" : "Pendiente"
     },
     "Cazador Pretendiente": {
         "roles": {
             "Resistencia": "Pretendiente"
-        }
+        },
+        "descripcion" : "Pendiente"
     },
     "Trama": {
         "plot": {
@@ -265,12 +279,14 @@ modules = {
         },
         "rules": [
             "plot"
-        ]
+        ],
+        "descripcion" : "Pendiente"
     },
     "Sargento": {        
         "rules": [
             "Sargento"
-        ]
+        ],
+        "descripcion" : "Pendiente"
     },
     "Picaro": {
         "roles": {
@@ -279,7 +295,8 @@ modules = {
         },
         "rules": [
             "Picaro"
-        ]
+        ],
+        "descripcion" : "Pendiente"
     }
 
 }

@@ -14,6 +14,7 @@ from telegram.ext import (CallbackContext)
 import MainController
 import GamesController
 from Constants.Config import STATS
+from Constants.Cards import modules
 from Boardgamebox.Board import Board
 from Boardgamebox.Game import Game
 from Boardgamebox.Player import Player
@@ -419,8 +420,8 @@ def command_showmodulos(update: Update, context: CallbackContext):
 		if game:
 			modulos_incluidos = ""
 			for modulo in game.modulos:
-				modulos_incluidos += modulo + "\n"
-			bot.send_message(cid, f"Los modulos incluidos en este juego son:\n{modulos_incluidos}")	
+				modulos_incluidos += f"{modulo}: *{modules[modulo]['descripcion']}*\n"
+			bot.send_message(cid, f"Los modulos incluidos en este juego son:\n{modulos_incluidos}", ParseMode.MARKDOWN)	
 		else:
 			bot.send_message(cid, "No hay juego en este chat. Crea un nuevo juego con /newgame")
 	except Exception as e:
