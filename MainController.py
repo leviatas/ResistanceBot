@@ -513,6 +513,7 @@ def votacion_fallida(bot, game):
 		game.board.state.resultado_misiones.append("Fracaso")
 		game.history.append("La mision ha sido un fracaso debido a no decidirse!\n\n")
 		bot.send_message(game.cid, "La mision ha sido un fracaso debido a no decidirse!")
+		verify_fin_de_partida(bot, game)
 	else:
 		voting_aftermath(bot, game, False)
 			
@@ -584,7 +585,6 @@ def handle_team_voting(update: Update, context: CallbackContext):
 	regex = re.search("(-[0-9]*)_(.*)", callback.data)
 	cid = int(regex.group(1))
 	answer = regex.group(2)
-	strcid = regex.group(1)
 	try:
 		game = Commands.get_game(cid)
 		uid = callback.from_user.id
@@ -1642,6 +1642,7 @@ def incluir_modulo(update: Update, context: CallbackContext):
 		else:
 			game.modulos.append(modulo_elegido)
 			bot.edit_message_text("Se ha incluido el modulo %s" % (modulo_elegido), cid, callback.message.message_id)
+			Commands.save_game(game.cid, "Configuracion", game)
 			configurar_partida(bot, game)
 	except AttributeError as e:
 		log.error("incluir_modulo: " + str(e))
