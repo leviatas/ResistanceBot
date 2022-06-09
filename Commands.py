@@ -420,7 +420,7 @@ def command_showmodulos(update: Update, context: CallbackContext):
 		if game:
 			modulos_incluidos = ""
 			for modulo in game.modulos:
-				modulos_incluidos += f"{modulo}: *{modules[modulo]['descripcion']}*\n"
+				modulos_incluidos += f"*{modulo}*: {modules[modulo]['descripcion']}\n"
 			bot.send_message(cid, f"Los modulos incluidos en este juego son:\n{modulos_incluidos}", ParseMode.MARKDOWN)	
 		else:
 			bot.send_message(cid, "No hay juego en este chat. Crea un nuevo juego con /newgame")
