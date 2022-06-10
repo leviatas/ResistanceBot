@@ -142,7 +142,7 @@ modules = {
         "roles": {
             "Espia": "Espia Ciego"
         },
-        "descripcion" : "Agrega un espía que no conoce a sus compañeros, pero ellos le conocen y es conocido por el comandante."
+        "descripcion" : "Agrega un espía que no conoce a sus compañeros ni sus compañeros lo conocen a él, pero es conocido por el comandante."
     },
     "Desertor": {
         "roles": {
