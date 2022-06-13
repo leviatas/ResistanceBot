@@ -33,7 +33,7 @@ class Board(object):
         
         for i in range(5):
             # Pongo la cantidad de miembros por mision como primera fila
-            board += " " + self.misiones[i].replace('*', '\*') + "   " #X
+            board += " " + self.misiones[i].replace('*', '\*') + "     " #X
         board += "\n"
         
         # Seguimiento de misiones
