@@ -25,9 +25,9 @@ class Board(object):
             # Pongo la cantidad de miembros por mision como primera fila
             # pongo un espacio extra luego de 4 porque esta el * de mision en casod e mas de 6 jugadores
             if i == 3 and self.num_players > 6:
-                board += " " + str(i+1) + "    "
+                board += " " + str(i+1) + "      "
             else:        
-                board += " " + str(i+1) + "   "            
+                board += " " + str(i+1) + "     "            
             
         board += "\n"
         
