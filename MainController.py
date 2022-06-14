@@ -12,6 +12,7 @@ from time import sleep
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, Update
 from telegram.ext import (Updater, CommandHandler, CallbackQueryHandler, CallbackContext)
+from telegram.utils.helpers import mention_html
 
 import Commands
 from Constants.Cards import playerSets
@@ -25,6 +26,9 @@ import datetime
 import os
 import psycopg2
 import urllib.parse
+
+import traceback
+import sys
 
 # Enable logging
 
@@ -708,8 +712,8 @@ def verify_fin_de_partida(bot, game):
 	if sum(x == 'Exito' for x in game.board.state.resultado_misiones) == 3:
 		# Si esta el modulo de asesino se deberia preguntar al asesino a quien mata y mostrar un mensaje de que puede matar
 		if "Asesino" in game.modulos:
-			finalizo_el_partido = False
-			final_asesino(bot, game)			
+			finalizo_el_partido = True
+			final_asesino(bot, game)
 		elif "Cazador" in game.modulos:
 			finalizo_el_partido = False
 			bot.send_message(game.cid, "Con 3 exitos la resistencia ahora deben encontrar a un jefe de los espias y darle caza!")
@@ -871,33 +875,28 @@ def asesinar_miembro(update: Update, context: CallbackContext):
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
 
-	try:
-		game = GamesController.games.get(cid, None)
-		log.info(chosen_uid)
-		miembro_asesinado = game.playerlist[chosen_uid]			
-		
-		log.info("Se ha asesinado a %s (%d)" % (miembro_asesinado.name, miembro_asesinado.uid))
-						
-		bot.edit_message_text("Tú asesinaste a %s !" % miembro_asesinado.name,
-				callback.from_user.id, callback.message.message_id)
-		
-		text_asesinato = "La bala pega entre los ojos de %s!\n" % (miembro_asesinado.name)
-		
-		miembro_asesinado.esta_muerto = True
-		
-		if miembro_asesinado.rol == "Comandante":
-			text_asesinato += "Lamentablemente era nuestro Comandante. La resistencia, sin alguien que los guie, se desbanda."
-			bot.send_message(game.cid, text_asesinato)
-			end_game(bot, game, -2)
-		else:
-			text_asesinato += "Los restantes miembros de la resistencia protegen a su lider. El imperio tiene los días contados."
-			bot.send_message(game.uid, text_asesinato)
-			end_game(bot, game, 1)
-	except AttributeError as e:
-		log.error("asesinar_miembro: Game or board should not be None! Eror: " + str(e))
-	except Exception as e:
-		log.error("Unknown error: " + repr(e))
-		log.exception(e)
+	game = GamesController.games.get(cid, None)
+	log.info(chosen_uid)
+	miembro_asesinado = game.playerlist[chosen_uid]			
+	
+	log.info("Se ha asesinado a %s (%d)" % (miembro_asesinado.name, miembro_asesinado.uid))
+					
+	bot.edit_message_text("Tú asesinaste a %s !" % miembro_asesinado.name,
+			callback.from_user.id, callback.message.message_id)
+	
+	text_asesinato = "La bala pega entre los ojos de %s!\n" % (miembro_asesinado.name)
+	
+	miembro_asesinado.esta_muerto = True
+	
+	if miembro_asesinado.rol == "Comandante":
+		text_asesinato += "Lamentablemente era nuestro Comandante. La resistencia, sin alguien que los guie, se desbanda."
+		bot.send_message(game.cid, text_asesinato)
+		end_game(bot, game, -2)
+	else:
+		text_asesinato += "Los restantes miembros de la resistencia protegen a su lider. El imperio tiene los días contados."
+		bot.send_message(game.uid, text_asesinato)
+		end_game(bot, game, 1)
+	
 
 # Modulo Trama
 def preguntar_intencion_uso_carta(bot, game, nombre_carta, accion_carta):
@@ -1831,12 +1830,44 @@ def shuffle_policy_pile(bot, game):
                          "No habia cartas suficientes en el mazo de políticas asi que he mezclado el resto con el mazo de descarte!")
 
 
-def error(bot, update, error):
-    #bot.send_message(387393551, 'Update "%s" caused error "%s"' % (update, error) ) 
-    logger.warning('Update "%s" caused error "%s"' % (update, error))
-
-
-
+def error(update, context):
+    # add all the dev user_ids in this list. You can also add ids of channels or groups.
+    devs = [ADMIN]
+    # we want to notify the user of this problem. This will always work, but not notify users if the update is an
+	# callback or inline query, or a poll update. In case you want this, keep in mind that sending the message 
+    # could fail
+    '''
+	if update.effective_message:
+        text = "Hey. I'm sorry to inform you that an error happened while I tried to handle your update. " \
+               "My developer(s) will be notified."
+        update.effective_message.reply_text(text)
+	'''
+    # This traceback is created with accessing the traceback object from the sys.exc_info, which is returned as the
+    # third value of the returned tuple. Then we use the traceback.format_tb to get the traceback as a string, which
+    # for a weird reason separates the line breaks in a list, but keeps the linebreaks itself. So just joining an
+    # empty string works fine.
+    trace = "".join(traceback.format_tb(sys.exc_info()[2]))
+    # lets try to get as much information from the telegram update as possible
+    payload = ""
+    # normally, we always have an user. If not, its either a channel or a poll update.
+    if update.effective_user:
+        payload += f' with the user {mention_html(update.effective_user.id, update.effective_user.first_name)}'
+    # there are more situations when you don't get a chat
+    if update.effective_chat:
+        payload += f' within the chat <i>{update.effective_chat.title}</i>'
+        if update.effective_chat.username:
+            payload += f' (@{update.effective_chat.username})'
+    # but only one where you have an empty payload by now: A poll (buuuh)
+    if update.poll:
+        payload += f' with the poll id {update.poll.id}.'
+    # lets put this in a "well" formatted text
+    text = f"Hey.\n The error <code>{context.error}</code> happened{payload}. The full traceback:\n\n<code>{trace}" \
+           f"</code>"
+    # and send it to the dev(s)
+    for dev_id in devs:
+        context.bot.send_message(dev_id, text, parse_mode=ParseMode.HTML)
+    # we raise the error again, so the logger module catches it. If you don't use the logger module, use it.
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
 		
 def main():
 	GamesController.init() #Call only once
