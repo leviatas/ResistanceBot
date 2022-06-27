@@ -1967,6 +1967,7 @@ def main():
 		  webhook_url="https://resistenciabot.herokuapp.com/" + TOKEN)
 	# Fin codigo con hooks
 
+	updater.bot.send_message(ADMIN, "Nueva version en linea")
 
 	# Start the Bot
 	# Comentar cuando no se use webhooks
