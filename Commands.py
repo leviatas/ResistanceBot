@@ -184,7 +184,7 @@ def command_newgame(update: Update, context: CallbackContext):
 	cid = update.message.chat_id
 		
 	try:
-		game = MainController.get_game(cid)
+		game = get_game(cid)
 		groupType = update.message.chat.type
 		if groupType not in ['group', 'supergroup']:
 			bot.send_message(cid, "Tienes que agregarme a un grupo primero y escribir /newgame allá!")
@@ -214,7 +214,7 @@ def command_join(update: Update, context: CallbackContext):
 	args = context.args
 	cid = update.message.chat_id
 	groupType = update.message.chat.type
-	game = MainController.get_game(cid)
+	game = get_game(cid)
 	if len(args) <= 0:
 		# if not args, use normal behaviour
 		fname = update.message.from_user.first_name
@@ -269,7 +269,7 @@ def command_startgame(update: Update, context: CallbackContext):
 	groupName = update.message.chat.title
 	bot = context.bot
 	cid = update.message.chat_id
-	game = MainController.get_game(cid)
+	game = get_game(cid)
 	if not game:
 		bot.send_message(cid, "No hay juego en este chat. Crea un nuevo juego con /newgame")
 	elif game.board:
@@ -554,7 +554,7 @@ def command_ja(update: Update, context: CallbackContext):
 	if uid == ADMIN:
 		bot = context.bot
 		cid = update.message.chat_id
-		game = MainController.get_game(cid)
+		game = get_game(cid)
 		answer = "Si"
 		for uid in game.playerlist:
 			game.board.state.last_votes[uid] = answer
@@ -566,7 +566,7 @@ def command_nein(update: Update, context: CallbackContext):
 	if uid == ADMIN:
 		bot = context.bot
 		cid = update.message.chat_id
-		game = MainController.get_game(cid)
+		game = get_game(cid)
 		answer = "No"
 		for uid in game.playerlist:
 			game.board.state.last_votes[uid] = answer
@@ -577,7 +577,7 @@ def command_reloadgame(update: Update, context: CallbackContext):
 	cid = update.message.chat_id
 		
 	try:
-		game = MainController.get_game(cid)
+		game = get_game(cid)
 		groupType = update.message.chat.type
 		if groupType not in ['group', 'supergroup']:
 			bot.send_message(cid, "Tienes que agregarme a un grupo primero y escribir /reloadgame allá!")		
@@ -598,7 +598,7 @@ def command_toggle_debugging(update: Update, context: CallbackContext):
 	if uid == ADMIN:
 		bot = context.bot
 		cid = update.message.chat_id
-		game = MainController.get_game(cid)
+		game = get_game(cid)
 		# Informo que el modo de debugging ha cambiado
 		game.is_debugging = True if not game.is_debugging else False
 		bot.send_message(cid, "Debug Mode: ON" if game.is_debugging else "Debug Mode: OFF")
@@ -608,7 +608,7 @@ def command_prueba(update: Update, context: CallbackContext):
 	if uid == ADMIN:
 		bot = context.bot
 		cid = update.message.chat_id
-		game = MainController.get_game(cid)
+		game = get_game(cid)
 		game.board.state.resultado_misiones.append("Fracaso")
 		MainController.start_round(bot, game)
 		
@@ -620,7 +620,7 @@ def command_prueba(update: Update, context: CallbackContext):
 		'''
 		#bot.send_photo(cid, photo='https://www.dropbox.com/s/sy4473ohowipxke/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg?raw=1&cache=%d' % (datetime.now()))
 		#bot.send_photo(cid, photo='https://www.dropbox.com/s/sy4473ohowipxke/BSGP%20Esperando%20la%20Carroza%20-%20CURRENT.jpg?raw=1')
-		'''game = MainController.get_game(cid)
+		'''game = get_game(cid)
 		
 		#game.board.state.failed_votes -= 1
 		
@@ -645,7 +645,7 @@ def command_jugadores(update: Update, context: CallbackContext):
 	uid = update.message.from_user.id
 	bot = context.bot
 	cid = update.message.chat_id
-	game = MainController.get_game(cid)
+	game = get_game(cid)
 	jugadoresActuales = "Los jugadores que se han unido al momento son:\n"
 	for uid in game.playerlist:
 		jugadoresActuales += "[%s](tg://user?id=%d)\n" % (game.playerlist[uid].name, uid)
