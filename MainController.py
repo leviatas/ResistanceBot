@@ -890,11 +890,11 @@ def asesinar_miembro(update: Update, context: CallbackContext):
 	
 	if miembro_asesinado.rol == "Comandante":
 		text_asesinato += "Lamentablemente era nuestro Comandante. La resistencia, sin alguien que los guie, se desbanda."
-		bot.send_message(game.cid, text_asesinato)
+		bot.send_message(cid, text_asesinato)
 		end_game(bot, game, -2)
 	else:
 		text_asesinato += "Los restantes miembros de la resistencia protegen a su lider. El imperio tiene los días contados."
-		bot.send_message(game.uid, text_asesinato)
+		bot.send_message(cid, text_asesinato)
 		end_game(bot, game, 1)
 	
 
