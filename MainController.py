@@ -265,7 +265,7 @@ def elegir_jugador_general(update: Update, context: CallbackContext):
 	regex = re.search("(-[0-9]*)_elegirjugador_([0-9]*)", callback.data)
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
-	game = GamesController.games.get(cid, None)
+	game = Commands.get_game(cid)
 	miembro_elegido = game.playerlist[chosen_uid]
 	strcid = str(game.cid)
 	log.info(game.board.state.fase_actual)
@@ -875,7 +875,7 @@ def asesinar_miembro(update: Update, context: CallbackContext):
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
 
-	game = GamesController.games.get(cid, None)
+	game = Commands.get_game(cid)
 	log.info(chosen_uid)
 	miembro_asesinado = game.playerlist[chosen_uid]			
 	
@@ -1022,7 +1022,7 @@ def dar_carta_trama(update: Update, context: CallbackContext):
 	chosen_uid = int(regex.group(2))
 
 	try:
-		game = GamesController.games.get(cid, None)
+		game = Commands.get_game(cid)
 		log.info(chosen_uid)
 		miembro_elegido = game.playerlist[chosen_uid]		
 		carta = game.board.state.carta_actual
@@ -1116,7 +1116,7 @@ def investigar_jugador(update: Update, context: CallbackContext):
 	chosen_uid = int(regex.group(2))
 	caller_uid = callback.from_user.id
 	try:
-		game = GamesController.games.get(cid, None)
+		game = Commands.get_game(cid)
 		mostrar_afiliacion(bot, game, caller_uid, chosen_uid)
 		miembro_elegido = game.playerlist[chosen_uid]	
 		bot.edit_message_text("Tú has investigado a %s!" % (miembro_elegido.name),
@@ -1138,7 +1138,7 @@ def revelarse_jugador(update: Update, context: CallbackContext):
 	chosen_uid = int(regex.group(2))
 	caller_uid = callback.from_user.id
 	try:
-		game = GamesController.games.get(cid, None)
+		game = Commands.get_game(cid)
 		mostrar_afiliacion(bot, game, chosen_uid, caller_uid)
 		miembro_elegido = game.playerlist[chosen_uid]	
 		bot.edit_message_text("Te has revelado a %s!" % (miembro_elegido.name),
@@ -1654,7 +1654,7 @@ def showHiddenhistory(cid, bot):
 	#game.pedrote = 3
 	try:
 		#Check if there is a current game		
-		game = GamesController.games.get(cid, None)
+		game = Commands.get_game(cid)
 		history_text = "Historial Oculto:\n\n" 
 		for x in game.hiddenhistory:				
 			history_text += x + "\n\n"
