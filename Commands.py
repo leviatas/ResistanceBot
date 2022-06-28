@@ -95,7 +95,7 @@ def command_board(update: Update, context: CallbackContext):
 	game = get_game(cid)
 	if game:
 		if game.board:			
-			bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+			bot.send_message(cid, game.board.print_board(game), ParseMode.MARKDOWN)
 		else:
 			bot.send_message(cid, "No hay juego comenzado en este chat.  Por favor comience el juego con /startgame")
 	else:
@@ -160,7 +160,7 @@ def reload_game(bot, game, cid):
 	
 	# Ask the president to choose a chancellor	
 	if game.board.state.fase_actual == "votacion_del_equipo_de_mision":
-		bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)		
+		bot.send_message(cid, game.board.print_board(game), ParseMode.MARKDOWN)		
 		if len(game.board.state.last_votes) == len(game.player_sequence):
 			MainController.count_votes(bot, game)
 		else:
@@ -168,13 +168,13 @@ def reload_game(bot, game, cid):
 			bot.send_message(cid, "Hay una votación en progreso utiliza /calltovote para decirles a los otros jugadores. ")
 	else:
 		if game.board.state.fase_actual == "conducir_la_mision":
-			bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)	
+			bot.send_message(cid, game.board.print_board(game), ParseMode.MARKDOWN)	
 			MainController.voting_aftermath(bot, game, True)
 		elif game.board.state.fase_actual == "asignar_equipo":			
-			bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)	
+			bot.send_message(cid, game.board.print_board(game), ParseMode.MARKDOWN)	
 			MainController.asignar_equipo(bot, game)
 		elif game.board.state.fase_actual == "vote_creadores_opinion":
-			bot.send_message(cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+			bot.send_message(cid, game.board.print_board(game), ParseMode.MARKDOWN)
 			MainController.vote_creadores_opinion(bot, game)
 		else:
 			MainController.start_round(bot, game)

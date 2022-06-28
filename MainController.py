@@ -92,7 +92,7 @@ def start_round(bot, game):
 		game.board.state.lider_actual = game.board.state.lider_elegido
 		game.board.state.lider_elegido = None
 	
-	bot.send_message(game.cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+	bot.send_message(game.cid, game.board.print_board(game), ParseMode.MARKDOWN)
 	bot.send_message(game.cid, "El próximo Lider es [%s](tg://user?id=%d)." % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid), ParseMode.MARKDOWN)
 	
 	turno_actual = len(game.board.state.resultado_misiones)
@@ -145,10 +145,10 @@ def asignar_equipo(bot, game):
 	
 	
 	if(game.is_debugging):
-		bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(ADMIN, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(ADMIN, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
 	else:
-		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
 
 	
@@ -240,10 +240,10 @@ def elegir_jugador_general_menu(bot, game, texto_publico, texto_menu, restriccio
 	elegirjugador = InlineKeyboardMarkup(btns)
 		
 	if(game.is_debugging):
-		bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(ADMIN, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(ADMIN, texto_menu, reply_markup=elegirjugador)
 	else:
-		bot.send_message(id_jugador_eleccion, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(id_jugador_eleccion, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(id_jugador_eleccion, texto_menu, reply_markup=elegirjugador)
 
 	
@@ -378,7 +378,7 @@ def vote_creadores_opinion(bot, game):
 	for player in creadores_de_opinion:
 		if not game.playerlist[player.uid].esta_muerto and not game.is_debugging:
 			if game.playerlist[player.uid] is not game.board.state.lider_actual:
-				bot.send_message(player.uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+				bot.send_message(player.uid, game.board.print_board(game), ParseMode.MARKDOWN)
 			bot.send_message(player.uid, game.board.state.mensaje_votacion + "\nCUIDADO TU VOTO SERA PUBLICO Y NO PODRAS CAMBIARLO!", reply_markup=voteMarkup)
 	
 def vote(bot, game):
@@ -400,7 +400,7 @@ def vote(bot, game):
 			# Solo envio votacion a los que no hayan votado
 			if player.uid not in game.board.state.last_votes:
 				if player is not game.board.state.lider_actual:
-					bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+					bot.send_message(uid, game.board.print_board(game), ParseMode.MARKDOWN)
 				bot.send_message(uid, game.board.state.mensaje_votacion, reply_markup=voteMarkup)
 			
 def handle_voting(update: Update, context: CallbackContext):
@@ -733,7 +733,7 @@ def verify_fin_de_partida(bot, game):
 				investigacion_cazador(bot, game)
 				
 		else:
-			bot.send_message(game.cid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+			bot.send_message(game.cid, game.board.print_board(game), ParseMode.MARKDOWN)
 			start_next_round(bot, game)
 
 def preguntar_desencadenante_temprano(bot, game):
@@ -917,11 +917,11 @@ def elegir_carta_mision(bot, game, uid):
 	equipoMarkup = InlineKeyboardMarkup(btns)
 	
 	if(game.is_debugging):
-		bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(ADMIN, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(ADMIN, 'Por favor elegi al miembro de la mision al que quieres ver su carta de misión!', reply_markup=equipoMarkup)
 	else:
 		
-		bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(uid, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(uid, 'Por favor elegi al miembro de la mision al que quieres ver su carta de misión!', reply_markup=equipoMarkup)
 		
 		
@@ -955,10 +955,10 @@ def elegir_carta_de_trama_a_repartir(bot, game):
 	cartasMarkup = InlineKeyboardMarkup(btns)
 	
 	if(game.is_debugging):
-		bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(ADMIN, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(ADMIN, 'Elige la primera carta a repartir!', reply_markup=cartasMarkup)
 	else:
-		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(game.board.state.lider_actual.uid, 'Elige una carta para repartir!', reply_markup=cartasMarkup)
 		
 def elegir_jugador_para_dar_carta_de_trama(update: Update, context: CallbackContext):
@@ -1289,10 +1289,10 @@ def elegir_miembro_carta_plot_enelpuntodemira(bot, game, uid):
 	equipoMarkup = InlineKeyboardMarkup(btns)	
 
 	if(game.is_debugging):
-		bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(ADMIN, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(ADMIN, 'Por favor elegi al miembro de la mision al que quieres forzar a jugar su carta de mision por adelantado!', reply_markup=equipoMarkup)
 	else:
-		bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(uid, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(uid, 'Por favor elegi al miembro de la mision al que quieres forzar a jugar su carta de mision por adelantado!', reply_markup=equipoMarkup)
 	
 
@@ -1452,10 +1452,10 @@ def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 	equipoMarkup = InlineKeyboardMarkup(btns)	
 
 	if(game.is_debugging):
-		bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(ADMIN, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(ADMIN, 'Por favor elegi la carta que quieres robar al miembro correspondiente!', reply_markup=equipoMarkup)
 	else:
-		bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(uid, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(uid, 'Por favor elegi la carta que quieres robar al miembro correspondiente!', reply_markup=equipoMarkup)
 		
 def robar_carta_plot(update: Update, context: CallbackContext):	

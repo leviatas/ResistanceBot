@@ -18,8 +18,8 @@ class Board(object):
             
         self.discards = []
         self.previous = []
-    def print_board(self, player_sequence):
-        board = "--- Misiones ---\n"
+    def print_board(self, game):
+        board = f"--- Misiones --- ({game.board.state.fase_actual })\n"
         
         for i in range(5):
             # Pongo la cantidad de miembros por mision como primera fila
@@ -55,14 +55,14 @@ class Board(object):
         
         board += "\n--- Orden de turno  ---\n"
         
-        for player in player_sequence:
+        for player in game.player_sequence:
             if self.state.lider_actual == player:
                 board += "*" + player.name + "*" + " " + u"\u27A1\uFE0F" + " "
             else:
                 board += player.name + " " + u"\u27A1\uFE0F" + " "
         board = board[:-1]
         board += u"\U0001F501"
-        board += self.print_playerCards(player_sequence)
+        board += self.print_playerCards(game.player_sequence)
         return board
     
     def print_playerCards(self, player_sequence):
