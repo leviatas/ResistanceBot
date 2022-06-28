@@ -19,7 +19,8 @@ class Board(object):
         self.discards = []
         self.previous = []
     def print_board(self, game):
-        board = f"--- Misiones --- ({game.board.state.fase_actual })\n"
+        fase_actual = game.board.state.fase_actual.replace("_", " ")
+        board = f"--- Misiones --- ({fase_actual})\n"
         
         for i in range(5):
             # Pongo la cantidad de miembros por mision como primera fila
