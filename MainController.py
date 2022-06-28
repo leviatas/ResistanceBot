@@ -486,7 +486,7 @@ def count_votes(bot, game):
 		# VOTING WAS SUCCESSFUL
 		log.info("Voting successful")
 				
-		voting_text += f"\nFelicitaciones al equipo de [{game.board.state.lider_actual.name}](tg://user?id={game.board.state.lider_actual.uid}) compuesto por:\n{game.get_equipo_actual(True)}\nNO SE PUEDE HABLAR"
+		voting_text += f"\nFelicitaciones al equipo de [{game.board.state.lider_actual.name}](tg://user?id={game.board.state.lider_actual.uid}) compuesto por:\n{game.get_equipo_actual(True)}"
 		
 		voting_success = True
 		bot.send_message(game.cid, voting_text, ParseMode.MARKDOWN)
