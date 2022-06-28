@@ -164,49 +164,42 @@ def asignar_miembro(update: Update, context: CallbackContext):
 	'''if debugging:
 		chosen_uid = ADMIN
 	'''
-	try:
-		game = Commands.get_game(cid)
-		log.info(chosen_uid)
-		
-		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
-			bot.edit_message_text("Ya has elegido a todos los miembros del equipo!", 
-					      callback.from_user.id, callback.message.message_id)
-			return
-		
-		turno_actual = len(game.board.state.resultado_misiones)		
-		#log.info(game.playerlist)
-		#log.info(str(chosen_uid) in game.playerlist )
-		#log.info(chosen_uid in game.playerlist)        
-		
-		miembro_asignado = game.playerlist[chosen_uid]			
-		
-		log.info("El lider %s (%d) eligio a %s (%d)" % (
-			game.board.state.lider_actual.name, game.board.state.lider_actual.uid,
-			miembro_asignado.name, miembro_asignado.uid))
-		bot.edit_message_text("Tú elegiste a %s para ir a la misión!" % miembro_asignado.name,
-				callback.from_user.id, callback.message.message_id)
-		
-		bot.send_message(game.cid,
-			"El lider %s eligió a %s para ir a la misión!" % (
-			game.board.state.lider_actual.name, miembro_asignado.name))
-		
-		#Agrego uno al contador de Miembros, minimo hay 2 por misión.
-		#Lo agrego al equipo
-		game.board.state.equipo.append(miembro_asignado)
-		game.board.state.equipo_contador += 1
-				
-		# Si se suman la cantidad apropiada de miembros para la mision se vota.
-		if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
-			pre_inicio_votacion(bot, game)
-		else:
-			#Si no se eligieron todos se le pide que siga eligiendo hasta llegar al cupo. Se pone tiempo para que no se sobrepise
-			asignar_equipo(bot, game)
-		
-	except AttributeError as e:
-		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
-	except Exception as e:
-		log.error("Unknown error: " + repr(e))
-		log.exception(e)
+	game = Commands.get_game(cid)
+	log.info(chosen_uid)
+	
+	if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
+		bot.edit_message_text("Ya has elegido a todos los miembros del equipo!", 
+						callback.from_user.id, callback.message.message_id)
+		return
+	
+	turno_actual = len(game.board.state.resultado_misiones)		
+	#log.info(game.playerlist)
+	#log.info(str(chosen_uid) in game.playerlist )
+	#log.info(chosen_uid in game.playerlist)        
+	
+	miembro_asignado = game.playerlist[chosen_uid]			
+	
+	log.info("El lider %s (%d) eligio a %s (%d)" % (
+		game.board.state.lider_actual.name, game.board.state.lider_actual.uid,
+		miembro_asignado.name, miembro_asignado.uid))
+	bot.edit_message_text("Tú elegiste a %s para ir a la misión!" % miembro_asignado.name,
+			callback.from_user.id, callback.message.message_id)
+	
+	bot.send_message(game.cid,
+		"El lider %s eligió a %s para ir a la misión!" % (
+		game.board.state.lider_actual.name, miembro_asignado.name))
+	
+	#Agrego uno al contador de Miembros, minimo hay 2 por misión.
+	#Lo agrego al equipo
+	game.board.state.equipo.append(miembro_asignado)
+	game.board.state.equipo_contador += 1
+			
+	# Si se suman la cantidad apropiada de miembros para la mision se vota.
+	if game.board.state.equipo_contador == game.board.state.equipo_cantidad_mision:
+		pre_inicio_votacion(bot, game)
+	else:
+		#Si no se eligieron todos se le pide que siga eligiendo hasta llegar al cupo. Se pone tiempo para que no se sobrepise
+		asignar_equipo(bot, game)	
 
 def pre_inicio_votacion(bot, game):
 	log.info('pre_inicio_votacion called')
@@ -270,88 +263,82 @@ def elegir_jugador_general(update: Update, context: CallbackContext):
 	strcid = str(game.cid)
 	log.info(game.board.state.fase_actual)
 	# Luego hago accion dependiendo de la fase en la que este. 
-	try:
-		# (Cazador) Si esta eligiendo investigador para el modulo cazador.
-		# Lo asigno como posible investigador y continuo con la votación.		
-		if game.board.state.fase_actual == "eleccion_de_investigador_cazador":			
-			bot.edit_message_text("Elegiste a %s para ser investigador en caso que falle la mision!" % miembro_elegido.name,
-				callback.from_user.id, callback.message.message_id)
-			game.board.state.investigador_nominado = miembro_elegido
-			bot.send_message(game.cid, "El investigador elegido ha sido %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
-			iniciar_votacion(bot, game)
-		# El cazador de la resistencia tiene que descubrir al jefe espia
-		if game.board.state.fase_actual == "acusacion_resistencia_cazador":
-			bot.edit_message_text("Te lanzas contra %s convencido de que es tu objetivo!" % miembro_elegido.name,
-				callback.from_user.id, callback.message.message_id)
-			# Si es alguno de los dos espias...
-			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2"):
-				bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
-				end_game(bot, game, 2)
+	
+	# (Cazador) Si esta eligiendo investigador para el modulo cazador.
+	# Lo asigno como posible investigador y continuo con la votación.		
+	if game.board.state.fase_actual == "eleccion_de_investigador_cazador":			
+		bot.edit_message_text("Elegiste a %s para ser investigador en caso que falle la mision!" % miembro_elegido.name,
+			callback.from_user.id, callback.message.message_id)
+		game.board.state.investigador_nominado = miembro_elegido
+		bot.send_message(game.cid, "El investigador elegido ha sido %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
+		iniciar_votacion(bot, game)
+	# El cazador de la resistencia tiene que descubrir al jefe espia
+	if game.board.state.fase_actual == "acusacion_resistencia_cazador":
+		bot.edit_message_text("Te lanzas contra %s convencido de que es tu objetivo!" % miembro_elegido.name,
+			callback.from_user.id, callback.message.message_id)
+		# Si es alguno de los dos espias...
+		if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2"):
+			bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
+			end_game(bot, game, 2)
+		else:
+			bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
+			# Elimino el ultimo resultado y agrego uno de Fracaso
+			game.board.state.resultado_misiones.pop()
+			game.board.state.resultado_misiones.append("Fracaso")
+			# Se verifica nuevamente si hay fin de partida
+			verify_fin_de_partida(bot, game)
+	
+	if game.board.state.fase_actual in ("acusacion_espias_cazador", "acusacion_temprana_espias_cazador"):
+		bot.edit_message_text("Te lanzas contra %s convencido de que es tu objetivo!" % miembro_elegido.name,
+			callback.from_user.id, callback.message.message_id)
+		# Si es alguno de los dos es jefe resistencia. O el coordinador si este esta habilitado.
+		if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2", "Coordinador"):
+			bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
+			end_game(bot, game, -3)
+		else:
+			if game.board.state.fase_actual == "acusacion_temprana_espias_cazador":
+				game.board.state.se_ha_realizado_fin_temprano = True				
+			bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
+			# Elimino el ultimo resultado y agrego uno de Fracaso
+			game.board.state.resultado_misiones.pop()
+			game.board.state.resultado_misiones.append("Exito")
+			# Se verifica nuevamente si hay fin de partida
+			verify_fin_de_partida(bot, game)
+	if game.board.state.fase_actual == "investigacion_cazador":			
+		bot.send_message(game.cid, "El investigador %s ha elegido investigar a %s" % (game.board.state.investigador.name, miembro_elegido.name), ParseMode.MARKDOWN)
+		game.history.append("El investigador %s ha elegido investigar a %s" % (game.board.state.investigador.name, miembro_elegido.name))
+		# Decidi que es no hay motivo estrategico para el jefe espia mostrar
+		# que es jefe espia si no hay agente oculto y son 5-6 jugadores		
+		if ("Cazador Agente Oculto" not in game.modulos) and len(game.playerlist) < 7:
+			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2"):					
+				bot.send_message(game.board.state.investigador.uid, "El jugador es: **Jefe**" % (miembro_elegido.name), ParseMode.MARKDOWN)
 			else:
-				bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
-				# Elimino el ultimo resultado y agrego uno de Fracaso
-				game.board.state.resultado_misiones.pop()
-				game.board.state.resultado_misiones.append("Fracaso")
-				# Se verifica nuevamente si hay fin de partida
-				verify_fin_de_partida(bot, game)
-		
-		if game.board.state.fase_actual in ("acusacion_espias_cazador", "acusacion_temprana_espias_cazador"):
-			bot.edit_message_text("Te lanzas contra %s convencido de que es tu objetivo!" % miembro_elegido.name,
-				callback.from_user.id, callback.message.message_id)
-			# Si es alguno de los dos es jefe resistencia. O el coordinador si este esta habilitado.
-			if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2", "Coordinador"):
-				bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
-				end_game(bot, game, -3)
+				bot.send_message(game.board.state.investigador.uid, "El jugador es: **No jefe**" % (miembro_elegido.name), ParseMode.MARKDOWN)
+			start_next_round(bot, game)
+		else:
+			bot.edit_message_text("Has investigado a %s espera a que elija su respuesta!" % miembro_elegido.name,
+				callback.from_user.id, callback.message.message_id)				
+			btns = []
+			# El jugador debe elegir entre dos ya que tenemos que simular la decision del jefe espia.			
+			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2", "Agente Falso"):
+				# Si es jefe tiene que decidir
+				if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2", "Agente Falso"):
+					btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])					
+					# Si ha 7+ jugadores el jefe de la resistencia puede mostrar la carta de Jefe Resistencia
+					if len(game.playerlist) > 6:
+						btns.append([InlineKeyboardButton("Mostrar Jefe Resistencia", callback_data=strcid + "_mostrarinvestigador_Jefe_Resistencia")])														
+				else:
+					# Jefe espia siempre puede mostrar lealtad del jefe y jefe espia
+					btns.append([InlineKeyboardButton("Mostrar Jefe Espia", callback_data=strcid + "_mostrarinvestigador_Jefe_Espia")])
+					btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])										
 			else:
-				if game.board.state.fase_actual == "acusacion_temprana_espias_cazador":
-					game.board.state.se_ha_realizado_fin_temprano = True				
-				bot.send_message(game.cid, "El cazador eligio como objetivo a %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
-				# Elimino el ultimo resultado y agrego uno de Fracaso
-				game.board.state.resultado_misiones.pop()
-				game.board.state.resultado_misiones.append("Exito")
-				# Se verifica nuevamente si hay fin de partida
-				verify_fin_de_partida(bot, game)
-		if game.board.state.fase_actual == "investigacion_cazador":			
-			bot.send_message(game.cid, "El investigador %s ha elegido investigar a %s" % (game.board.state.investigador.name, miembro_elegido.name), ParseMode.MARKDOWN)
-			game.history.append("El investigador %s ha elegido investigar a %s" % (game.board.state.investigador.name, miembro_elegido.name))
-			# Decidi que es no hay motivo estrategico para el jefe espia mostrar
-			# que es jefe espia si no hay agente oculto y son 5-6 jugadores		
-			if ("Cazador Agente Oculto" not in game.modulos) and len(game.playerlist) < 7:
-				if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2"):					
-					bot.send_message(game.board.state.investigador.uid, "El jugador es: **Jefe**" % (miembro_elegido.name), ParseMode.MARKDOWN)
-				else:
-					bot.send_message(game.board.state.investigador.uid, "El jugador es: **No jefe**" % (miembro_elegido.name), ParseMode.MARKDOWN)
-				start_next_round(bot, game)
+				# Si no es lider le pongo solo de opcion que diga "No un jefe"
+				btns.append([InlineKeyboardButton("Mostrar No Jefe", callback_data=strcid + "_mostrarinvestigador_No_jefe")])			
+			revelarMarkup = InlineKeyboardMarkup(btns)
+			if game.is_debugging:
+				bot.send_message(ADMIN, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
 			else:
-				bot.edit_message_text("Has investigado a %s espera a que elija su respuesta!" % miembro_elegido.name,
-					callback.from_user.id, callback.message.message_id)				
-				btns = []
-				# El jugador debe elegir entre dos ya que tenemos que simular la decision del jefe espia.			
-				if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2", "Agente Falso"):
-					# Si es jefe tiene que decidir
-					if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2", "Agente Falso"):
-						btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])					
-						# Si ha 7+ jugadores el jefe de la resistencia puede mostrar la carta de Jefe Resistencia
-						if len(game.playerlist) > 6:
-							btns.append([InlineKeyboardButton("Mostrar Jefe Resistencia", callback_data=strcid + "_mostrarinvestigador_Jefe_Resistencia")])														
-					else:
-						# Jefe espia siempre puede mostrar lealtad del jefe y jefe espia
-						btns.append([InlineKeyboardButton("Mostrar Jefe Espia", callback_data=strcid + "_mostrarinvestigador_Jefe_Espia")])
-						btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])										
-				else:
-					# Si no es lider le pongo solo de opcion que diga "No un jefe"
-					btns.append([InlineKeyboardButton("Mostrar No Jefe", callback_data=strcid + "_mostrarinvestigador_No_jefe")])			
-				revelarMarkup = InlineKeyboardMarkup(btns)
-				if game.is_debugging:
-					bot.send_message(ADMIN, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
-				else:
-					bot.send_message(miembro_elegido.uid, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
-			
-	except AttributeError as e:
-		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
-	except Exception as e:
-		log.error("Unknown error: " + repr(e))
-		log.exception(e)
+				bot.send_message(miembro_elegido.uid, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
 		
 def iniciar_votacion(bot, game):
 	miembros_elegidos = game.get_equipo_actual(False)			
@@ -424,46 +411,44 @@ def handle_voting(update: Update, context: CallbackContext):
 	cid = int(regex.group(1))
 	answer = regex.group(2)
 	strcid = regex.group(1)
-	try:
-		game = Commands.get_game(cid)
-		
-		uid = callback.from_user.id
-		player = game.playerlist[uid]
-		
-		if game.board.state.fase_actual == "vote_creadores_opinion" and not player.creador_de_opinion:
-			bot.edit_message_text("No eres un creador de opinion, no debes votar todavia!", uid, callback.message.message_id)
-			return
-		if game.board.state.fase_actual not in ["votacion_del_equipo_de_mision", "vote_creadores_opinion"]:
-			bot.edit_message_text("No es el momento de votar!", uid, callback.message.message_id)
-			return
-		
-		bot.edit_message_text("Gracias por tu voto %s al equipo:\n%s" % (answer, game.get_equipo_actual_flat(False)), uid, callback.message.message_id)
-		log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
+	
+	game = Commands.get_game(cid)
+	
+	uid = callback.from_user.id
+	player = game.playerlist[uid]
+	
+	if game.board.state.fase_actual == "vote_creadores_opinion" and not player.creador_de_opinion:
+		bot.edit_message_text("No eres un creador de opinion, no debes votar todavia!", uid, callback.message.message_id)
+		return
+	if game.board.state.fase_actual not in ["votacion_del_equipo_de_mision", "vote_creadores_opinion"]:
+		bot.edit_message_text("No es el momento de votar!", uid, callback.message.message_id)
+		return
+	
+	bot.edit_message_text("Gracias por tu voto %s al equipo:\n%s" % (answer, game.get_equipo_actual_flat(False)), uid, callback.message.message_id)
+	log.info("Jugador %s (%d) voto %s" % (callback.from_user.first_name, uid, answer))
 
-		#if uid not in game.board.state.last_votes:
-		game.board.state.last_votes[uid] = answer
-		
-		# Ahora vienen los casos particulares
-		# Si el usuario es un creador de opinion no le permito cambiar el voto y 
-		# verifico si todos los creadores de opinion ya votaron
-		if player.creador_de_opinion:
-			bot.send_message(game.cid, "El creador de opinion %s ha votado *%s*" % (player.name, answer), ParseMode.MARKDOWN)
-			game.history.append("El creador de opinion %s ha votado *%s*" % (player.name, answer))
-			if len(game.board.state.last_votes) == len(game.get_creadores_de_opinion()):
-				vote(bot, game)
-				return
-			else:
-				return
-		
-		#Allow player to change his vote
-		btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
-		voteMarkup = InlineKeyboardMarkup(btns)
-		bot.send_message(uid, "Puedes cambiar tu voto aquí.\n%s" % (game.board.state.mensaje_votacion), reply_markup=voteMarkup)
-		Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
-		if len(game.board.state.last_votes) == len(game.player_sequence):
-			count_votes(bot, game)
-	except Exception as e:
-		log.error(str(e))
+	#if uid not in game.board.state.last_votes:
+	game.board.state.last_votes[uid] = answer
+	
+	# Ahora vienen los casos particulares
+	# Si el usuario es un creador de opinion no le permito cambiar el voto y 
+	# verifico si todos los creadores de opinion ya votaron
+	if player.creador_de_opinion:
+		bot.send_message(game.cid, "El creador de opinion %s ha votado *%s*" % (player.name, answer), ParseMode.MARKDOWN)
+		game.history.append("El creador de opinion %s ha votado *%s*" % (player.name, answer))
+		if len(game.board.state.last_votes) == len(game.get_creadores_de_opinion()):
+			vote(bot, game)
+			return
+		else:
+			return
+	
+	#Allow player to change his vote
+	btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
+	voteMarkup = InlineKeyboardMarkup(btns)
+	bot.send_message(uid, "Puedes cambiar tu voto aquí.\n%s" % (game.board.state.mensaje_votacion), reply_markup=voteMarkup)
+	Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
+	if len(game.board.state.last_votes) == len(game.player_sequence):
+		count_votes(bot, game)	
 
 
 def count_votes(bot, game):
@@ -589,53 +574,52 @@ def handle_team_voting(update: Update, context: CallbackContext):
 	regex = re.search("(-[0-9]*)_(.*)", callback.data)
 	cid = int(regex.group(1))
 	answer = regex.group(2)
-	try:
-		game = Commands.get_game(cid)
-		uid = callback.from_user.id
-		bot.edit_message_text("Gracias por tu voto!", uid, callback.message.message_id)
-		log.info(f"Jugador {callback.from_user.first_name} ({uid}) voto {answer}")
+	
+	game = Commands.get_game(cid)
+	uid = callback.from_user.id
+	bot.edit_message_text("Gracias por tu voto!", uid, callback.message.message_id)
+	log.info(f"Jugador {callback.from_user.first_name} ({uid}) voto {answer}")
 
-		#if uid not in game.board.state.last_votes:
-		if not game.is_debugging:
-			#Modulo Cazador, si el jefe espia pone un fracaso se habilita la acusaion fin de partida temprana
-			if game.playerlist[uid].rol in ("Jefe Espia", "Jefe Espia 2") and answer in ("Fracaso", "Fracaso Jefe"):
-				game.board.state.trigger_fin_temprano = True				
-			game.board.state.votos_mision[uid] = answer
-		
-		# Si hay alguien en el punto de mira...
-		# y es el jugador que recien voto...
-		if "Trama" in game.modulos:
-			if game.board.state.miembroenelpuntodemira is not None:
-				if uid == game.board.state.miembroenelpuntodemira:
-					bot.send_message(game.cid, "El voto del jugador %s es: %s" % (callback.from_user.first_name, answer))
-					inicio_votacion_equipo(bot, game)
-					return
-					
-		Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
-		#log.info(len(game.board.state.votos_mision))
-		#log.info(game.board.state.equipo_cantidad_mision)
-		
-		# Pretendo que todos votan juntos de una sola forma.
-		if game.is_debugging:
-			for player in game.board.state.equipo:
-				game.board.state.votos_mision[player.uid] = answer
-		
-		if len(game.board.state.votos_mision) == game.board.state.equipo_cantidad_mision:
-			game.dateinitvote = None
-			if "Trampero" in game.modulos:
-				game.board.state.fase_actual = "carta_mision_trampero"
-				bot.send_message(game.cid, "El lider de la misión entonces decide aislar a un miembro para ver sus inteciones")
-				elegir_carta_mision(bot, game, game.board.state.lider_actual.uid)
-			else:
-				# Antes de contar los votos, si hay cartas de trama,
-				# preguntamos si algun jugador con la carta vigilancia estrecha quiere ver una carta de mision.
-				# Importante no se puede ver la misma carta en una misma mision	
-				if "Trama" in game.modulos:
-					if preguntar_intencion_uso_carta(bot, game, "Vigilancia Estrecha 1-Uso", "vigilanciaestrecha"):
-						return				
-				count_mission_votes(bot, game)
-	except Exception as e:
-		log.error(str(e))
+	#if uid not in game.board.state.last_votes:
+	if not game.is_debugging:
+		#Modulo Cazador, si el jefe espia pone un fracaso se habilita la acusaion fin de partida temprana
+		if game.playerlist[uid].rol in ("Jefe Espia", "Jefe Espia 2") and answer in ("Fracaso", "Fracaso Jefe"):
+			game.board.state.trigger_fin_temprano = True				
+		game.board.state.votos_mision[uid] = answer
+	
+	# Si hay alguien en el punto de mira...
+	# y es el jugador que recien voto...
+	if "Trama" in game.modulos:
+		if game.board.state.miembroenelpuntodemira is not None:
+			if uid == game.board.state.miembroenelpuntodemira:
+				bot.send_message(game.cid, "El voto del jugador %s es: %s" % (callback.from_user.first_name, answer))
+				inicio_votacion_equipo(bot, game)
+				return
+				
+	Commands.save_game(game.cid, "Saved Round %d" % (game.board.state.currentround), game)
+	#log.info(len(game.board.state.votos_mision))
+	#log.info(game.board.state.equipo_cantidad_mision)
+	
+	# Pretendo que todos votan juntos de una sola forma.
+	if game.is_debugging:
+		for player in game.board.state.equipo:
+			game.board.state.votos_mision[player.uid] = answer
+	
+	if len(game.board.state.votos_mision) == game.board.state.equipo_cantidad_mision:
+		game.dateinitvote = None
+		if "Trampero" in game.modulos:
+			game.board.state.fase_actual = "carta_mision_trampero"
+			bot.send_message(game.cid, "El lider de la misión entonces decide aislar a un miembro para ver sus inteciones")
+			elegir_carta_mision(bot, game, game.board.state.lider_actual.uid)
+		else:
+			# Antes de contar los votos, si hay cartas de trama,
+			# preguntamos si algun jugador con la carta vigilancia estrecha quiere ver una carta de mision.
+			# Importante no se puede ver la misma carta en una misma mision	
+			if "Trama" in game.modulos:
+				if preguntar_intencion_uso_carta(bot, game, "Vigilancia Estrecha 1-Uso", "vigilanciaestrecha"):
+					return				
+			count_mission_votes(bot, game)
+	
 
 def count_mission_votes(bot, game):
 	turno_actual = len(game.board.state.resultado_misiones)
@@ -781,23 +765,20 @@ def respuesta_desencadenante_temprano(update: Update, context: CallbackContext):
 	game = Commands.get_game(cid)		
 	uid = callback.from_user.id
 		
-	try:
-		if not game.board.state.fase_actual == 'preguntar_desencadenante_temprano':
-			bot.edit_message_text("No puedes usar esta accion en este momento!", uid, callback.message.message_id)
-			return				
-		if answer == "Si":
-			game.board.state.fase_actual = "acusacion_temprana_espias_cazador"			
-			cazador_espia = game.get_cazador_espia()
-			restriccion_jugador_a_elegir = [cazador_espia]
-			texto_eleccion = "%s, por favor elige a quien cazar!" % (cazador_espia.name)
-			texto_menu = "¿A que jugador quieres cazar?"
-			elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, cazador_espia.uid)
-		else:
-			#Si no hay acusacion temprana se pasa a la fase de investigacion
-			investigacion_cazador(bot, game)
-			
-	except Exception as e:
-		log.error(str(e))
+	if not game.board.state.fase_actual == 'preguntar_desencadenante_temprano':
+		bot.edit_message_text("No puedes usar esta accion en este momento!", uid, callback.message.message_id)
+		return				
+	if answer == "Si":
+		game.board.state.fase_actual = "acusacion_temprana_espias_cazador"			
+		cazador_espia = game.get_cazador_espia()
+		restriccion_jugador_a_elegir = [cazador_espia]
+		texto_eleccion = "%s, por favor elige a quien cazar!" % (cazador_espia.name)
+		texto_menu = "¿A que jugador quieres cazar?"
+		elegir_jugador_general_menu(bot, game, texto_eleccion, texto_menu, restriccion_jugador_a_elegir, cazador_espia.uid)
+	else:
+		#Si no hay acusacion temprana se pasa a la fase de investigacion
+		investigacion_cazador(bot, game)
+		
 
 def investigacion_cazador(bot, game):
 	# Veo si el ultimo objeto fue un fracaso o un exito.
@@ -988,29 +969,28 @@ def elegir_jugador_para_dar_carta_de_trama(update: Update, context: CallbackCont
 	cid = int(regex.group(1))
 	answer = regex.group(2)
 	strcid = regex.group(1)
-	try:
-		game = Commands.get_game(cid)
-		uid = callback.from_user.id
-				
-		if not game.board.state.fase_actual == "repartir_cartas_trama":
-			bot.edit_message_text("No es el momento de dar cartas de trama!", uid, callback.message.message_id)
-			return		
-		btns = []
-		game.board.state.carta_actual = answer
-		# Inicialmente se puede elegir a cualquiera para formar los equipos
-		# Menos los que esten en el equipo elegido
-		bot.edit_message_text("Has elegido la carta %s!" % (answer), uid, callback.message.message_id)
-		for uid in game.playerlist:
-			if uid != game.board.state.lider_actual.uid:
-				name = game.playerlist[uid].name
-				btns.append([InlineKeyboardButton(name, callback_data=strcid + "_darcartatrama_" + str(uid))])
-		jugadoresMarkup = InlineKeyboardMarkup(btns)
-		if game.is_debugging:
-			bot.send_message(ADMIN, 'Elige al jugador que le quieres dar la carta %s!' % (game.board.state.carta_actual), reply_markup=jugadoresMarkup)
-		else:
-			bot.send_message(game.board.state.lider_actual.uid, 'Elige al jugador que le quieres dar la carta %s!' % (game.board.state.carta_actual), reply_markup=jugadoresMarkup)
-	except Exception as e:
-		log.error(str(e))
+	
+	game = Commands.get_game(cid)
+	uid = callback.from_user.id
+			
+	if not game.board.state.fase_actual == "repartir_cartas_trama":
+		bot.edit_message_text("No es el momento de dar cartas de trama!", uid, callback.message.message_id)
+		return		
+	btns = []
+	game.board.state.carta_actual = answer
+	# Inicialmente se puede elegir a cualquiera para formar los equipos
+	# Menos los que esten en el equipo elegido
+	bot.edit_message_text("Has elegido la carta %s!" % (answer), uid, callback.message.message_id)
+	for uid in game.playerlist:
+		if uid != game.board.state.lider_actual.uid:
+			name = game.playerlist[uid].name
+			btns.append([InlineKeyboardButton(name, callback_data=strcid + "_darcartatrama_" + str(uid))])
+	jugadoresMarkup = InlineKeyboardMarkup(btns)
+	if game.is_debugging:
+		bot.send_message(ADMIN, 'Elige al jugador que le quieres dar la carta %s!' % (game.board.state.carta_actual), reply_markup=jugadoresMarkup)
+	else:
+		bot.send_message(game.board.state.lider_actual.uid, 'Elige al jugador que le quieres dar la carta %s!' % (game.board.state.carta_actual), reply_markup=jugadoresMarkup)
+	
 		
 def dar_carta_trama(update: Update, context: CallbackContext):
 	bot = context.bot
@@ -1021,53 +1001,47 @@ def dar_carta_trama(update: Update, context: CallbackContext):
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
 
-	try:
-		game = Commands.get_game(cid)
-		log.info(chosen_uid)
-		miembro_elegido = game.playerlist[chosen_uid]		
-		carta = game.board.state.carta_actual
-		
-		log.info("El lider %s (%d) le dio la carta %s a %s (%d)" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, carta, miembro_elegido.name, miembro_elegido.uid))
-		bot.edit_message_text("Tú elegiste a %s para la carta %s!" % (miembro_elegido.name, carta),
-				callback.from_user.id, callback.message.message_id)		
-		bot.send_message(game.cid,
-			"El lider %s le dio a %s la carta %s!" % (
-			game.board.state.lider_actual.name, miembro_elegido.name, carta))
-		
-		game.history.append("El lider %s le dio a %s la carta %s!" % (
-			game.board.state.lider_actual.name, miembro_elegido.name, carta))
-				
-		#Agrego uno al contador de Miembros, minimo hay 2 por misión.
-		#Lo agrego al equipo
-				
-		# Si es de 1 uso, se la dejo al jugador en sus cartas disponibles
-		if "1-Uso" in carta:
-			miembro_elegido.cartas_trama.append(carta)		
-		elif "Permanente" in carta:
-			# Actualmente solo hay 1 carta permanente
-			miembro_elegido.creador_de_opinion = True
-			miembro_elegido.cartas_trama.append(carta)
-		elif "Inmediata" in carta:
-			if carta == "Comunicación Intervenida Inmediata":
-				# El jugador que recibe la carte debe investigar un jugador adyacente				
-				menu_investigar_jugador(bot, game, chosen_uid)
-				return
-			if carta == "Compartir Opinión Inmediata":
-				# El jugador tiene que mostrar su carta a un jugador adyacente a él				
-				menu_revelarse_a_jugador(bot, game, chosen_uid)
-				return
-			if carta == "Establecer Confianza Inmediata":
-				# La ejecuto inmediatamente ya que es simplemente mostrar la afiliacion del lider				
-				mostrar_afiliacion(bot, game, chosen_uid, game.board.state.lider_actual.uid)
-				verificar_cartas_a_entregar(bot, game)
-				return
-		verificar_cartas_a_entregar(bot, game)
-	except AttributeError as e:
-		log.error("dar_carta_trama: Game or board should not be None! Eror: " + str(e))
-	except Exception as e:
-		log.error("Unknown error: " + repr(e))
-		log.exception(e)
-
+	game = Commands.get_game(cid)
+	log.info(chosen_uid)
+	miembro_elegido = game.playerlist[chosen_uid]		
+	carta = game.board.state.carta_actual
+	
+	log.info("El lider %s (%d) le dio la carta %s a %s (%d)" % (game.board.state.lider_actual.name, game.board.state.lider_actual.uid, carta, miembro_elegido.name, miembro_elegido.uid))
+	bot.edit_message_text("Tú elegiste a %s para la carta %s!" % (miembro_elegido.name, carta),
+			callback.from_user.id, callback.message.message_id)		
+	bot.send_message(game.cid,
+		"El lider %s le dio a %s la carta %s!" % (
+		game.board.state.lider_actual.name, miembro_elegido.name, carta))
+	
+	game.history.append("El lider %s le dio a %s la carta %s!" % (
+		game.board.state.lider_actual.name, miembro_elegido.name, carta))
+			
+	#Agrego uno al contador de Miembros, minimo hay 2 por misión.
+	#Lo agrego al equipo
+			
+	# Si es de 1 uso, se la dejo al jugador en sus cartas disponibles
+	if "1-Uso" in carta:
+		miembro_elegido.cartas_trama.append(carta)		
+	elif "Permanente" in carta:
+		# Actualmente solo hay 1 carta permanente
+		miembro_elegido.creador_de_opinion = True
+		miembro_elegido.cartas_trama.append(carta)
+	elif "Inmediata" in carta:
+		if carta == "Comunicación Intervenida Inmediata":
+			# El jugador que recibe la carte debe investigar un jugador adyacente				
+			menu_investigar_jugador(bot, game, chosen_uid)
+			return
+		if carta == "Compartir Opinión Inmediata":
+			# El jugador tiene que mostrar su carta a un jugador adyacente a él				
+			menu_revelarse_a_jugador(bot, game, chosen_uid)
+			return
+		if carta == "Establecer Confianza Inmediata":
+			# La ejecuto inmediatamente ya que es simplemente mostrar la afiliacion del lider				
+			mostrar_afiliacion(bot, game, chosen_uid, game.board.state.lider_actual.uid)
+			verificar_cartas_a_entregar(bot, game)
+			return
+	verificar_cartas_a_entregar(bot, game)
+	
 def verificar_cartas_a_entregar(bot, game):
 	# Remuevo la carta entregada asi se siguen repartiendo las siguientes cartas
 	game.board.state.cartas_trama_obtenidas.remove(game.board.state.carta_actual)
@@ -1115,19 +1089,14 @@ def investigar_jugador(update: Update, context: CallbackContext):
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
 	caller_uid = callback.from_user.id
-	try:
-		game = Commands.get_game(cid)
-		mostrar_afiliacion(bot, game, caller_uid, chosen_uid)
-		miembro_elegido = game.playerlist[chosen_uid]	
-		bot.edit_message_text("Tú has investigado a %s!" % (miembro_elegido.name),
-				callback.from_user.id, callback.message.message_id)	
-		verificar_cartas_a_entregar(bot, game)
-	except AttributeError as e:
-		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
-	except Exception as e:
-		log.error("Unknown error: " + repr(e))
-		log.exception(e)
-
+	
+	game = Commands.get_game(cid)
+	mostrar_afiliacion(bot, game, caller_uid, chosen_uid)
+	miembro_elegido = game.playerlist[chosen_uid]	
+	bot.edit_message_text("Tú has investigado a %s!" % (miembro_elegido.name),
+			callback.from_user.id, callback.message.message_id)	
+	verificar_cartas_a_entregar(bot, game)
+	
 def revelarse_jugador(update: Update, context: CallbackContext):	
 	bot = context.bot
 	log.info('asignar_miembro called')
@@ -1137,18 +1106,14 @@ def revelarse_jugador(update: Update, context: CallbackContext):
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
 	caller_uid = callback.from_user.id
-	try:
-		game = Commands.get_game(cid)
-		mostrar_afiliacion(bot, game, chosen_uid, caller_uid)
-		miembro_elegido = game.playerlist[chosen_uid]	
-		bot.edit_message_text("Te has revelado a %s!" % (miembro_elegido.name),
-				callback.from_user.id, callback.message.message_id)
-		verificar_cartas_a_entregar(bot, game)
-	except AttributeError as e:
-		log.error("asignar_miembro: Game or board should not be None! Eror: " + str(e))
-	except Exception as e:
-		log.error("Unknown error: " + repr(e))
-		log.exception(e)
+	
+	game = Commands.get_game(cid)
+	mostrar_afiliacion(bot, game, chosen_uid, caller_uid)
+	miembro_elegido = game.playerlist[chosen_uid]	
+	bot.edit_message_text("Te has revelado a %s!" % (miembro_elegido.name),
+			callback.from_user.id, callback.message.message_id)
+	verificar_cartas_a_entregar(bot, game)
+	
 	
 def get_jugadores_adjacentes(game, uidjugador):
 	indexJugadorRevelado = game.player_sequence.index(game.playerlist[uidjugador])
@@ -1193,46 +1158,41 @@ def ver_carta_mision(update: Update, context: CallbackContext):
 	cid = int(regex.group(1))
 	chosen_uid = int(regex.group(2))
 	uid = callback.from_user.id
-	try:
-		game = Commands.get_game(cid)
-		turno_actual = len(game.board.state.resultado_misiones)		
-		#log.info(game.playerlist)
-		#log.info(str(chosen_uid) in game.playerlist )
-		#log.info(chosen_uid in game.playerlist)        
-		log.info(chosen_uid)
-		
-		miembro_investigador = game.playerlist[uid]
-		miembro_elegido = game.playerlist[chosen_uid]
-		
-		log.info("El miembro %s (%d) eligio la carta de %s (%d)" % (
-			miembro_investigador.name, miembro_investigador.uid,
-			miembro_elegido.name, miembro_elegido.uid))
-		
-		# Muestro el texto de la carta de mision elegida
-		voto_mision = game.board.state.votos_mision[chosen_uid]
-		
-		bot.edit_message_text("La carta de %s es: %s!" % (miembro_elegido.name, voto_mision),
-				uid, callback.message.message_id)
-		
-		bot.send_message(game.cid,
-			"El miembro %s investigo la carta de %s!" % (
-			miembro_investigador.name, miembro_elegido.name))
-		
-		if game.board.state.fase_actual == "carta_mision_trampero":
-			# En Trampero se remueve el voto de mision que se ve.
-			del game.board.state.votos_mision[chosen_uid]
+	
+	game = Commands.get_game(cid)
+	turno_actual = len(game.board.state.resultado_misiones)		
+	#log.info(game.playerlist)
+	#log.info(str(chosen_uid) in game.playerlist )
+	#log.info(chosen_uid in game.playerlist)        
+	log.info(chosen_uid)
+	
+	miembro_investigador = game.playerlist[uid]
+	miembro_elegido = game.playerlist[chosen_uid]
+	
+	log.info("El miembro %s (%d) eligio la carta de %s (%d)" % (
+		miembro_investigador.name, miembro_investigador.uid,
+		miembro_elegido.name, miembro_elegido.uid))
+	
+	# Muestro el texto de la carta de mision elegida
+	voto_mision = game.board.state.votos_mision[chosen_uid]
+	
+	bot.edit_message_text("La carta de %s es: %s!" % (miembro_elegido.name, voto_mision),
+			uid, callback.message.message_id)
+	
+	bot.send_message(game.cid,
+		"El miembro %s investigo la carta de %s!" % (
+		miembro_investigador.name, miembro_elegido.name))
+	
+	if game.board.state.fase_actual == "carta_mision_trampero":
+		# En Trampero se remueve el voto de mision que se ve.
+		del game.board.state.votos_mision[chosen_uid]
+		count_mission_votes(bot, game)
+	else:			
+		# Si es el de trama
+		game.board.state.enesperadeaccion.pop(uid, None)
+		if not game.board.state.enesperadeaccion:
 			count_mission_votes(bot, game)
-		else:			
-			# Si es el de trama
-			game.board.state.enesperadeaccion.pop(uid, None)
-			if not game.board.state.enesperadeaccion:
-				count_mission_votes(bot, game)
-			
-	except AttributeError as e:
-		log.error("ver_carta_mision: Game or board should not be None! Eror: " + str(e))
-	except Exception as e:
-		log.error("Unknown error: " + repr(e))
-		log.exception(e)
+	
 
 def carta_plot_sinconfianza(update: Update, context: CallbackContext):	
 	bot = context.bot
@@ -1243,42 +1203,40 @@ def carta_plot_sinconfianza(update: Update, context: CallbackContext):
 	strcid = regex.group(1)
 	
 	answer = regex.group(2)
-	try:
-		game = Commands.get_game(cid)		
-		uid = callback.from_user.id
-		nombre_carta = 'Sin confianza 1-Uso'
-		fase = "plot_" + nombre_carta
-		
-		if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
-			bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
-			return
-		if answer == "Si":
-			# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en lider fuerte
-			log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
-			bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))
-			bot.send_message(cid, "La votacion exitosa se convierte en fallo")
-			game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
-			game.playerlist[uid].cartas_trama.remove(nombre_carta)
-			game.board.state.enesperadeaccion = {}
-			bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
-			votacion_fallida(bot, game)
-		else:			
-			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
-			bot.edit_message_text("Gracias por responder!", uid, callback.message.message_id)
-			bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))			
-			# Quito la intencion del usuario
-			game.board.state.enesperadeaccion.pop(uid, None)
-			for jugador in game.board.state.enesperadeaccion:
-				log.info("Jugadores que falta decidirse %d" % (jugador))
-				
+	
+	game = Commands.get_game(cid)		
+	uid = callback.from_user.id
+	nombre_carta = 'Sin confianza 1-Uso'
+	fase = "plot_" + nombre_carta
+	
+	if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
+		bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
+		return
+	if answer == "Si":
+		# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en lider fuerte
+		log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+		bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))
+		bot.send_message(cid, "La votacion exitosa se convierte en fallo")
+		game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
+		game.playerlist[uid].cartas_trama.remove(nombre_carta)
+		game.board.state.enesperadeaccion = {}
+		bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
+		votacion_fallida(bot, game)
+	else:			
+		log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+		bot.edit_message_text("Gracias por responder!", uid, callback.message.message_id)
+		bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))			
+		# Quito la intencion del usuario
+		game.board.state.enesperadeaccion.pop(uid, None)
+		for jugador in game.board.state.enesperadeaccion:
+			log.info("Jugadores que falta decidirse %d" % (jugador))
 			
-			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
-			# Empty dict bool as false, o sea que si esta vacia continuo.
-			if not game.board.state.enesperadeaccion:				
-				voting_aftermath(bot, game, True)			
-				
-	except Exception as e:
-		log.error(str(e))
+		
+		# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
+		# Empty dict bool as false, o sea que si esta vacia continuo.
+		if not game.board.state.enesperadeaccion:				
+			voting_aftermath(bot, game, True)			
+	
 
 def carta_plot_enelpuntodemira(update: Update, context: CallbackContext):	
 	bot = context.bot
@@ -1289,60 +1247,54 @@ def carta_plot_enelpuntodemira(update: Update, context: CallbackContext):
 	strcid = regex.group(1)
 	
 	answer = regex.group(2)
-	try:
-		game = Commands.get_game(cid)		
-		uid = callback.from_user.id
-		
-		nombre_carta = 'En El Punto De Mira 1-Uso'
-		fase = "plot_" + nombre_carta
-		
-		if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
-			bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
-			return
-		
-		if answer == "Si":
-			# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
-			log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
-			bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))	
-			game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
-			game.playerlist[uid].cartas_trama.remove('En El Punto De Mira 1-Uso')
-			bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
-			elegir_miembro_carta_plot_enelpuntodemira(bot, game, uid)
-		else:
-			# En este caso no se pregunta a otros jugadores ya que hay solo 1 carta de estas,
-			# aunque se podria poner como base que siempre se pregunte...
-			bot.edit_message_text("Gracias por responder!", uid, callback.message.message_id)
-			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
-			bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))
-			# Quito la intencion del usuario
-			game.board.state.enesperadeaccion.pop(uid, None)
-			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
-			if not game.board.state.enesperadeaccion:
-				inicio_votacion_equipo(bot, game)
-			
-	except Exception as e:
-		log.error(str(e))
+	game = Commands.get_game(cid)		
+	uid = callback.from_user.id
+	
+	nombre_carta = 'En El Punto De Mira 1-Uso'
+	fase = "plot_" + nombre_carta
+	
+	if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
+		bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
+		return
+	
+	if answer == "Si":
+		# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
+		log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+		bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))	
+		game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
+		game.playerlist[uid].cartas_trama.remove('En El Punto De Mira 1-Uso')
+		bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
+		elegir_miembro_carta_plot_enelpuntodemira(bot, game, uid)
+	else:
+		# En este caso no se pregunta a otros jugadores ya que hay solo 1 carta de estas,
+		# aunque se podria poner como base que siempre se pregunte...
+		bot.edit_message_text("Gracias por responder!", uid, callback.message.message_id)
+		log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+		bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))
+		# Quito la intencion del usuario
+		game.board.state.enesperadeaccion.pop(uid, None)
+		# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
+		if not game.board.state.enesperadeaccion:
+			inicio_votacion_equipo(bot, game)	
 		
 def elegir_miembro_carta_plot_enelpuntodemira(bot, game, uid):
 	log.info('elegir_miembro_carta_plot_enelpuntodemira called')	
-	try:
-		strcid = str(game.cid)	
-		btns = []	
-		# Doy opcion de elegir cualquier miembro el cual debera poner su carta de mision adelantada
-		for player in game.board.state.equipo:		
-			btns.append([InlineKeyboardButton(player.name, callback_data=strcid + "_forzarvotomision_" + str(player.uid))])
+	
+	strcid = str(game.cid)	
+	btns = []	
+	# Doy opcion de elegir cualquier miembro el cual debera poner su carta de mision adelantada
+	for player in game.board.state.equipo:		
+		btns.append([InlineKeyboardButton(player.name, callback_data=strcid + "_forzarvotomision_" + str(player.uid))])
 
-		equipoMarkup = InlineKeyboardMarkup(btns)	
+	equipoMarkup = InlineKeyboardMarkup(btns)	
 
-		if(game.is_debugging):
-			bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
-			bot.send_message(ADMIN, 'Por favor elegi al miembro de la mision al que quieres forzar a jugar su carta de mision por adelantado!', reply_markup=equipoMarkup)
-		else:
-			bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
-			bot.send_message(uid, 'Por favor elegi al miembro de la mision al que quieres forzar a jugar su carta de mision por adelantado!', reply_markup=equipoMarkup)
-			
-	except Exception as e:
-		log.error(str(e))
+	if(game.is_debugging):
+		bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(ADMIN, 'Por favor elegi al miembro de la mision al que quieres forzar a jugar su carta de mision por adelantado!', reply_markup=equipoMarkup)
+	else:
+		bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(uid, 'Por favor elegi al miembro de la mision al que quieres forzar a jugar su carta de mision por adelantado!', reply_markup=equipoMarkup)
+	
 
 def forzar_jugar_carta_mision_adelantada(update: Update, context: CallbackContext):
 	log.info('forzar_jugar_carta_mision_adelantada called')
@@ -1355,21 +1307,16 @@ def forzar_jugar_carta_mision_adelantada(update: Update, context: CallbackContex
 	
 	chosen_uid = int(regex.group(2))
 	
-	try:
-		# Se envia al jugar la opcion de votar normal.
-		# La diferencia es que esta se muestra el resultado y hace que el resto siga votando		
-		game = Commands.get_game(cid)
-		uid = callback.from_user.id
-		player = game.playerlist[uid]	
-		game.board.state.miembroenelpuntodemira = chosen_uid
-		bot.edit_message_text("Has forzado a %s a jugar su carta boca arriba!" % (player.name), uid, callback.message.message_id)
-		bot.send_message(cid, "El Jugador %s ha sido forzado a jugar su carta de misión boca arriba" % (player.name))
-		enviar_votacion_equipo(bot, game, player)
-	except AttributeError as e:
-		log.error("forzar_jugar_carta_mision_adelantada: Game or board should not be None! Eror: " + str(e))
-	except Exception as e:
-		log.error("Unknown error: " + repr(e))
-		log.exception(e)
+	# Se envia al jugar la opcion de votar normal.
+	# La diferencia es que esta se muestra el resultado y hace que el resto siga votando		
+	game = Commands.get_game(cid)
+	uid = callback.from_user.id
+	player = game.playerlist[uid]	
+	game.board.state.miembroenelpuntodemira = chosen_uid
+	bot.edit_message_text("Has forzado a %s a jugar su carta boca arriba!" % (player.name), uid, callback.message.message_id)
+	bot.send_message(cid, "El Jugador %s ha sido forzado a jugar su carta de misión boca arriba" % (player.name))
+	enviar_votacion_equipo(bot, game, player)
+	
 	
 		
 def carta_plot_vigilanciaestrecha(update: Update, context: CallbackContext):	
@@ -1381,37 +1328,33 @@ def carta_plot_vigilanciaestrecha(update: Update, context: CallbackContext):
 	bot = context.bot
 	answer = regex.group(2)
 	carta = "Vigilancia Estrecha"
-	try:
-		game = Commands.get_game(cid)		
-		uid = callback.from_user.id
-		
-		nombre_carta = 'Vigilancia Estrecha 1-Uso'
-		fase = "plot_" + nombre_carta
-		
-		if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
-			bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
-			return
-				
-		if answer == "Si":
-			# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
-			log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
-			bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))
-			game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
-			game.playerlist[uid].cartas_trama.remove(nombre_carta)
-			bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
-			elegir_carta_mision(bot, game, uid)
-		else:
-			bot.edit_message_text("Gracias por responder!", uid, callback.message.message_id)
-			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
-			bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))
-			# Quito la intencion del usuario
-			game.board.state.enesperadeaccion.pop(uid, None)
-			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
-			if not game.board.state.enesperadeaccion:
-				count_mission_votes(bot, game)
+	game = Commands.get_game(cid)		
+	uid = callback.from_user.id
+	
+	nombre_carta = 'Vigilancia Estrecha 1-Uso'
+	fase = "plot_" + nombre_carta
+	
+	if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
+		bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
+		return
 			
-	except Exception as e:
-		log.error(str(e))
+	if answer == "Si":
+		# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
+		log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+		bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (callback.from_user.first_name, nombre_carta))
+		game.history.append("Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
+		game.playerlist[uid].cartas_trama.remove(nombre_carta)
+		bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
+		elegir_carta_mision(bot, game, uid)
+	else:
+		bot.edit_message_text("Gracias por responder!", uid, callback.message.message_id)
+		log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+		bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))
+		# Quito la intencion del usuario
+		game.board.state.enesperadeaccion.pop(uid, None)
+		# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
+		if not game.board.state.enesperadeaccion:
+			count_mission_votes(bot, game)
 
 def carta_plot_liderfuerte(update: Update, context: CallbackContext):	
 	bot = context.bot
@@ -1422,39 +1365,36 @@ def carta_plot_liderfuerte(update: Update, context: CallbackContext):
 	strcid = regex.group(1)
 	
 	answer = regex.group(2)
-	try:
-		game = Commands.get_game(cid)		
-		uid = callback.from_user.id
-		
-		nombre_carta = 'Lider Fuerte 1-Uso'
-		fase = "plot_" + nombre_carta
-		
-		if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
-			bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
-			return
-				
-		if answer == "Si":
-			# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
-			log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
-			bot.send_message(cid, "Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
-			game.board.state.lider_elegido = game.playerlist[uid]
-			game.playerlist[uid].cartas_trama.remove('Lider Fuerte 1-Uso')
-			game.board.state.enesperadeaccion = {}
-			bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
-			start_round(bot, game)
-		else:
-			bot.edit_message_text("Gracias por responder!", uid, callback.message.message_id)
-			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
-			bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))
-			# Quito la intencion del usuario
-			game.board.state.enesperadeaccion.pop(uid, None)
-			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
-			if not game.board.state.enesperadeaccion:
-				increment_player_counter(game)
-				start_round(bot, game)
+	
+	game = Commands.get_game(cid)		
+	uid = callback.from_user.id
+	
+	nombre_carta = 'Lider Fuerte 1-Uso'
+	fase = "plot_" + nombre_carta
+	
+	if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
+		bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
+		return
 			
-	except Exception as e:
-		log.error(str(e))
+	if answer == "Si":
+		# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
+		log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+		bot.send_message(cid, "Jugador %s decidio usar la carta %s\n" % (callback.from_user.first_name, nombre_carta))
+		game.board.state.lider_elegido = game.playerlist[uid]
+		game.playerlist[uid].cartas_trama.remove('Lider Fuerte 1-Uso')
+		game.board.state.enesperadeaccion = {}
+		bot.edit_message_text("Has utilizado la carta %s!" % (nombre_carta), uid, callback.message.message_id)
+		start_round(bot, game)
+	else:
+		bot.edit_message_text("Gracias por responder!", uid, callback.message.message_id)
+		log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+		bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))
+		# Quito la intencion del usuario
+		game.board.state.enesperadeaccion.pop(uid, None)
+		# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
+		if not game.board.state.enesperadeaccion:
+			increment_player_counter(game)
+			start_round(bot, game)
 
 def carta_plot_asumirresponsabilidad(update: Update, context: CallbackContext):	
 	bot = context.bot
@@ -1465,64 +1405,58 @@ def carta_plot_asumirresponsabilidad(update: Update, context: CallbackContext):
 	strcid = regex.group(1)
 	
 	answer = regex.group(2)
-	try:
-		game = Commands.get_game(cid)		
-		uid = callback.from_user.id
-		
-		nombre_carta = 'Asumir Responsabilidad 1-Uso'
-		fase = "plot_" + nombre_carta
-		
-		if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
-			bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
-			return
-				
-		if answer == "Si":
-			# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
-			log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+	
+	game = Commands.get_game(cid)		
+	uid = callback.from_user.id
+	
+	nombre_carta = 'Asumir Responsabilidad 1-Uso'
+	fase = "plot_" + nombre_carta
+	
+	if not game.board.state.fase_actual == fase or not game.board.state.enesperadeaccion:
+		bot.edit_message_text("No puedes usar la carta en este momento!", uid, callback.message.message_id)
+		return
 			
-			bot.edit_message_text("Ahora te mostrare las opciones para usar la carta %s!" % (nombre_carta), uid, callback.message.message_id)
-			elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid)
-		else:
-			# En este caso no se pregunta a otros jugadores ya que hay solo 1 carta de estas,
-			# aunque se podria poner como base que siempre se pregunte...
-			bot.edit_message_text("Gracias por responder!", uid, callback.message.message_id)
-			log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
-			bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))
-			# Quito la intencion del usuario
-			game.board.state.enesperadeaccion.pop(uid, None)
-			# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
-			if not game.board.state.enesperadeaccion:
-				inicio_votacion_equipo(bot, game)
-			
-	except Exception as e:
-		log.error(str(e))		
+	if answer == "Si":
+		# TODO Al definir que si tendria que ver que se vean prioridades, esto es importante en ldier fuerte
+		log.info("Jugador %s (%d) decidio usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+		
+		bot.edit_message_text("Ahora te mostrare las opciones para usar la carta %s!" % (nombre_carta), uid, callback.message.message_id)
+		elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid)
+	else:
+		# En este caso no se pregunta a otros jugadores ya que hay solo 1 carta de estas,
+		# aunque se podria poner como base que siempre se pregunte...
+		bot.edit_message_text("Gracias por responder!", uid, callback.message.message_id)
+		log.info("Jugador %s (%d) decidio no usar la carta %s" % (callback.from_user.first_name, uid, nombre_carta))
+		bot.send_message(cid, "Jugador %s decidio no usar la carta %s" % (callback.from_user.first_name, nombre_carta))
+		# Quito la intencion del usuario
+		game.board.state.enesperadeaccion.pop(uid, None)
+		# Si todos los jugadores con esa carta decidieron no usarla entonces se continua el juego normalmente
+		if not game.board.state.enesperadeaccion:
+			inicio_votacion_equipo(bot, game)
 
 def elegir_miembro_carta_plot_asumirresponsabilidad(bot, game, uid):
 	log.info('elegir_miembro_carta_plot_enelpuntodemira called')	
-	try:
-		strcid = str(game.cid)	
-		btns = []	
-		# Doy opcion de elegir cualquier miembro el cual debera poner su carta de mision adelantada
-		for player in game.player_sequence:
-			if player.cartas_trama and player.uid != uid:
-				for carta in player.cartas_trama:
-					txtBoton = "%s %s" % (player.name, carta)
-					strCarta = carta.replace(" ", "_")
-					#datos = strcid + "_elegircartaplot_" + str(player.uid) + "_carta_" + strCarta
-					datos = strcid + "_elegircartaplot_" + str(player.uid) + "_" +strCarta
-					log.info("Se crea boton con datos: %s %s" % (txtBoton, datos))					
-					btns.append([InlineKeyboardButton(txtBoton, callback_data=datos)])
-		equipoMarkup = InlineKeyboardMarkup(btns)	
+	
+	strcid = str(game.cid)	
+	btns = []	
+	# Doy opcion de elegir cualquier miembro el cual debera poner su carta de mision adelantada
+	for player in game.player_sequence:
+		if player.cartas_trama and player.uid != uid:
+			for carta in player.cartas_trama:
+				txtBoton = "%s %s" % (player.name, carta)
+				strCarta = carta.replace(" ", "_")
+				#datos = strcid + "_elegircartaplot_" + str(player.uid) + "_carta_" + strCarta
+				datos = strcid + "_elegircartaplot_" + str(player.uid) + "_" +strCarta
+				log.info("Se crea boton con datos: %s %s" % (txtBoton, datos))					
+				btns.append([InlineKeyboardButton(txtBoton, callback_data=datos)])
+	equipoMarkup = InlineKeyboardMarkup(btns)	
 
-		if(game.is_debugging):
-			bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
-			bot.send_message(ADMIN, 'Por favor elegi la carta que quieres robar al miembro correspondiente!', reply_markup=equipoMarkup)
-		else:
-			bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
-			bot.send_message(uid, 'Por favor elegi la carta que quieres robar al miembro correspondiente!', reply_markup=equipoMarkup)
-			
-	except Exception as e:
-		log.error(str(e))
+	if(game.is_debugging):
+		bot.send_message(ADMIN, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(ADMIN, 'Por favor elegi la carta que quieres robar al miembro correspondiente!', reply_markup=equipoMarkup)
+	else:
+		bot.send_message(uid, game.board.print_board(game.player_sequence), ParseMode.MARKDOWN)
+		bot.send_message(uid, 'Por favor elegi la carta que quieres robar al miembro correspondiente!', reply_markup=equipoMarkup)
 		
 def robar_carta_plot(update: Update, context: CallbackContext):	
 	bot = context.bot
@@ -1534,27 +1468,22 @@ def robar_carta_plot(update: Update, context: CallbackContext):
 	player_objetivo_uid = int(regex.group(2))
 	carta = regex.group(3).replace("_", " ")
 	
-	try:
-		game = Commands.get_game(cid)		
-		uid = callback.from_user.id
-		player_objetivo = game.playerlist[player_objetivo_uid]
-		player_ladron = game.playerlist[uid]
-			
-		if carta in player_objetivo.cartas_trama:
-			player_objetivo.cartas_trama.remove(carta)
-			bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (player_ladron.name, carta))
-			game.history.append("Jugador %s decidio usar la carta %s\n" % (player_ladron.name, carta))
-			player_ladron.cartas_trama.remove('Asumir Responsabilidad 1-Uso')
-			player_ladron.cartas_trama.append(carta)
-			bot.send_message(cid, "El jugador %s ha robado la carta %s al jugador %s" % (player_ladron.name, carta, player_objetivo.name))
-			bot.edit_message_text("Le has robado la carta %s a %s!" % (carta, player_objetivo.name), uid, callback.message.message_id)
-		else:
-			bot.send_message(player_ladron.uid, "El jugador %s ya no tiene la carta %s" % (player_objetivo.name, carta))
-			preguntar_intencion_uso_carta(bot, game, "Asumir Responsabilidad 1-Uso", "asumirresponsabilidad")
-			
-			
-	except Exception as e:
-		log.error(str(e))
+	game = Commands.get_game(cid)		
+	uid = callback.from_user.id
+	player_objetivo = game.playerlist[player_objetivo_uid]
+	player_ladron = game.playerlist[uid]
+		
+	if carta in player_objetivo.cartas_trama:
+		player_objetivo.cartas_trama.remove(carta)
+		bot.send_message(cid, "Jugador %s decidio usar la carta %s" % (player_ladron.name, carta))
+		game.history.append("Jugador %s decidio usar la carta %s\n" % (player_ladron.name, carta))
+		player_ladron.cartas_trama.remove('Asumir Responsabilidad 1-Uso')
+		player_ladron.cartas_trama.append(carta)
+		bot.send_message(cid, "El jugador %s ha robado la carta %s al jugador %s" % (player_ladron.name, carta, player_objetivo.name))
+		bot.edit_message_text("Le has robado la carta %s a %s!" % (carta, player_objetivo.name), uid, callback.message.message_id)
+	else:
+		bot.send_message(player_ladron.uid, "El jugador %s ya no tiene la carta %s" % (player_objetivo.name, carta))
+		preguntar_intencion_uso_carta(bot, game, "Asumir Responsabilidad 1-Uso", "asumirresponsabilidad")	
 		
 ##
 #
@@ -1599,21 +1528,16 @@ def end_game(bot, game, game_endcode):
 
 	
 def configurar_partida(bot, game):
-	try:
-		# Metodo para configurar la partida actual
-		strcid = str(game.cid)			
-		btns = []
-		for modulo in modules.keys():
-			if modulo not in game.modulos:
-				btns.append([InlineKeyboardButton(modulo, callback_data=strcid + "_modulo_" + modulo)])
-		btns.append([InlineKeyboardButton("Finalizar Configuración", callback_data=strcid + "_modulo_" + "Fin")])
-		modulosMarkup = InlineKeyboardMarkup(btns)
-		bot.send_message(game.cid, 'Elija un modulo para agregar!', reply_markup=modulosMarkup)
-	except AttributeError as e:
-		log.error("incluir_modulo: " + str(e))
-	except Exception as e:
-		log.error("Unknown error: " + repr(e))
-		log.exception(e)
+	# Metodo para configurar la partida actual
+	strcid = str(game.cid)			
+	btns = []
+	for modulo in modules.keys():
+		if modulo not in game.modulos:
+			btns.append([InlineKeyboardButton(modulo, callback_data=strcid + "_modulo_" + modulo)])
+	btns.append([InlineKeyboardButton("Finalizar Configuración", callback_data=strcid + "_modulo_" + "Fin")])
+	modulosMarkup = InlineKeyboardMarkup(btns)
+	bot.send_message(game.cid, 'Elija un modulo para agregar!', reply_markup=modulosMarkup)
+	
 		
 def incluir_modulo(update: Update, context: CallbackContext):
 	bot = context.bot
@@ -1631,37 +1555,29 @@ def incluir_modulo(update: Update, context: CallbackContext):
 	'''if debugging:
 		chosen_uid = ADMIN
 	'''
-	try:
-		game = Commands.get_game(cid)
-		# Si se ha terminado de configurar los modulos...
-		uid = callback.from_user.id
-		
-		if modulo_elegido == "Fin":
-			bot.edit_message_text("Gracias por configurar el juego, para unirse usar /join y para comenzar presione /startgame", cid, callback.message.message_id)
-		else:
-			game.modulos.append(modulo_elegido)
-			bot.edit_message_text("Se ha incluido el modulo %s" % (modulo_elegido), cid, callback.message.message_id)
-			Commands.save_game(game.cid, "Configuracion", game)
-			configurar_partida(bot, game)
-	except AttributeError as e:
-		log.error("incluir_modulo: " + str(e))
-	except Exception as e:
-		log.error("Unknown error: " + repr(e))
-		log.exception(e)
-
+	game = Commands.get_game(cid)
+	# Si se ha terminado de configurar los modulos...
+	uid = callback.from_user.id
+	
+	if modulo_elegido == "Fin":
+		bot.edit_message_text("Gracias por configurar el juego, para unirse usar /join y para comenzar presione /startgame", cid, callback.message.message_id)
+	else:
+		game.modulos.append(modulo_elegido)
+		bot.edit_message_text("Se ha incluido el modulo %s" % (modulo_elegido), cid, callback.message.message_id)
+		Commands.save_game(game.cid, "Configuracion", game)
+		configurar_partida(bot, game)
+	
 		
 def showHiddenhistory(cid, bot):
 	#game.pedrote = 3
-	try:
-		#Check if there is a current game		
-		game = Commands.get_game(cid)
-		history_text = "Historial Oculto:\n\n" 
-		for x in game.hiddenhistory:				
-			history_text += x + "\n\n"
-		bot.send_message(cid, history_text, ParseMode.MARKDOWN)
-	except Exception as e:
-		bot.send_message(cid, str(e))
-		log.error("Unknown error: " + str(e)) 
+	
+	#Check if there is a current game		
+	game = Commands.get_game(cid)
+	history_text = "Historial Oculto:\n\n" 
+	for x in game.hiddenhistory:				
+		history_text += x + "\n\n"
+	bot.send_message(cid, history_text, ParseMode.MARKDOWN)
+	
         
 def inform_players(bot, game, cid, player_number):
 	log.info('inform_players called')
