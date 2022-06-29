@@ -30,6 +30,8 @@ import urllib.parse
 import traceback
 import sys
 
+from Utils import validate_action
+
 # Enable logging
 
 log.basicConfig(
@@ -151,7 +153,7 @@ def asignar_equipo(bot, game):
 		bot.send_message(game.board.state.lider_actual.uid, game.board.print_board(game), ParseMode.MARKDOWN)
 		bot.send_message(game.board.state.lider_actual.uid, 'Por favor nomina a un miembro para la misión!', reply_markup=equipoMarkup)
 
-	
+@validate_action("asignar_equipo")
 def asignar_miembro(update: Update, context: CallbackContext):
 	bot = context.bot
 	log.info('asignar_miembro called')
@@ -566,7 +568,8 @@ def enviar_votacion_equipo(bot, game, player):
 				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspiaJefe)
 			else:
 				bot.send_message(player.uid, "¿Ayudaras en el exito de la misión?", reply_markup=voteMarkupEspias)
-		
+
+@validate_action("conducir_la_mision")	
 def handle_team_voting(update: Update, context: CallbackContext):
 	bot = context.bot
 	callback = update.callback_query
