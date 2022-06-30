@@ -30,7 +30,7 @@ import urllib.parse
 import traceback
 import sys
 
-from Utils import validate_action
+from Utils import validate_action, player_call
 
 # Enable logging
 
@@ -273,6 +273,7 @@ def elegir_jugador_general(update: Update, context: CallbackContext):
 			callback.from_user.id, callback.message.message_id)
 		game.board.state.investigador_nominado = miembro_elegido
 		bot.send_message(game.cid, "El investigador elegido ha sido %s" % (miembro_elegido.name), ParseMode.MARKDOWN)
+		game.history.append(f"El investigador elegido ha sido {miembro_elegido.name}")
 		iniciar_votacion(bot, game)
 	# El cazador de la resistencia tiene que descubrir al jefe espia
 	if game.board.state.fase_actual == "acusacion_resistencia_cazador":
@@ -343,12 +344,16 @@ def elegir_jugador_general(update: Update, context: CallbackContext):
 				bot.send_message(miembro_elegido.uid, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
 		
 def iniciar_votacion(bot, game):
+	
 	miembros_elegidos = game.get_equipo_actual(False)			
 	mensaje_votacion = "Quieres elegir al siguiente equipo para la mision %d:\n" % (len(game.board.state.resultado_misiones) + 1)
 	mensaje_votacion += miembros_elegidos
 	miembros_elegidos = game.get_equipo_actual(True)		
 	game.board.state.mensaje_votacion = mensaje_votacion			
-	mensaje_miembros_mision_elegidos = "El líder ha elegido a los siguientes miembros para ir a la misión:\n%s\nVoten en privado si les gusta dicho equipo." % (miembros_elegidos)			
+	mensaje_miembros_mision_elegidos = f"El líder {player_call(game.board.state.lider_actual)} ha elegido a los siguientes miembros para ir a la misión:\n{miembros_elegidos}\nVoten en privado si les gusta dicho equipo."
+	# Si esta usandose el modulo cazador se muestra mensaje que advierte quien investiga
+	if "Cazador" in game.modulos:
+		mensaje_miembros_mision_elegidos += f"\n\nEn caso que sea un exito la mision investigara: {player_call(game.board.state.lider_actual)}, caso de fallo investigará {player_call(game.board.state.investigador_nominado)}"
 	bot.send_message(game.cid, mensaje_miembros_mision_elegidos, ParseMode.MARKDOWN )	
 	if "Trama" in game.modulos:
 		creadores_de_opinion = game.get_creadores_de_opinion()
@@ -365,7 +370,7 @@ def vote_creadores_opinion(bot, game):
 	game.board.state.fase_actual = "vote_creadores_opinion"
 	#When voting starts we start the counter to see later with the vote command if we can see you voted.
 	game.dateinitvote = datetime.datetime.now()
-	game.board.state.fase_actual = "votacion_del_equipo_de_mision"
+	Commands.save_game(game.cid, "vote_creadores_opinion", game)
 	strcid = str(game.cid)
 	btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
 	voteMarkup = InlineKeyboardMarkup(btns)
@@ -388,6 +393,8 @@ def vote(bot, game):
 	#When voting starts we start the counter to see later with the vote command if we can see you voted.
 	game.dateinitvote = datetime.datetime.now()
 	game.board.state.fase_actual = "votacion_del_equipo_de_mision"
+	Commands.save_game(game.cid, "votacion_del_equipo_de_mision", game)
+	
 	strcid = str(game.cid)
 	btns = [[InlineKeyboardButton("Si", callback_data=strcid + "_Si"), InlineKeyboardButton("No", callback_data=strcid + "_No")]]
 	voteMarkup = InlineKeyboardMarkup(btns)
