@@ -310,38 +310,50 @@ def elegir_jugador_general(update: Update, context: CallbackContext):
 	if game.board.state.fase_actual == "investigacion_cazador":			
 		bot.send_message(game.cid, "El investigador %s ha elegido investigar a %s" % (game.board.state.investigador.name, miembro_elegido.name), ParseMode.MARKDOWN)
 		game.history.append("El investigador %s ha elegido investigar a %s" % (game.board.state.investigador.name, miembro_elegido.name))
+		
+		#Si es un jefe o el jefe falso
+		if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2", "Agente Falso"):
+			# En partidas de 5 o 6 jugadores se muestra jefe
+			if len(game.playerlist) <= 6:
+				bot.send_message(game.board.state.investigador.uid, f"El jugador { miembro_elegido.name} es: **Jefe**", ParseMode.MARKDOWN)
+			else:
+				# En partidas de 7+ jugadores el jefe muestra aparte su afiliacion
+				bot.send_message(game.board.state.investigador.uid, f"El jugador { miembro_elegido.name} es: **Jefe {miembro_elegido.afiliacion}**", ParseMode.MARKDOWN)
+		else:
+			bot.send_message(game.board.state.investigador.uid, "El jugador es: **No jefe**" % (miembro_elegido.name), ParseMode.MARKDOWN)
+		
 		# Decidi que es no hay motivo estrategico para el jefe espia mostrar
 		# que es jefe espia si no hay agente oculto y son 5-6 jugadores		
-		if ("Cazador Agente Oculto" not in game.modulos) and len(game.playerlist) < 7:
-			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2"):					
-				bot.send_message(game.board.state.investigador.uid, "El jugador es: **Jefe**" % (miembro_elegido.name), ParseMode.MARKDOWN)
-			else:
-				bot.send_message(game.board.state.investigador.uid, "El jugador es: **No jefe**" % (miembro_elegido.name), ParseMode.MARKDOWN)
-			start_next_round(bot, game)
-		else:
-			bot.edit_message_text("Has investigado a %s espera a que elija su respuesta!" % miembro_elegido.name,
-				callback.from_user.id, callback.message.message_id)				
-			btns = []
-			# El jugador debe elegir entre dos ya que tenemos que simular la decision del jefe espia.			
-			if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2", "Agente Falso"):
-				# Si es jefe tiene que decidir
-				if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2", "Agente Falso"):
-					btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])					
-					# Si ha 7+ jugadores el jefe de la resistencia puede mostrar la carta de Jefe Resistencia
-					if len(game.playerlist) > 6:
-						btns.append([InlineKeyboardButton("Mostrar Jefe Resistencia", callback_data=strcid + "_mostrarinvestigador_Jefe_Resistencia")])														
-				else:
-					# Jefe espia siempre puede mostrar lealtad del jefe y jefe espia
-					btns.append([InlineKeyboardButton("Mostrar Jefe Espia", callback_data=strcid + "_mostrarinvestigador_Jefe_Espia")])
-					btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])										
-			else:
-				# Si no es lider le pongo solo de opcion que diga "No un jefe"
-				btns.append([InlineKeyboardButton("Mostrar No Jefe", callback_data=strcid + "_mostrarinvestigador_No_jefe")])			
-			revelarMarkup = InlineKeyboardMarkup(btns)
-			if game.is_debugging:
-				bot.send_message(ADMIN, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
-			else:
-				bot.send_message(miembro_elegido.uid, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
+		# if ("Cazador Agente Oculto" not in game.modulos) and len(game.playerlist) < 7:
+		# 	if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2"):					
+		# 		bot.send_message(game.board.state.investigador.uid, "El jugador es: **Jefe**" % (miembro_elegido.name), ParseMode.MARKDOWN)
+		# 	else:
+		# 		bot.send_message(game.board.state.investigador.uid, "El jugador es: **No jefe**" % (miembro_elegido.name), ParseMode.MARKDOWN)
+		# 	start_next_round(bot, game)
+		# else:
+		# 	bot.edit_message_text("Has investigado a %s espera a que elija su respuesta!" % miembro_elegido.name,
+		# 		callback.from_user.id, callback.message.message_id)				
+		# 	btns = []
+		# 	# El jugador debe elegir entre dos ya que tenemos que simular la decision del jefe espia.			
+		# 	if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2", "Agente Falso"):
+		# 		# Si es jefe tiene que decidir
+		# 		if miembro_elegido.rol in ("Jefe Resistencia", "Jefe Resistencia 2", "Agente Falso"):
+		# 			btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])					
+		# 			# Si ha 7+ jugadores el jefe de la resistencia puede mostrar la carta de Jefe Resistencia
+		# 			if len(game.playerlist) > 6:
+		# 				btns.append([InlineKeyboardButton("Mostrar Jefe Resistencia", callback_data=strcid + "_mostrarinvestigador_Jefe_Resistencia")])														
+		# 		else:
+		# 			# Jefe espia siempre puede mostrar lealtad del jefe y jefe espia
+		# 			btns.append([InlineKeyboardButton("Mostrar Jefe Espia", callback_data=strcid + "_mostrarinvestigador_Jefe_Espia")])
+		# 			btns.append([InlineKeyboardButton("Mostrar Jefe", callback_data=strcid + "_mostrarinvestigador_Jefe")])										
+		# 	else:
+		# 		# Si no es lider le pongo solo de opcion que diga "No un jefe"
+		# 		btns.append([InlineKeyboardButton("Mostrar No Jefe", callback_data=strcid + "_mostrarinvestigador_No_jefe")])			
+		# 	revelarMarkup = InlineKeyboardMarkup(btns)
+		# 	if game.is_debugging:
+		# 		bot.send_message(ADMIN, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
+		# 	else:
+		# 		bot.send_message(miembro_elegido.uid, '¿Que carta queres mostrar al investigador?', reply_markup=revelarMarkup)
 		
 def iniciar_votacion(bot, game):
 	
