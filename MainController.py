@@ -308,8 +308,8 @@ def elegir_jugador_general(update: Update, context: CallbackContext):
 			# Se verifica nuevamente si hay fin de partida
 			verify_fin_de_partida(bot, game)
 	if game.board.state.fase_actual == "investigacion_cazador":			
-		bot.send_message(game.cid, "El investigador %s ha elegido investigar a %s" % (game.board.state.investigador.name, miembro_elegido.name), ParseMode.MARKDOWN)
-		game.history.append("El investigador %s ha elegido investigar a %s" % (game.board.state.investigador.name, miembro_elegido.name))
+		bot.send_message(game.cid, f"El investigador {game.board.state.investigador.name} ha elegido investigar a {miembro_elegido.name}", ParseMode.MARKDOWN)
+		game.history.append(f"El investigador {game.board.state.investigador.name} ha elegido investigar a {miembro_elegido.name}")
 		
 		#Si es un jefe o el jefe falso
 		if miembro_elegido.rol in ("Jefe Espia", "Jefe Espia 2", "Jefe Resistencia", "Jefe Resistencia 2", "Agente Falso"):
@@ -321,7 +321,7 @@ def elegir_jugador_general(update: Update, context: CallbackContext):
 				bot.send_message(game.board.state.investigador.uid, f"El jugador { miembro_elegido.name} es: **Jefe {miembro_elegido.afiliacion}**", ParseMode.MARKDOWN)
 		else:
 			bot.send_message(game.board.state.investigador.uid, "El jugador es: **No jefe**" % (miembro_elegido.name), ParseMode.MARKDOWN)
-		
+		start_next_round(bot, game)
 		# Decidi que es no hay motivo estrategico para el jefe espia mostrar
 		# que es jefe espia si no hay agente oculto y son 5-6 jugadores		
 		# if ("Cazador Agente Oculto" not in game.modulos) and len(game.playerlist) < 7:

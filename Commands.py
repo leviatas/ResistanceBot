@@ -605,8 +605,8 @@ def command_prueba(update: Update, context: CallbackContext):
 		bot = context.bot
 		cid = update.message.chat_id
 		game = get_game(cid)
-		game.board.state.resultado_misiones.append("Fracaso")
-		MainController.start_round(bot, game)
+		# game.board.state.resultado_misiones.append("Fracaso")
+		MainController.start_next_round(bot, game)
 		
 		'''sdate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 		log.info("Paso la conversion " + sdate)
