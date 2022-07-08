@@ -21,7 +21,11 @@ class Game(object):
     
     
 	def add_player(self, uid, player):
-		self.playerlist[uid] = player
+		if any([True for k,v in self.playerlist.items() if v.name == player.name]):
+			# Pongo al player con su uid
+			self.playerlist[uid] = Player(f'{player.name} {uid}', uid)
+		else:
+			self.playerlist[uid] = player
 
 	def get_asesino(self):
 		for uid in self.playerlist:
