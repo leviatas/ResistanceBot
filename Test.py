@@ -12,7 +12,7 @@ juego.add_player(2, player)
 player_number = len(juego.playerlist)
 # juego.board = Board(player_number, juego)
 
-print(any([True for k,v in juego.playerlist.items() if v.name == 'Maximiliano']))
+print(any([True for k,v in juego.playerlist.items() if v.name.strip() == 'Maximiliano']))
 
 board = ""
 for uid in juego.playerlist:

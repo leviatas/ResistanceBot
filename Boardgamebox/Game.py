@@ -21,7 +21,7 @@ class Game(object):
     
     
 	def add_player(self, uid, player):
-		if any([True for k,v in self.playerlist.items() if v.name == player.name]):
+		if any([True for k,v in self.playerlist.items() if v.name.strip() == player.name.strip()]):
 			# Pongo al player con su uid
 			self.playerlist[uid] = Player(f'{player.name} {uid}', uid)
 		else:
